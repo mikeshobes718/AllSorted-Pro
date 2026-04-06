@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Log in — AllSorted Pro</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,700;1,9..144,300&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="auth-ui.css">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --black: #0d0d0d;
+    --white: #fafaf7;
+    --cream: #f2efe8;
+    --green: #1a3d2b;
+    --green-light: #2d6648;
+    --gold: #c9a84c;
+    --muted: #6b6b5f;
+    --border: rgba(13,13,13,0.12);
+    --red: #8b2e2e;
+  }
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--cream);
+    color: var(--black);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 1.25rem;
+    font-size: 15px;
+    line-height: 1.55;
+  }
+  .card {
+    width: 100%;
+    max-width: 420px;
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 2rem 1.75rem 1.75rem;
+    box-shadow: 0 8px 32px rgba(13,13,13,0.06);
+  }
+  .logo {
+    font-family: 'Fraunces', serif;
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: var(--green);
+    text-align: center;
+    margin-bottom: 0.35rem;
+  }
+  .logo span { color: var(--gold); }
+  .sub {
+    text-align: center;
+    font-size: 0.88rem;
+    color: var(--muted);
+    margin-bottom: 1.75rem;
+    font-weight: 300;
+  }
+  .form-label {
+    display: block;
+    font-size: 0.68rem;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 0.5rem;
+  }
+  .form-input {
+    width: 100%;
+    padding: 0.55rem 0.75rem;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    font-size: 0.9rem;
+    font-family: inherit;
+    margin-bottom: 1rem;
+  }
+  .form-input:focus { outline: none; border-color: var(--green); }
+  .err {
+    font-size: 0.82rem;
+    color: var(--red);
+    margin: -0.5rem 0 1rem;
+    min-height: 1.2em;
+  }
+  .btn {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: none;
+    border-radius: 4px;
+    font-size: 0.92rem;
+    font-weight: 500;
+    font-family: inherit;
+    cursor: pointer;
+    background: var(--green);
+    color: var(--white);
+    transition: background 0.15s;
+  }
+  .btn:hover { background: var(--green-light); }
+  .back, .register-row {
+    text-align: center;
+    margin-top: 1.25rem;
+  }
+  .register-row { margin-top: 1rem; font-size: 0.88rem; color: var(--muted); }
+  .back a, .register-row a {
+    font-size: 0.85rem;
+    color: var(--muted);
+    text-decoration: none;
+  }
+  .register-row a { color: var(--green); font-weight: 500; }
+  .back a:hover, .register-row a:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+  <div class="card">
+    <div class="logo">AllSorted <span>Pro</span></div>
+    <p class="sub">Team portal — sign in with your account. New users register as <strong>Callers</strong>; an admin can promote accounts to Admin in the portal.</p>
+
+    <form id="loginForm" onsubmit="submitLogin(event);">
+      <label class="form-label" for="email">Email</label>
+      <input type="email" class="form-input" id="email" name="email" required autocomplete="email" placeholder="you@company.com">
+
+      <label class="form-label" for="password">Password</label>
+      <div class="pw-wrap">
+        <input type="password" class="form-input" id="password" name="password" required autocomplete="current-password" placeholder="••••••••">
+        <button type="button" class="pw-toggle" id="pwToggle" aria-label="Show password">Show</button>
+      </div>
+      <div class="forgot-row"><a href="reset-password.html">Forgot password?</a></div>
+
+      <div class="err" id="loginErr" aria-live="polite"></div>
+
+      <button type="submit" class="btn">Continue to portal</button>
+    </form>
+    <p class="register-row">No account? <a href="register.html">Register</a></p>
+    <div class="back"><a href="index.html">← Back to site</a></div>
+  </div>
+  <script src="auth.js"></script>
+  <script>
+    seedUsersIfNeeded();
+    (function redirectIfLoggedIn() {
+      if (!getCurrentUser()) return;
+      var params = new URLSearchParams(window.location.search);
+      var ret = params.get('return');
+      var safe = ret === 'caller-dashboard.html' ? ret : 'caller-dashboard.html';
+      window.location.replace(safe);
+    })();
+
+    (function initPwToggle() {
+      var input = document.getElementById('password');
+      var btn = document.getElementById('pwToggle');
+      btn.addEventListener('click', function () {
+        var show = input.type === 'password';
+        input.type = show ? 'text' : 'password';
+        btn.textContent = show ? 'Hide' : 'Show';
+        btn.setAttribute('aria-label', show ? 'Hide password' : 'Show password');
+      });
+    })();
+
+    async function submitLogin(ev) {
+      ev.preventDefault();
+      document.getElementById('loginErr').textContent = '';
+      var email = document.getElementById('email').value.trim();
+      var password = document.getElementById('password').value;
+      var r = loginUser(email, password);
+      if (!r.ok) {
+        document.getElementById('loginErr').textContent = r.error || 'Login failed';
+        return;
+      }
+      if (typeof syncPortalRosterToServer === 'function') {
+        await syncPortalRosterToServer(r.user);
+      }
+      var params = new URLSearchParams(window.location.search);
+      var ret = params.get('return');
+      var safe = ret === 'caller-dashboard.html' ? ret : 'caller-dashboard.html';
+      window.location.href = safe;
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,25 @@
+{
+  "functions": {
+    "api/scrape-maps.js": {
+      "maxDuration": 60
+    },
+    "api/team-chat.js": {
+      "maxDuration": 60
+    },
+    "api/team-chat-log.js": {
+      "maxDuration": 30
+    },
+    "api/portal-content.js": {
+      "maxDuration": 30
+    },
+    "api/team-chat-clear.js": {
+      "maxDuration": 15
+    },
+    "api/portal-presence.js": {
+      "maxDuration": 15
+    },
+    "api/portal-pipeline.js": {
+      "maxDuration": 30
+    }
+  }
+}

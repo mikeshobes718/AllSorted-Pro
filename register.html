@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Register — AllSorted Pro</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,700;1,9..144,300&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="auth-ui.css">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --black: #0d0d0d;
+    --white: #fafaf7;
+    --cream: #f2efe8;
+    --green: #1a3d2b;
+    --green-light: #2d6648;
+    --gold: #c9a84c;
+    --muted: #6b6b5f;
+    --border: rgba(13,13,13,0.12);
+    --red: #8b2e2e;
+  }
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--cream);
+    color: var(--black);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 1.25rem;
+    font-size: 15px;
+    line-height: 1.55;
+  }
+  .card {
+    width: 100%;
+    max-width: 420px;
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 2rem 1.75rem 1.75rem;
+    box-shadow: 0 8px 32px rgba(13,13,13,0.06);
+  }
+  .logo {
+    font-family: 'Fraunces', serif;
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: var(--green);
+    text-align: center;
+    margin-bottom: 0.35rem;
+  }
+  .logo span { color: var(--gold); }
+  .sub {
+    text-align: center;
+    font-size: 0.88rem;
+    color: var(--muted);
+    margin-bottom: 1.75rem;
+    font-weight: 300;
+  }
+  .form-label {
+    display: block;
+    font-size: 0.68rem;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 0.5rem;
+  }
+  .form-input {
+    width: 100%;
+    padding: 0.55rem 0.75rem;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    font-size: 0.9rem;
+    font-family: inherit;
+    margin-bottom: 1rem;
+  }
+  .form-input:focus { outline: none; border-color: var(--green); }
+  .hint-box {
+    font-size: 0.78rem;
+    color: var(--muted);
+    background: var(--cream);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 0.65rem 0.75rem;
+    margin-bottom: 1.25rem;
+    line-height: 1.45;
+  }
+  .err {
+    font-size: 0.82rem;
+    color: var(--red);
+    margin: -0.5rem 0 1rem;
+    min-height: 1.2em;
+  }
+  .btn {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: none;
+    border-radius: 4px;
+    font-size: 0.92rem;
+    font-weight: 500;
+    font-family: inherit;
+    cursor: pointer;
+    background: var(--green);
+    color: var(--white);
+    transition: background 0.15s;
+  }
+  .btn:hover { background: var(--green-light); }
+  .back, .login-row {
+    text-align: center;
+    margin-top: 1.25rem;
+  }
+  .login-row { margin-top: 1rem; font-size: 0.88rem; color: var(--muted); }
+  .back a, .login-row a {
+    font-size: 0.85rem;
+    color: var(--muted);
+    text-decoration: none;
+  }
+  .login-row a { color: var(--green); font-weight: 500; }
+  .back a:hover, .login-row a:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+  <div class="card">
+    <div class="logo">AllSorted <span>Pro</span></div>
+    <p class="sub">Create an account. You will be a <strong>Caller</strong> by default. An admin can change your role in <strong>Admin → Team members</strong>.</p>
+
+    <form id="regForm" onsubmit="submitRegister(event);">
+      <label class="form-label" for="name">Display name (optional)</label>
+      <input type="text" class="form-input" id="name" name="name" autocomplete="name" placeholder="e.g. Alex">
+
+      <label class="form-label" for="email">Email</label>
+      <input type="email" class="form-input" id="email" name="email" required autocomplete="email" placeholder="you@company.com">
+
+      <label class="form-label" for="password">Password</label>
+      <div class="pw-wrap">
+        <input type="password" class="form-input" id="password" name="password" required autocomplete="new-password" placeholder="Choose a password" minlength="4">
+        <button type="button" class="pw-toggle" id="pwToggle" aria-label="Show password">Show</button>
+      </div>
+      <div class="pw-meter-wrap">
+        <div class="pw-meter-label" id="pwMeterLabel" aria-live="polite"></div>
+        <div class="pw-meter" id="pwMeter" data-score="0" role="meter" aria-valuemin="0" aria-valuemax="4" aria-valuenow="0" aria-label="Password strength"><span></span><span></span><span></span><span></span></div>
+      </div>
+
+      <div class="err" id="regErr" aria-live="polite"></div>
+
+      <div class="hint-box">Data stays in <strong>this browser</strong> (localStorage demo). Do not use a password you reuse on important sites. <a href="reset-password.html" style="color:var(--green);">Forgot password?</a> works for accounts already stored here.</div>
+
+      <button type="submit" class="btn">Create account</button>
+    </form>
+    <p class="login-row">Already have an account? <a href="login.html?return=caller-dashboard.html">Log in</a></p>
+    <div class="back"><a href="index.html">← Back to site</a></div>
+  </div>
+  <script src="auth.js"></script>
+  <script>
+    seedUsersIfNeeded();
+    (function redirectIfLoggedIn() {
+      if (!getCurrentUser()) return;
+      window.location.replace('caller-dashboard.html');
+    })();
+
+    (function initPwUi() {
+      var input = document.getElementById('password');
+      var btn = document.getElementById('pwToggle');
+      var meter = document.getElementById('pwMeter');
+      var label = document.getElementById('pwMeterLabel');
+      btn.addEventListener('click', function () {
+        var show = input.type === 'password';
+        input.type = show ? 'text' : 'password';
+        btn.textContent = show ? 'Hide' : 'Show';
+        btn.setAttribute('aria-label', show ? 'Hide password' : 'Show password');
+      });
+      function updateMeter() {
+        var st = getPasswordStrength(input.value);
+        meter.setAttribute('data-score', String(st.score));
+        meter.setAttribute('aria-valuenow', String(st.score));
+        label.textContent = input.value ? (st.label || '') : '';
+      }
+      input.addEventListener('input', updateMeter);
+      input.addEventListener('focus', updateMeter);
+    })();
+
+    async function submitRegister(ev) {
+      ev.preventDefault();
+      document.getElementById('regErr').textContent = '';
+      var name = document.getElementById('name').value.trim();
+      var email = document.getElementById('email').value.trim();
+      var password = document.getElementById('password').value;
+      var r = registerUser(email, password, name);
+      if (!r.ok) {
+        document.getElementById('regErr').textContent = r.error || 'Registration failed';
+        return;
+      }
+      if (r.user) {
+        try {
+          await fetch('/api/register-notify', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              registrantEmail: r.user.email,
+              registrantName: r.user.name || '',
+              employeeId: r.user.employeeId,
+              adminEmails: getAdminNotifyEmails(),
+            }),
+          });
+        } catch (e) {}
+      }
+      var lr = loginUser(email, password);
+      if (!lr.ok) {
+        window.location.href = 'login.html?return=caller-dashboard.html';
+        return;
+      }
+      if (typeof syncPortalRosterToServer === 'function' && lr.user) {
+        await syncPortalRosterToServer(lr.user);
+      }
+      window.location.href = 'caller-dashboard.html';
+    }
+  </script>
+</body>
+</html>

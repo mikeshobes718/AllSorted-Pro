@@ -3043,6 +3043,10 @@ function sendPresenceHeartbeat() {
       role: u.role || 'caller',
       employeeId: u.employeeId,
       createdAt: u.createdAt || '',
+      employmentStatus:
+        typeof normalizeEmploymentStatus === 'function'
+          ? normalizeEmploymentStatus(u.employmentStatus || 'active')
+          : 'active',
     },
   });
   fetch('/api/portal-presence', {
@@ -4797,6 +4801,33 @@ function renderRemovalRequestsAdmin() {
   });
 }
 
+async function updateServerRosterEmploymentStatus(email, employmentStatus) {
+  try {
+    const r = await fetch('/api/portal-roster', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        action: 'setEmploymentStatus',
+        secret: resolvePortalPresenceSecret(),
+        email: email,
+        employmentStatus: employmentStatus,
+      }),
+    });
+    const data = await r.json().catch(function () {
+      return {};
+    });
+    if (!r.ok || !data.ok) {
+      toast(data.error || 'Could not update employment status on server roster');
+      return false;
+    }
+    toast('Status updated (server roster)');
+    return true;
+  } catch (e) {
+    toast('Could not update status on server roster');
+    return false;
+  }
+}
+
 async function updateServerRosterRole(email, role) {
   try {
     const r = await fetch('/api/portal-roster', {
@@ -4909,6 +4940,11 @@ async function renderTeamMembers() {
     if (u && u.email) seenEmail[String(u.email).trim().toLowerCase()] = true;
   });
   const merged = localUsers.slice();
+  const rosterByEmail = {};
+  rosterList.forEach(function (row) {
+    if (!row || !row.email) return;
+    rosterByEmail[String(row.email).trim().toLowerCase()] = row;
+  });
   rosterList.forEach(function (row) {
     if (!row || !row.email) return;
     const em = String(row.email).trim().toLowerCase();
@@ -4921,6 +4957,7 @@ async function renderTeamMembers() {
       role: row.role || 'caller',
       employeeId: row.employeeId,
       createdAt: row.createdAt,
+      employmentStatus: row.employmentStatus || 'active',
       serverRosterOnly: true,
     });
   });
@@ -4928,14 +4965,15 @@ async function renderTeamMembers() {
     return String(a.email).localeCompare(String(b.email));
   });
   body.innerHTML = `
-    <p style="font-size:0.78rem;color:var(--muted);margin:0 0 0.75rem;line-height:1.45;">Accounts are stored <strong>per browser</strong> (local). <strong>Where</strong> shows whether the row is from this device or the shared server list. <strong>Delete account</strong> removes everything we store on the server for that email (roster, presence, assistant transcript, clear-chat queue) and, for this browser, deletes their login here. It does <strong>not</strong> erase another browser’s localStorage — only that user clearing site data does. <strong>Online</strong> = heartbeat in the last ~3 minutes.</p>
+    <p style="font-size:0.78rem;color:var(--muted);margin:0 0 0.75rem;line-height:1.45;">Accounts are stored <strong>per browser</strong> (local). <strong>Where</strong> shows whether the row is from this device or the shared server list. <strong>Status</strong> is employment state (active, training, etc.) — stored on the server roster and in this browser for local accounts. <strong>Delete account</strong> removes everything we store on the server for that email (roster, presence, assistant transcript, clear-chat queue) and, for this browser, deletes their login here. It does <strong>not</strong> erase another browser’s localStorage — only that user clearing site data does. <strong>Online</strong> = heartbeat in the last ~3 minutes.</p>
     <div class="table-wrap" style="overflow-x:auto;">
-      <table style="width:100%;min-width:1180px;font-size:0.82rem;border-collapse:collapse;">
+      <table style="width:100%;min-width:1320px;font-size:0.82rem;border-collapse:collapse;">
         <thead>
           <tr>
             <th style="text-align:left;padding:0.5rem 0.65rem;border-bottom:1px solid var(--border);font-size:0.68rem;text-transform:uppercase;letter-spacing:0.06em;color:var(--muted);">Emp. ID</th>
             <th style="text-align:left;padding:0.5rem 0.65rem;border-bottom:1px solid var(--border);font-size:0.68rem;text-transform:uppercase;letter-spacing:0.06em;color:var(--muted);">Email</th>
             <th style="text-align:left;padding:0.5rem 0.65rem;border-bottom:1px solid var(--border);font-size:0.68rem;text-transform:uppercase;letter-spacing:0.06em;color:var(--muted);">Name</th>
+            <th style="text-align:left;padding:0.5rem 0.65rem;border-bottom:1px solid var(--border);font-size:0.68rem;text-transform:uppercase;letter-spacing:0.06em;color:var(--muted);">Status</th>
             <th style="text-align:left;padding:0.5rem 0.65rem;border-bottom:1px solid var(--border);font-size:0.68rem;text-transform:uppercase;letter-spacing:0.06em;color:var(--muted);">Commission</th>
             <th style="text-align:left;padding:0.5rem 0.65rem;border-bottom:1px solid var(--border);font-size:0.68rem;text-transform:uppercase;letter-spacing:0.06em;color:var(--muted);">Where</th>
             <th style="text-align:left;padding:0.5rem 0.65rem;border-bottom:1px solid var(--border);font-size:0.68rem;text-transform:uppercase;letter-spacing:0.06em;color:var(--muted);">Online</th>
@@ -4966,11 +5004,25 @@ async function renderTeamMembers() {
               a => (a.status === 'showed' || a.status === 'closed') && a.employeeId != null && String(a.employeeId).trim() === empDisp
             ).length;
             const comm = empDisp !== '—' ? '$' + (showedMine * COMMISSION_PER_SHOWED_APPT) : '—';
+            const eml = u.email ? String(u.email).trim().toLowerCase() : '';
+            const rrow = eml ? rosterByEmail[eml] : null;
+            const rawSt = (u.employmentStatus != null && String(u.employmentStatus).trim() !== '')
+              ? u.employmentStatus
+              : ((rrow && rrow.employmentStatus) || 'active');
+            const uem = typeof normalizeEmploymentStatus === 'function' ? normalizeEmploymentStatus(rawSt) : 'active';
             return `
             <tr>
               <td style="padding:0.55rem 0.65rem;border-bottom:1px solid var(--border);font-variant-numeric:tabular-nums;font-weight:600;color:var(--text);">${empDisp}</td>
               <td style="padding:0.55rem 0.65rem;border-bottom:1px solid var(--border);">${escapeHtml(u.email)}</td>
               <td style="padding:0.55rem 0.65rem;border-bottom:1px solid var(--border);">${escapeHtml(u.name || '—')}</td>
+              <td style="padding:0.45rem 0.5rem;border-bottom:1px solid var(--border);">
+                <select class="form-select team-status-select" data-user-id="${escapeHtml(u.id)}" data-server-only="${sr ? '1' : '0'}" data-user-email="${escapeHtml(u.email)}" style="font-size:0.8rem;padding:0.3rem 0.5rem;border:1px solid var(--border);border-radius:4px;font-family:inherit;min-width:8.75rem;max-width:12rem;">
+                  <option value="active" ${uem === 'active' ? 'selected' : ''}>Active</option>
+                  <option value="inactive" ${uem === 'inactive' ? 'selected' : ''}>Inactive</option>
+                  <option value="training" ${uem === 'training' ? 'selected' : ''}>Training</option>
+                  <option value="on_leave" ${uem === 'on_leave' ? 'selected' : ''}>On leave</option>
+                </select>
+              </td>
               <td style="padding:0.55rem 0.65rem;border-bottom:1px solid var(--border);font-weight:600;color:var(--green);">${comm}</td>
               <td style="padding:0.55rem 0.65rem;border-bottom:1px solid var(--border);">${whereLabel}</td>
               <td style="padding:0.55rem 0.65rem;border-bottom:1px solid var(--border);white-space:nowrap;">${dot}</td>
@@ -4995,6 +5047,34 @@ async function renderTeamMembers() {
         </tbody>
       </table>
     </div>`;
+  body.querySelectorAll('.team-status-select').forEach(sel => {
+    sel.addEventListener('change', async () => {
+      const id = sel.getAttribute('data-user-id');
+      const serverOnly = sel.getAttribute('data-server-only') === '1';
+      const email = sel.getAttribute('data-user-email');
+      const val = sel.value;
+      if (serverOnly) {
+        await updateServerRosterEmploymentStatus(email, val);
+        void renderTeamMembers();
+        return;
+      }
+      const r = updateUserEmploymentStatus(id, val);
+      if (!r.ok) {
+        toast(r.error || 'Could not update status');
+        const fresh = getUsers().find(x => x.id === id);
+        if (fresh && typeof normalizeEmploymentStatus === 'function') {
+          sel.value = normalizeEmploymentStatus(fresh.employmentStatus || 'active');
+        }
+        return;
+      }
+      toast('Employment status updated');
+      try {
+        var updated = getUsers().find(x => x.id === id);
+        if (updated) syncPortalRosterToServer(updated);
+      } catch (e) {}
+      void renderTeamMembers();
+    });
+  });
   body.querySelectorAll('.team-role-select').forEach(sel => {
     sel.addEventListener('change', async () => {
       const id = sel.getAttribute('data-user-id');
@@ -5672,9 +5752,22 @@ function renderGoals() {
   if (admin) {
     adminSelector.style.display = 'flex';
     employeeSelect.disabled = false;
-    employeeSelect.title = 'View goals for any team member';
+    employeeSelect.title =
+      'Goals for active employees only. Inactive, training, and on-leave people are hidden — you always stay listed so you can view your own goals.';
 
-    var allUsers = getUsers().slice();
+    function goalsEmploymentStatus(u) {
+      return typeof normalizeEmploymentStatus === 'function'
+        ? normalizeEmploymentStatus(u && u.employmentStatus != null ? u.employmentStatus : 'active')
+        : 'active';
+    }
+
+    var allUsers = getUsers()
+      .slice()
+      .filter(function(member) {
+        if (!member || !member.id) return false;
+        if (member.id === currentUser.id) return true;
+        return goalsEmploymentStatus(member) === 'active';
+      });
     allUsers.sort(function(a, b) {
       var na = String((a && (a.name || a.email)) || '').toLowerCase();
       var nb = String((b && (b.name || b.email)) || '').toLowerCase();

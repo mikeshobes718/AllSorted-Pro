@@ -61,6 +61,16 @@ async function collectRosterKeys(kv) {
 
 const ONLINE_MS = 3 * 60 * 1000;
 
+function normalizeEmploymentStatus(v) {
+  const allowed = ['active', 'inactive', 'training', 'on_leave'];
+  let s = String(v || 'active')
+    .trim()
+    .toLowerCase()
+    .replace(/[\s-]+/g, '_');
+  if (s === 'onleave' || s === 'leave') s = 'on_leave';
+  return allowed.includes(s) ? s : 'active';
+}
+
 module.exports = async (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
@@ -223,6 +233,26 @@ module.exports = async (req, res) => {
     if (email && email.indexOf('@') > 0) {
       const rk = rosterKeyFromEmail(email);
       if (rk) {
+        let prevRec = null;
+        try {
+          prevRec = await kv.get(rk);
+          if (typeof prevRec === 'string') {
+            try {
+              prevRec = JSON.parse(prevRec);
+            } catch {
+              prevRec = null;
+            }
+          }
+        } catch {
+          prevRec = null;
+        }
+        const fromBody = body.roster.employmentStatus;
+        const mergedStatus =
+          fromBody != null && String(fromBody).trim() !== ''
+            ? normalizeEmploymentStatus(fromBody)
+            : prevRec && prevRec.employmentStatus
+              ? normalizeEmploymentStatus(prevRec.employmentStatus)
+              : 'active';
         const rosterRec = {
           userId: userId.slice(0, 120),
           email: email.slice(0, 200),
@@ -231,6 +261,7 @@ module.exports = async (req, res) => {
           employeeId:
             body.roster.employeeId != null ? String(body.roster.employeeId).slice(0, 12) : '',
           createdAt: String(body.roster.createdAt || '').slice(0, 40) || null,
+          employmentStatus: mergedStatus,
           updatedAt: now,
         };
         try {

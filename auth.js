@@ -106,6 +106,36 @@
     return out;
   }
 
+  function normalizeEmploymentStatus(v) {
+    var allowed = ['active', 'inactive', 'training', 'on_leave'];
+    var s = String(v || 'active')
+      .trim()
+      .toLowerCase()
+      .replace(/[\s-]+/g, '_');
+    if (s === 'onleave' || s === 'leave') s = 'on_leave';
+    if (allowed.indexOf(s) !== -1) return s;
+    return 'active';
+  }
+
+  function ensureEmploymentStatuses() {
+    var users = getUsers();
+    var changed = false;
+    users.forEach(function (u) {
+      if (!u) return;
+      if (u.employmentStatus == null || String(u.employmentStatus).trim() === '') {
+        u.employmentStatus = 'active';
+        changed = true;
+      } else {
+        var n = normalizeEmploymentStatus(u.employmentStatus);
+        if (n !== u.employmentStatus) {
+          u.employmentStatus = n;
+          changed = true;
+        }
+      }
+    });
+    if (changed) saveUsers(users);
+  }
+
   function seedUsersIfNeeded() {
     var users = getUsers();
     if (!users.length) {
@@ -115,12 +145,14 @@
         password: 'AllSorted2026!',
         name: 'Admin',
         role: 'admin',
+        employmentStatus: 'active',
         createdAt: new Date().toISOString()
       });
       saveUsers(users);
     }
     ensurePromotedAdmins();
     ensureEmployeeIds();
+    ensureEmploymentStatuses();
   }
 
   function registerUser(email, password, name) {
@@ -146,6 +178,7 @@
       name: displayName,
       role: 'caller',
       employeeId: pickNewEmployeeId(users),
+      employmentStatus: 'active',
       createdAt: new Date().toISOString()
     };
     users.push(newUser);
@@ -276,6 +309,20 @@
     return { ok: true };
   }
 
+  function updateUserEmploymentStatus(userId, status) {
+    var cur = getCurrentUser();
+    if (!cur || cur.role !== 'admin') return { ok: false, error: 'Admin only' };
+    var norm = normalizeEmploymentStatus(status);
+    var users = getUsers();
+    var u = users.find(function (x) {
+      return x.id === userId;
+    });
+    if (!u) return { ok: false, error: 'User not found' };
+    u.employmentStatus = norm;
+    saveUsers(users);
+    return { ok: true, user: u };
+  }
+
   var PORTAL_PRESENCE_DEFAULT_SECRET = 'Free2026';
 
   function syncPortalRosterToServer(user) {
@@ -301,6 +348,7 @@
         role: user.role || 'caller',
         employeeId: user.employeeId,
         createdAt: user.createdAt || '',
+        employmentStatus: normalizeEmploymentStatus(user.employmentStatus || 'active'),
       },
     });
     return fetch('/api/portal-presence', {
@@ -366,6 +414,8 @@
   global.seedUsersIfNeeded = seedUsersIfNeeded;
   global.getAdminNotifyEmails = getAdminNotifyEmails;
   global.ensureEmployeeIds = ensureEmployeeIds;
+  global.normalizeEmploymentStatus = normalizeEmploymentStatus;
+  global.updateUserEmploymentStatus = updateUserEmploymentStatus;
   global.getUsers = getUsers;
   global.saveUsers = saveUsers;
   global.registerUser = registerUser;

@@ -19,6 +19,16 @@ function rosterKeyFromEmail(email) {
   return 'portal:roster:byemail:v1:' + crypto.createHash('sha256').update(e).digest('hex');
 }
 
+function normalizeEmploymentStatus(v) {
+  const allowed = ['active', 'inactive', 'training', 'on_leave'];
+  let s = String(v || 'active')
+    .trim()
+    .toLowerCase()
+    .replace(/[\s-]+/g, '_');
+  if (s === 'onleave' || s === 'leave') s = 'on_leave';
+  return allowed.includes(s) ? s : 'active';
+}
+
 module.exports = async (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
@@ -85,6 +95,46 @@ module.exports = async (req, res) => {
       return res.status(404).json({ ok: false, error: 'not_found' });
     }
     rec.role = role;
+    rec.updatedAt = new Date().toISOString();
+    try {
+      await kv.set(key, rec);
+    } catch (e) {
+      return res.status(500).json({
+        error: e && e.message ? e.message : 'Save failed',
+      });
+    }
+    return res.status(200).json({ ok: true });
+  }
+
+  if (action === 'setEmploymentStatus') {
+    const email = String(body.email || '')
+      .trim()
+      .toLowerCase();
+    if (!email || email.indexOf('@') === -1) {
+      return res.status(400).json({ error: 'email required' });
+    }
+    const status = normalizeEmploymentStatus(body.employmentStatus);
+    const key = rosterKeyFromEmail(email);
+    if (!key) {
+      return res.status(400).json({ error: 'invalid email' });
+    }
+    let rec = null;
+    try {
+      rec = await kv.get(key);
+    } catch {
+      return res.status(500).json({ error: 'read failed' });
+    }
+    if (typeof rec === 'string') {
+      try {
+        rec = JSON.parse(rec);
+      } catch {
+        rec = null;
+      }
+    }
+    if (!rec || !rec.email) {
+      return res.status(404).json({ ok: false, error: 'not_found' });
+    }
+    rec.employmentStatus = status;
     rec.updatedAt = new Date().toISOString();
     try {
       await kv.set(key, rec);

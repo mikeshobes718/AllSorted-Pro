@@ -575,7 +575,7 @@ details.scrape-panel summary .scrape-hint{font-family:'DM Sans',sans-serif;font-
         <span class="nav-icon">🎯</span><span class="nav-text">Goals</span>
       </button>
     </div>
-    <div class="nav-section">
+    <div class="nav-section" id="navSectionLeads">
       <div class="nav-label">Leads</div>
       <button type="button" class="nav-item" data-view="leads" onclick="showView('leads')" title="Lead Queue">
         <span class="nav-icon">📋</span><span class="nav-text">Lead Queue</span>
@@ -586,7 +586,7 @@ details.scrape-panel summary .scrape-hint{font-family:'DM Sans',sans-serif;font-
         <span class="nav-count" id="navCallLogCount">0</span>
       </button>
     </div>
-    <div class="nav-section">
+    <div class="nav-section" id="navSectionPipeline">
       <div class="nav-label">Pipeline</div>
       <button type="button" class="nav-item" data-view="appointments" onclick="showView('appointments')" title="Appointments">
         <span class="nav-icon">📅</span><span class="nav-text">Appointments</span>
@@ -3985,10 +3985,50 @@ function switchAdminTab(tabId) {
   if (activeContent) activeContent.style.display = 'block';
 }
 
+var INTERVIEWING_BLOCKED_VIEWS = ['dashboard', 'leads', 'log', 'appointments'];
+
+function isInterviewingEmployment() {
+  var u = getCurrentUser();
+  if (!u) return false;
+  if (typeof normalizeEmploymentStatus !== 'function') return false;
+  return normalizeEmploymentStatus(u.employmentStatus != null ? u.employmentStatus : 'active') === 'interviewing';
+}
+
+function applyInterviewingNavRestrictions() {
+  var hide = isInterviewingEmployment();
+  INTERVIEWING_BLOCKED_VIEWS.forEach(function (v) {
+    var btn = document.querySelector('.nav-item[data-view="' + v + '"]');
+    if (btn) {
+      btn.style.display = hide ? 'none' : '';
+      btn.disabled = !!hide;
+    }
+  });
+  var secLeads = document.getElementById('navSectionLeads');
+  if (secLeads) secLeads.style.display = hide ? 'none' : '';
+  var secPipe = document.getElementById('navSectionPipeline');
+  if (secPipe) secPipe.style.display = hide ? 'none' : '';
+}
+
 function showView(name, skipHashUpdate) {
   if (name === 'admin' && (!getCurrentUser() || getCurrentUser().role !== 'admin')) {
     toast('Admin access required — ask an admin to promote your account, or use the seeded admin account.');
     return;
+  }
+  if (isInterviewingEmployment() && INTERVIEWING_BLOCKED_VIEWS.indexOf(name) !== -1) {
+    toast(
+      'Overview, Lead queue, Call log, and Appointments are not available while your employment status is Interviewing.'
+    );
+    name = 'goals';
+    try {
+      if (typeof history !== 'undefined' && history.replaceState) {
+        history.replaceState(null, '', window.location.pathname + window.location.search + '#goals');
+      } else {
+        window.location.hash = 'goals';
+      }
+    } catch (e) {
+      window.location.hash = 'goals';
+    }
+    skipHashUpdate = true;
   }
   document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
@@ -4029,14 +4069,25 @@ function showView(name, skipHashUpdate) {
 window.addEventListener('hashchange', function () {
   var h = window.location.hash.replace('#', '');
   var valid = ['dashboard','leads','log','appointments','admin','script','assistant','resources','settings','goals'];
-  if (valid.indexOf(h) !== -1) showView(h, true);
+  if (valid.indexOf(h) === -1) return;
+  if (typeof isInterviewingEmployment === 'function' && isInterviewingEmployment() && INTERVIEWING_BLOCKED_VIEWS.indexOf(h) !== -1) {
+    showView('goals', true);
+    return;
+  }
+  showView(h, true);
 });
 
 (function restoreViewFromHash() {
   var h = window.location.hash.replace('#', '');
   var valid = ['dashboard','leads','log','appointments','admin','script','assistant','resources','settings','goals'];
   if (valid.indexOf(h) !== -1) {
-    setTimeout(function () { showView(h, true); }, 50);
+    setTimeout(function () {
+      if (typeof isInterviewingEmployment === 'function' && isInterviewingEmployment() && INTERVIEWING_BLOCKED_VIEWS.indexOf(h) !== -1) {
+        showView('goals', true);
+      } else {
+        showView(h, true);
+      }
+    }, 50);
   }
 })();
 
@@ -5849,6 +5900,7 @@ function renderAll() {
   void renderTeamMembers();
   renderDatabase();
   renderSettings();
+  applyInterviewingNavRestrictions();
 }
 
 // LEAD DATABASE
@@ -6666,6 +6718,12 @@ void (async function bootstrapPortal() {
   initTeamChat();
   applyProfileToUI();
   renderAll();
+  if (typeof isInterviewingEmployment === 'function' && isInterviewingEmployment()) {
+    var ih = (window.location.hash || '').replace(/^#/, '');
+    if (!ih) {
+      showView('goals', true);
+    }
+  }
   var sessionUser = getCurrentUser();
   sendPresenceHeartbeat();
   setInterval(sendPresenceHeartbeat, 45000);

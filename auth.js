@@ -71,7 +71,7 @@
     if (changed) saveUsers(users);
   }
 
-  var PROMOTE_TO_ADMIN_EMAILS = ['mikeybobby718@godfare.com'];
+  var PROMOTE_TO_ADMIN_EMAILS = ['hello@allsortedpro.com'];
 
   function ensurePromotedAdmins() {
     var users = getUsers();
@@ -111,7 +111,7 @@
     if (!users.length) {
       users.push({
         id: 'u_seed_' + Date.now(),
-        email: 'admin@allsortedpro.com',
+        email: 'hello@allsortedpro.com',
         password: 'AllSorted2026!',
         name: 'Admin',
         role: 'admin',

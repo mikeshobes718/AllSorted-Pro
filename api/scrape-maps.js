@@ -12,12 +12,19 @@ try {
 }
 
 function findCoords(city, state, bodyLat, bodyLng) {
-  if (typeof bodyLat === 'number' && typeof bodyLng === 'number' && !Number.isNaN(bodyLat) && !Number.isNaN(bodyLng)) {
+  if (
+    typeof bodyLat === 'number' &&
+    typeof bodyLng === 'number' &&
+    !Number.isNaN(bodyLat) &&
+    !Number.isNaN(bodyLng)
+  ) {
     return [bodyLat, bodyLng];
   }
   const c = String(city || '').trim();
   const s = String(state || '').trim().toUpperCase();
-  const m = METRO_COORDS.find((x) => x.city === c && String(x.state).toUpperCase() === s);
+  const m = METRO_COORDS.find(
+    (x) => x.city === c && String(x.state).toUpperCase() === s,
+  );
   if (m && typeof m.lat === 'number' && typeof m.lng === 'number') {
     return [m.lat, m.lng];
   }
@@ -35,7 +42,14 @@ function normalizePhoneNANP(raw) {
   return s;
 }
 
-function parseResults(data, city, state, nicheLabel) {
+function phoneDedupeKey(phoneStr) {
+  let d = String(phoneStr || '')
+    .replace(/\D/g, '');
+  if (d.length === 11 && d[0] === '1') d = d.slice(1);
+  return d.length === 10 ? d : d.length >= 7 ? d : '';
+}
+
+function parseScrapingDogResults(data, city, state, nicheLabel) {
   const rows = [];
   let rawPlacesCount = 0;
   if (!data) return { rows, rawPlacesCount };
@@ -53,16 +67,10 @@ function parseResults(data, city, state, nicheLabel) {
 
   for (const place of places) {
     if (!place || typeof place !== 'object') continue;
-
     const name = place.title || place.name || '';
     if (!name) continue;
-
     const phone =
-      place.phone ||
-      place.phone_number ||
-      place.formatted_phone_number ||
-      '';
-
+      place.phone || place.phone_number || place.formatted_phone_number || '';
     if (!phone) continue;
 
     let rawAddr =
@@ -75,34 +83,20 @@ function parseResults(data, city, state, nicheLabel) {
       place.snippet ||
       '';
     if (rawAddr && typeof rawAddr === 'object') {
-      rawAddr =
-        rawAddr.full ||
-        rawAddr.address ||
-        rawAddr.formatted ||
-        '';
+      rawAddr = rawAddr.full || rawAddr.address || rawAddr.formatted || '';
     }
-    const address = rawAddr ? String(rawAddr).trim() : '';
 
     let website = place.website || place.domain || '';
-    if (website && !String(website).startsWith('http')) {
-      website = 'https://' + website;
-    }
+    if (website && !String(website).startsWith('http')) website = 'https://' + website;
 
     const rating = place.rating ?? place.stars ?? '';
-    const reviews =
-      place.reviews ??
-      place.reviews_count ??
-      place.user_ratings_total ??
-      '';
-
+    const reviews = place.reviews ?? place.reviews_count ?? place.user_ratings_total ?? '';
     let googleMapsRating = '';
     const rStr = rating !== '' && rating != null ? String(rating) : '';
     const rvStr = reviews !== '' && reviews != null ? String(reviews) : '';
     if (rStr && rvStr) {
       const n = Number(rvStr);
-      const revWord =
-        !Number.isNaN(n) && n === 1 ? 'review' : 'reviews';
-      googleMapsRating = `${rStr}★ (${rvStr} ${revWord})`;
+      googleMapsRating = `${rStr}★ (${rvStr} ${!Number.isNaN(n) && n === 1 ? 'review' : 'reviews'})`;
     } else if (rStr) {
       googleMapsRating = `${rStr}★`;
     }
@@ -111,7 +105,7 @@ function parseResults(data, city, state, nicheLabel) {
       company: name.trim(),
       owner: '',
       phone: normalizePhoneNANP(phone.trim()) || phone.trim(),
-      address,
+      address: rawAddr ? String(rawAddr).trim() : '',
       email: '',
       category: nicheLabel,
       city,
@@ -123,8 +117,263 @@ function parseResults(data, city, state, nicheLabel) {
       source: 'ScrapingDog / Google Maps',
     });
   }
-
   return { rows, rawPlacesCount };
+}
+
+function parseApifyResults(items, city, state, nicheLabel) {
+  const rows = [];
+  if (!Array.isArray(items)) return rows;
+  for (const item of items) {
+    if (!item || typeof item !== 'object') continue;
+    const name = item.title || item.name || item.searchPageUrl || '';
+    if (!name) continue;
+    const phone = item.phone || item.phoneUnformatted || '';
+    if (!phone) continue;
+
+    let website = item.website || item.url || '';
+    if (website && !String(website).startsWith('http')) website = 'https://' + website;
+
+    const rating = item.totalScore ?? item.rating ?? '';
+    const reviews = item.reviewsCount ?? item.reviews ?? '';
+    let googleMapsRating = '';
+    const rStr = rating !== '' && rating != null ? String(rating) : '';
+    const rvStr = reviews !== '' && reviews != null ? String(reviews) : '';
+    if (rStr && rvStr) {
+      googleMapsRating = `${rStr}★ (${rvStr} reviews)`;
+    } else if (rStr) {
+      googleMapsRating = `${rStr}★`;
+    }
+
+    rows.push({
+      company: String(name).trim(),
+      owner: '',
+      phone: normalizePhoneNANP(String(phone).trim()) || String(phone).trim(),
+      address: item.address || item.street || '',
+      email: '',
+      category: nicheLabel,
+      city,
+      state,
+      country: 'US',
+      website: website ? String(website).trim() : '',
+      googleMapsRating,
+      notes: '',
+      source: 'Apify / Google Maps',
+    });
+  }
+  return rows;
+}
+
+function buildQueryVariations(niche, city, state) {
+  const base = niche.trim();
+  const words = base.split(/\s+/);
+  const variations = [];
+  variations.push(`${base} in ${city}, ${state}`);
+  variations.push(`${base} near ${city}, ${state}`);
+  if (words.length >= 2) {
+    variations.push(`${words[0]} services in ${city}, ${state}`);
+    variations.push(`${words[0]} near ${city}, ${state}`);
+  }
+  variations.push(`${base} ${city} ${state}`);
+  return variations;
+}
+
+async function fetchScrapingDogPage(apiKey, query, pageOffset, coords) {
+  const PAGE_STEP = 20;
+  const url = new URL('https://api.scrapingdog.com/google_maps');
+  url.searchParams.set('api_key', apiKey);
+  url.searchParams.set('query', query);
+  url.searchParams.set('results', String(PAGE_STEP));
+  url.searchParams.set('page', String(pageOffset));
+  url.searchParams.set('country', 'us');
+  if (coords) {
+    url.searchParams.set('ll', `@${coords[0]},${coords[1]},12z`);
+  }
+
+  let resp;
+  let lastErr;
+  for (let attempt = 0; attempt <= 2; attempt++) {
+    try {
+      const ctrl = new AbortController();
+      const t = setTimeout(() => ctrl.abort(), 45000);
+      resp = await fetch(url.toString(), { signal: ctrl.signal });
+      clearTimeout(t);
+      if (resp.status === 429) { await sleep(8000); continue; }
+      if (resp.status === 400 || resp.status === 403) {
+        if (attempt < 2) { await sleep(2000 + attempt * 2000); continue; }
+        return { ok: false, error: `ScrapingDog ${resp.status}` };
+      }
+      if (resp.ok) break;
+      if (resp.status >= 500 && attempt < 2) { await sleep(2000); continue; }
+      break;
+    } catch (e) {
+      lastErr = e;
+      if (attempt < 2) await sleep(3000);
+    }
+  }
+  if (!resp) return { ok: false, error: lastErr?.message || 'request failed' };
+
+  let data;
+  try { data = await resp.json(); } catch { return { ok: false, error: 'bad JSON' }; }
+  if (!resp.ok) return { ok: false, error: data?.error || `HTTP ${resp.status}` };
+  return { ok: true, data };
+}
+
+async function scrapeWithScrapingDog(apiKey, niche, city, state, nicheLabel, maxLeads, seenPhones, coords, startTime) {
+  const PAGE_STEP = 20;
+  const leads = [];
+  let pagesFetched = 0;
+  let stopReason = 'target_reached';
+  const variations = buildQueryVariations(niche, city, state);
+  const zoomLevels = coords ? ['12z', '10z', '14z'] : [null];
+
+  for (const zoomSuffix of zoomLevels) {
+    if (leads.length >= maxLeads) break;
+    if (Date.now() - startTime > 240000) { stopReason = 'timeout'; break; }
+
+    const effectiveCoords = coords && zoomSuffix
+      ? { lat: coords[0], lng: coords[1], zoom: zoomSuffix }
+      : coords
+        ? { lat: coords[0], lng: coords[1], zoom: '12z' }
+        : null;
+
+    for (const query of variations) {
+      if (leads.length >= maxLeads) break;
+      if (Date.now() - startTime > 240000) { stopReason = 'timeout'; break; }
+
+      let emptyRawPages = 0;
+      for (let pageOffset = 0; pageOffset <= 1960; pageOffset += PAGE_STEP) {
+        if (leads.length >= maxLeads) break;
+        if (Date.now() - startTime > 240000) { stopReason = 'timeout'; break; }
+
+        if (!coords && pageOffset > 0) break;
+
+        const urlObj = new URL('https://api.scrapingdog.com/google_maps');
+        urlObj.searchParams.set('api_key', apiKey);
+        urlObj.searchParams.set('query', query);
+        urlObj.searchParams.set('results', String(PAGE_STEP));
+        urlObj.searchParams.set('page', String(pageOffset));
+        urlObj.searchParams.set('country', 'us');
+        if (effectiveCoords) {
+          urlObj.searchParams.set(
+            'll',
+            `@${effectiveCoords.lat},${effectiveCoords.lng},${effectiveCoords.zoom}`,
+          );
+        }
+
+        let resp;
+        let lastErr;
+        for (let attempt = 0; attempt <= 2; attempt++) {
+          try {
+            const ctrl = new AbortController();
+            const t = setTimeout(() => ctrl.abort(), 45000);
+            resp = await fetch(urlObj.toString(), { signal: ctrl.signal });
+            clearTimeout(t);
+            if (resp.status === 429) { await sleep(8000); continue; }
+            if ((resp.status === 400 || resp.status === 403) && attempt < 2) {
+              await sleep(2000 + attempt * 2000);
+              continue;
+            }
+            if (resp.ok) break;
+            if (resp.status >= 500 && attempt < 2) { await sleep(2000); continue; }
+            break;
+          } catch (e) {
+            lastErr = e;
+            if (attempt < 2) await sleep(3000);
+          }
+        }
+        if (!resp || !resp.ok) break;
+
+        let data;
+        try { data = await resp.json(); } catch { break; }
+
+        const { rows: batch, rawPlacesCount } = parseScrapingDogResults(
+          data, city, state, nicheLabel,
+        );
+        pagesFetched++;
+
+        if (rawPlacesCount === 0) {
+          emptyRawPages++;
+          if (emptyRawPages >= 2) break;
+          await sleep(400);
+          continue;
+        }
+        emptyRawPages = 0;
+
+        for (const row of batch) {
+          const k = phoneDedupeKey(row.phone);
+          if (k && seenPhones.has(k)) continue;
+          if (k) seenPhones.add(k);
+          leads.push(row);
+          if (leads.length >= maxLeads) break;
+        }
+
+        if (rawPlacesCount < PAGE_STEP) break;
+        await sleep(300);
+      }
+    }
+
+    if (zoomSuffix === '12z' && leads.length >= maxLeads * 0.8) break;
+  }
+
+  if (leads.length >= maxLeads) stopReason = 'target_reached';
+  else if (stopReason !== 'timeout') stopReason = 'google_maps_exhausted';
+
+  return { leads, pagesFetched, stopReason };
+}
+
+async function scrapeWithApify(apifyToken, niche, city, state, nicheLabel, maxLeads, seenPhones, startTime) {
+  const leads = [];
+  const actorId = 'compass~crawler-google-places';
+  const url = `https://api.apify.com/v2/acts/${actorId}/run-sync-get-dataset-items?token=${apifyToken}`;
+
+  const remaining = maxLeads - leads.length;
+  if (remaining <= 0) return { leads, stopReason: 'not_needed' };
+
+  const input = {
+    searchStringsArray: [`${niche}`],
+    locationQuery: `${city}, ${state}, USA`,
+    maxCrawledPlaces: Math.min(remaining + 20, 200),
+    language: 'en',
+    maxReviews: 0,
+    maxImages: 0,
+  };
+
+  try {
+    const timeLeft = 260000 - (Date.now() - startTime);
+    if (timeLeft < 30000) return { leads, stopReason: 'timeout' };
+
+    const ctrl = new AbortController();
+    const t = setTimeout(() => ctrl.abort(), Math.min(timeLeft, 120000));
+    const resp = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(input),
+      signal: ctrl.signal,
+    });
+    clearTimeout(t);
+
+    if (!resp.ok) {
+      return { leads, stopReason: 'apify_error' };
+    }
+
+    const items = await resp.json();
+    const parsed = parseApifyResults(items, city, state, nicheLabel);
+
+    for (const row of parsed) {
+      const k = phoneDedupeKey(row.phone);
+      if (k && seenPhones.has(k)) continue;
+      if (k) seenPhones.add(k);
+      leads.push(row);
+      if (leads.length >= maxLeads) break;
+    }
+
+    return {
+      leads,
+      stopReason: leads.length >= maxLeads ? 'target_reached' : 'apify_done',
+    };
+  } catch (e) {
+    return { leads, stopReason: 'apify_timeout' };
+  }
 }
 
 module.exports = async (req, res) => {
@@ -133,22 +382,21 @@ module.exports = async (req, res) => {
   }
 
   const apiKey = process.env.SCRAPINGDOG_API_KEY;
+  const apifyToken = process.env.APIFY_API_TOKEN || '';
   const scraperSecret = process.env.SCRAPER_SECRET || 'Free2026';
+  const startTime = Date.now();
 
   let body = req.body;
   if (typeof body === 'string') {
-    try {
-      body = JSON.parse(body);
-    } catch {
+    try { body = JSON.parse(body); } catch {
       return res.status(400).json({ error: 'Invalid JSON' });
     }
   }
   if (!body || typeof body !== 'object') body = {};
 
-  if (!apiKey) {
+  if (!apiKey && !apifyToken) {
     return res.status(500).json({
-      error:
-        'Add SCRAPINGDOG_API_KEY in Vercel → Project → Settings → Environment Variables.',
+      error: 'Add SCRAPINGDOG_API_KEY or APIFY_API_TOKEN in Vercel → Settings → Environment Variables.',
     });
   }
   if (body.secret !== scraperSecret) {
@@ -166,8 +414,6 @@ module.exports = async (req, res) => {
     .map((w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
     .join(' ');
 
-  const query = `${niche} in ${city} ${state}`;
-
   let maxLeads = 20;
   const rawR = body.results;
   if (typeof rawR === 'number' && !Number.isNaN(rawR)) {
@@ -178,147 +424,50 @@ module.exports = async (req, res) => {
   }
 
   const coords = findCoords(city, state, body.lat, body.lng);
-
-  const PAGE_STEP = 20;
-  const leads = [];
-  const seenPhoneDigits = new Set();
-  let pagesFetched = 0;
-  let emptyPagesInRow = 0;
-  let stopReason = 'max_leads';
-
-  function phoneDedupeKey(phoneStr) {
-    let d = String(phoneStr || '').replace(/\D/g, '');
-    if (d.length === 11 && d[0] === '1') d = d.slice(1);
-    return d.length === 10 ? d : d.length >= 7 ? d : '';
-  }
+  const seenPhones = new Set();
 
   if (Array.isArray(body.existingPhones)) {
     for (const p of body.existingPhones) {
       const k = phoneDedupeKey(p);
-      if (k) seenPhoneDigits.add(k);
+      if (k) seenPhones.add(k);
     }
   }
 
-  for (let pageOffset = 0; leads.length < maxLeads && pageOffset <= 980; pageOffset += PAGE_STEP) {
-    if (!coords && pageOffset > 0) {
-      stopReason = 'no_coords_pagination';
-      break;
-    }
+  let allLeads = [];
+  let totalPagesFetched = 0;
+  let stopReason = 'unknown';
+  let providers = [];
 
-    const url = new URL('https://api.scrapingdog.com/google_maps');
-    url.searchParams.set('api_key', apiKey);
-    url.searchParams.set('query', query);
-    url.searchParams.set('results', String(PAGE_STEP));
-    url.searchParams.set('page', String(pageOffset));
-    url.searchParams.set('country', 'us');
-    if (coords) {
-      url.searchParams.set('ll', `@${coords[0]},${coords[1]},12z`);
-    }
-
-    let resp;
-    let lastErr;
-    for (let attempt = 0; attempt <= 3; attempt++) {
-      try {
-        const ctrl = new AbortController();
-        const t = setTimeout(() => ctrl.abort(), 55000);
-        resp = await fetch(url.toString(), { signal: ctrl.signal });
-        clearTimeout(t);
-        if (resp.status === 429) {
-          await sleep(12000);
-          continue;
-        }
-        if (resp.status === 400 || resp.status === 403) {
-          let errText = '';
-          try {
-            const j = await resp.clone().json();
-            errText = j.message || j.error || JSON.stringify(j).slice(0, 200);
-          } catch {
-            errText = await resp.clone().text().catch(() => '');
-          }
-          if (attempt < 3) {
-            await sleep(2000 + attempt * 2500);
-            continue;
-          }
-          return res.status(502).json({
-            error: `ScrapingDog returned ${resp.status}`,
-            detail: errText || undefined,
-          });
-        }
-        if (resp.ok) break;
-        if (resp.status >= 500 && attempt < 3) {
-          await sleep(2000 + attempt * 1500);
-          continue;
-        }
-        break;
-      } catch (e) {
-        lastErr = e;
-        if (attempt < 3) await sleep(4000 + attempt * 2000);
-      }
-    }
-
-    if (!resp) {
-      return res.status(502).json({
-        error: lastErr?.message || 'Upstream request failed',
-      });
-    }
-
-    let data;
-    try {
-      data = await resp.json();
-    } catch {
-      return res.status(502).json({ error: 'Invalid JSON from ScrapingDog' });
-    }
-
-    if (!resp.ok) {
-      const msg =
-        data && (data.message || data.error)
-          ? String(data.message || data.error)
-          : '';
-      return res.status(502).json({
-        error: `ScrapingDog returned ${resp.status}`,
-        detail: msg || undefined,
-      });
-    }
-
-    const { rows: batch, rawPlacesCount } = parseResults(data, city, state, nicheLabel);
-    pagesFetched++;
-
-    if (rawPlacesCount === 0) {
-      emptyPagesInRow++;
-      if (emptyPagesInRow >= 2 || pagesFetched === 1) {
-        stopReason = 'google_maps_exhausted';
-        break;
-      }
-      await sleep(400);
-      continue;
-    }
-    emptyPagesInRow = 0;
-
-    for (const row of batch) {
-      const k = phoneDedupeKey(row.phone);
-      if (k) {
-        if (seenPhoneDigits.has(k)) continue;
-        seenPhoneDigits.add(k);
-      }
-      leads.push(row);
-      if (leads.length >= maxLeads) break;
-    }
-
-    if (rawPlacesCount < PAGE_STEP) {
-      stopReason = 'google_maps_exhausted';
-      break;
-    }
-    await sleep(coords ? 280 : 400);
+  if (apiKey) {
+    const sdResult = await scrapeWithScrapingDog(
+      apiKey, niche, city, state, nicheLabel, maxLeads, seenPhones, coords, startTime,
+    );
+    allLeads.push(...sdResult.leads);
+    totalPagesFetched += sdResult.pagesFetched;
+    stopReason = sdResult.stopReason;
+    providers.push('scrapingdog');
   }
 
-  if (leads.length >= maxLeads) stopReason = 'max_leads';
-  else if (stopReason === 'max_leads') stopReason = 'page_limit';
+  if (allLeads.length < maxLeads && apifyToken && Date.now() - startTime < 230000) {
+    const apifyResult = await scrapeWithApify(
+      apifyToken, niche, city, state, nicheLabel,
+      maxLeads - allLeads.length, seenPhones, startTime,
+    );
+    allLeads.push(...apifyResult.leads);
+    providers.push('apify');
+    if (apifyResult.leads.length > 0) {
+      stopReason = apifyResult.stopReason;
+    }
+  }
+
+  if (allLeads.length >= maxLeads) stopReason = 'target_reached';
 
   return res.status(200).json({
     ok: true,
-    leads,
+    leads: allLeads.slice(0, maxLeads),
     coordsUsed: !!coords,
-    pagesFetched,
+    pagesFetched: totalPagesFetched,
     stopReason,
+    providers,
   });
 };

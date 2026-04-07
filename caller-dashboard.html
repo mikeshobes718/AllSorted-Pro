@@ -1300,7 +1300,10 @@ details.scrape-panel summary .scrape-hint{font-family:'DM Sans',sans-serif;font-
           <div class="form-group">
             <div class="form-label">Role</div>
             <span id="settingsRoleBadge" class="profile-badge">Caller</span>
-            <span style="font-size:0.78rem;color:var(--muted);margin-left:0.5rem;">Set by an admin in Admin → Team members.</span>
+          </div>
+          <div class="form-group">
+            <div class="form-label">Employment status</div>
+            <span id="settingsEmploymentBadge" class="profile-badge">Active</span>
           </div>
           <button type="button" class="btn btn-green btn-sm" onclick="saveSettingsProfile()">Save profile</button>
         </div>
@@ -2269,15 +2272,37 @@ function signOutPortal() {
   window.location.href = 'index.html';
 }
 
+function formatEmploymentStatusLabel(st) {
+  var labels = {
+    active: 'Active',
+    inactive: 'Inactive',
+    training: 'Training',
+    interviewing: 'Interviewing',
+    on_leave: 'On leave'
+  };
+  return labels[st] || st;
+}
+
 function renderSettings() {
   const u = getCurrentUser();
   const dn = document.getElementById('settingsDisplayName');
   const em = document.getElementById('settingsEmail');
   const rb = document.getElementById('settingsRoleBadge');
+  const es = document.getElementById('settingsEmploymentBadge');
   if (!u || !dn || !em || !rb) return;
   if (document.activeElement !== dn) dn.value = u.name || '';
   em.value = u.email || '';
-  rb.textContent = u.role === 'admin' ? 'Admin' : 'Caller';
+  if (u.role === 'admin') rb.textContent = 'Admin';
+  else if (u.role === 'va') rb.textContent = 'Bookkeeping VA';
+  else rb.textContent = 'Caller';
+  if (es) {
+    var norm =
+      typeof normalizeEmploymentStatus === 'function'
+        ? normalizeEmploymentStatus(u.employmentStatus != null ? u.employmentStatus : 'active')
+        : 'active';
+    es.textContent = formatEmploymentStatusLabel(norm);
+    es.title = 'Current employment status';
+  }
 }
 
 function saveSettingsProfile() {

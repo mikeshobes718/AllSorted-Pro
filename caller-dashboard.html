@@ -5795,9 +5795,27 @@ function updateScrapePreview() {
   if (runBtn) runBtn.textContent = 'Run scrape — ' + batch.length + ' cit' + (batch.length === 1 ? 'y' : 'ies') + ' · up to ' + (batch.length * resultsPer).toLocaleString() + ' leads';
 }
 
+function getAllExistingPhoneKeys() {
+  var keys = [];
+  for (var i = 0; i < leadDb.length; i++) {
+    var k = dbPhoneKey(leadDb[i].phone);
+    if (k) keys.push(k);
+  }
+  return keys;
+}
+var _cachedPhoneKeys = null;
+var _cachedPhoneKeysAt = 0;
+function getCachedPhoneKeys() {
+  if (!_cachedPhoneKeys || leadDb.length !== _cachedPhoneKeysAt) {
+    _cachedPhoneKeys = getAllExistingPhoneKeys();
+    _cachedPhoneKeysAt = leadDb.length;
+  }
+  return _cachedPhoneKeys;
+}
+
 async function fetchOneScrapeCity(secret, niche, city, st, resultsPer) {
   const label = city + ', ' + st;
-  const existingPhones = leadDb.filter(function(l) { return l.city === city && l.state === st; }).map(function(l) { return l.phone; }).filter(Boolean);
+  const existingPhones = getCachedPhoneKeys();
   var ac = new AbortController();
   var tid = setTimeout(function() { ac.abort(); }, 295000);
   let r;
@@ -5874,6 +5892,7 @@ async function runScrapeFromSite() {
   }
 
   scrapeAborted = false;
+  _cachedPhoneKeys = null;
   const btn = document.getElementById('scrapeRunBtn');
   const stopBtn = document.getElementById('scrapeStopBtn');
   const prog = document.getElementById('scrapeProgress');

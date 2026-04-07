@@ -745,9 +745,9 @@ details.scrape-panel summary .scrape-hint{font-family:'DM Sans',sans-serif;font-
       <div class="panel">
         <div class="panel-header" style="justify-content:space-between;flex-wrap:wrap;">
           <div class="panel-title">Employee Goals Dashboard</div>
-          <div id="goalsAdminSelector" style="display:none;align-items:center;gap:0.5rem;">
-            <label style="font-size:0.85rem;color:var(--muted);">Viewing:</label>
-            <select id="goalsEmployeeSelect" class="form-select" style="padding:0.25rem 0.5rem;font-size:0.85rem;min-width:160px;height:auto;" onchange="renderGoals()"></select>
+          <div id="goalsAdminSelector" style="display:none;align-items:center;gap:0.5rem;flex-wrap:wrap;position:relative;z-index:5;pointer-events:auto;">
+            <label for="goalsEmployeeSelect" style="font-size:0.85rem;color:var(--muted);cursor:default;">Viewing:</label>
+            <select id="goalsEmployeeSelect" class="form-select" style="padding:0.25rem 0.5rem;font-size:0.85rem;min-width:220px;max-width:min(100%,360px);height:auto;cursor:pointer;" onchange="renderGoals()" aria-label="Choose whose goals to view"></select>
           </div>
         </div>
         <div class="panel-body" id="goalsContent">
@@ -5650,6 +5650,10 @@ function resolveEmployeeId(user) {
   return (n >= 100 && n <= 999) ? String(n) : '';
 }
 
+function isPortalAdmin(user) {
+  return !!(user && String(user.role || '').toLowerCase() === 'admin');
+}
+
 function renderGoals() {
   var container = document.getElementById('goalsContent');
   var adminSelector = document.getElementById('goalsAdminSelector');
@@ -5661,34 +5665,55 @@ function renderGoals() {
 
   var targetUser = currentUser;
   var targetUserRole = currentUser.role || 'caller';
+  var admin = isPortalAdmin(currentUser);
 
-  if (currentUser.role === 'admin') {
+  if (!adminSelector || !employeeSelect) return;
+
+  if (admin) {
     adminSelector.style.display = 'flex';
-    var allUsers = getUsers();
-    if (employeeSelect.options.length === 0) {
-      var myEmp = resolveEmployeeId(currentUser);
-      employeeSelect.innerHTML = '<option value="' + currentUser.id + '">My Goals' + (myEmp ? ' (Emp #' + myEmp + ')' : '') + '</option>';
-      allUsers.forEach(function(member) {
-        if (member.id !== currentUser.id) {
-          var emp = resolveEmployeeId(member);
-          var opt = document.createElement('option');
-          opt.value = member.id;
-          opt.textContent = (member.name || member.email || 'Unknown') + (emp ? ' (Emp #' + emp + ')' : '') + ' — ' + (member.role || 'caller');
-          employeeSelect.appendChild(opt);
-        }
-      });
+    employeeSelect.disabled = false;
+    employeeSelect.title = 'View goals for any team member';
+
+    var allUsers = getUsers().slice();
+    allUsers.sort(function(a, b) {
+      var na = String((a && (a.name || a.email)) || '').toLowerCase();
+      var nb = String((b && (b.name || b.email)) || '').toLowerCase();
+      return na.localeCompare(nb);
+    });
+
+    var prevId = employeeSelect.value;
+    employeeSelect.innerHTML = '';
+
+    allUsers.forEach(function(member) {
+      if (!member || !member.id) return;
+      var opt = document.createElement('option');
+      opt.value = member.id;
+      var emp = resolveEmployeeId(member);
+      var base = (member.name || member.email || 'Unknown') + (emp ? ' (Emp #' + emp + ')' : '') + ' — ' + (member.role || 'caller');
+      opt.textContent = member.id === currentUser.id ? ('You — ' + base) : base;
+      employeeSelect.appendChild(opt);
+    });
+
+    if (prevId && allUsers.some(function(u) { return u && u.id === prevId; })) {
+      employeeSelect.value = prevId;
+    } else {
+      employeeSelect.value = currentUser.id;
     }
+
     var selectedId = employeeSelect.value;
-    targetUser = allUsers.find(function(m) { return m.id === selectedId; }) || currentUser;
+    targetUser = allUsers.find(function(m) { return m && m.id === selectedId; }) || currentUser;
     targetUserRole = targetUser.role || 'caller';
   } else {
     adminSelector.style.display = 'none';
+    employeeSelect.disabled = true;
+    employeeSelect.removeAttribute('title');
+    employeeSelect.innerHTML = '';
   }
 
   var empId = resolveEmployeeId(targetUser);
 
-  if (targetUserRole === 'va') {
-    renderVaGoals(container, targetUser.id, currentUser.role === 'admin');
+  if (String(targetUserRole || '').toLowerCase() === 'va') {
+    renderVaGoals(container, targetUser.id, admin);
   } else {
     renderCallerGoals(container, empId);
   }

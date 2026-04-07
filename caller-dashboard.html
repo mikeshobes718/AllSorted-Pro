@@ -401,6 +401,8 @@ details.scrape-panel summary .scrape-hint{font-family:'DM Sans',sans-serif;font-
 .scrape-bar-fill{height:100%;background:linear-gradient(90deg,#22c55e,#16a34a);width:0%;transition:width 0.3s ease;border-radius:6px;}
 .scrape-bar-label{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:0.72rem;font-weight:700;color:var(--text);pointer-events:none;letter-spacing:0.03em;}
 .scrape-bar-wrap[data-active] .scrape-bar-label{color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.4);}
+@keyframes scrape-pulse{0%,100%{opacity:1;}50%{opacity:.55;}}
+.scrape-bar-wrap[data-waiting] .scrape-bar-fill{animation:scrape-pulse 1.5s ease-in-out infinite;}
 .scrape-log{font-family:ui-monospace,monospace;font-size:0.72rem;line-height:1.45;max-height:140px;overflow-y:auto;background:var(--cream);border:1px solid var(--border);border-radius:4px;padding:0.5rem 0.65rem;color:var(--text);}
 .scrape-log .ok{color:var(--green);}
 .scrape-log .warn{color:var(--amber);}
@@ -5796,16 +5798,22 @@ function updateScrapePreview() {
 async function fetchOneScrapeCity(secret, niche, city, st, resultsPer) {
   const label = city + ', ' + st;
   const existingPhones = leadDb.filter(function(l) { return l.city === city && l.state === st; }).map(function(l) { return l.phone; }).filter(Boolean);
+  var ac = new AbortController();
+  var tid = setTimeout(function() { ac.abort(); }, 295000);
   let r;
   try {
     r = await fetch('/api/scrape-maps', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ secret, niche, city, state: st, results: resultsPer, existingPhones: existingPhones }),
+      signal: ac.signal,
     });
   } catch (e) {
-    return { ok: false, label, status: 0, data: {}, err: 'Network: ' + (e && e.message ? e.message : 'failed') };
+    clearTimeout(tid);
+    var msg = e && e.name === 'AbortError' ? 'Server timeout (5 min) — try fewer leads per city' : 'Network: ' + (e && e.message ? e.message : 'failed');
+    return { ok: false, label, status: 0, data: {}, err: msg };
   }
+  clearTimeout(tid);
   let data;
   try {
     data = await r.json();
@@ -5813,9 +5821,9 @@ async function fetchOneScrapeCity(secret, niche, city, st, resultsPer) {
     data = {};
   }
   if (!r.ok) {
-    var msg = data.error || 'HTTP ' + r.status;
-    if (data.detail) msg = msg + (msg.indexOf(data.detail) >= 0 ? '' : ' — ' + data.detail);
-    return { ok: false, label, status: r.status, data, err: msg };
+    var emsg = data.error || 'HTTP ' + r.status;
+    if (data.detail) emsg = emsg + (emsg.indexOf(data.detail) >= 0 ? '' : ' — ' + data.detail);
+    return { ok: false, label, status: r.status, data, err: emsg };
   }
   return { ok: true, label, status: r.status, data, err: null };
 }
@@ -5886,9 +5894,22 @@ async function runScrapeFromSite() {
   for (var base = 0; base < n; base += conc) {
     if (scrapeAborted) break;
     var slice = batch.slice(base, base + conc);
+    var batchNum = Math.floor(base / conc) + 1;
+    var cityNames = slice.map(function(c) { return c[0]; }).join(', ');
     prog.textContent =
-      'Batch ' + (Math.floor(base / conc) + 1) + ' — cities ' + (base + 1) + '–' + (base + slice.length) + ' of ' + n + '…';
+      'Batch ' + batchNum + ' — cities ' + (base + 1) + '–' + (base + slice.length) + ' of ' + n + '…';
     setScrapeBar((base / n) * 100, done + ' / ' + n + ' cities  ·  ' + total + ' new leads');
+
+    var batchStart = Date.now();
+    var wrap = document.getElementById('scrapeBarFill') && document.getElementById('scrapeBarFill').parentElement;
+    if (wrap) wrap.setAttribute('data-waiting', '');
+    var elapsedIv = setInterval(function() {
+      var sec = Math.round((Date.now() - batchStart) / 1000);
+      var mm = Math.floor(sec / 60);
+      var ss = sec % 60;
+      var elapsed = mm > 0 ? mm + 'm ' + ss + 's' : sec + 's';
+      prog.textContent = 'Scraping ' + cityNames + '… ' + elapsed + (resultsPer > 100 ? ' (large requests take up to 5 min)' : '');
+    }, 1000);
 
     var outcomes;
     try {
@@ -5898,6 +5919,8 @@ async function runScrapeFromSite() {
         })
       );
     } catch (e) {
+      clearInterval(elapsedIv);
+      if (wrap) wrap.removeAttribute('data-waiting');
       prog.textContent = 'Network error — use the deployed site (allsortedpro.com), not a local file.';
       scrapeLogLine('Network error: ' + (e && e.message ? e.message : 'failed'), 'err');
       toast('Scrape failed: network');
@@ -5906,6 +5929,8 @@ async function runScrapeFromSite() {
       setScrapeBar(0);
       return;
     }
+    clearInterval(elapsedIv);
+    if (wrap) wrap.removeAttribute('data-waiting');
 
     for (var oi = 0; oi < outcomes.length; oi++) {
       if (scrapeAborted) break;

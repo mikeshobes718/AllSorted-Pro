@@ -5020,6 +5020,7 @@ async function renderTeamMembers() {
                   <option value="active" ${uem === 'active' ? 'selected' : ''}>Active</option>
                   <option value="inactive" ${uem === 'inactive' ? 'selected' : ''}>Inactive</option>
                   <option value="training" ${uem === 'training' ? 'selected' : ''}>Training</option>
+                  <option value="interviewing" ${uem === 'interviewing' ? 'selected' : ''}>Interviewing</option>
                   <option value="on_leave" ${uem === 'on_leave' ? 'selected' : ''}>On leave</option>
                 </select>
               </td>
@@ -5753,7 +5754,7 @@ function renderGoals() {
     adminSelector.style.display = 'flex';
     employeeSelect.disabled = false;
     employeeSelect.title =
-      'Goals for active employees only. Inactive, training, and on-leave people are hidden — you always stay listed so you can view your own goals.';
+      'Goals for active employees only. Inactive, training, interviewing, and on-leave people are hidden — you always stay listed so you can view your own goals.';
 
     function goalsEmploymentStatus(u) {
       return typeof normalizeEmploymentStatus === 'function'

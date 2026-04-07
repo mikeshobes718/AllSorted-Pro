@@ -107,12 +107,13 @@
   }
 
   function normalizeEmploymentStatus(v) {
-    var allowed = ['active', 'inactive', 'training', 'on_leave'];
+    var allowed = ['active', 'inactive', 'training', 'interviewing', 'on_leave'];
     var s = String(v || 'active')
       .trim()
       .toLowerCase()
       .replace(/[\s-]+/g, '_');
     if (s === 'onleave' || s === 'leave') s = 'on_leave';
+    if (s === 'interview') s = 'interviewing';
     if (allowed.indexOf(s) !== -1) return s;
     return 'active';
   }

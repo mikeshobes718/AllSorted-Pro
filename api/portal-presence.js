@@ -62,12 +62,13 @@ async function collectRosterKeys(kv) {
 const ONLINE_MS = 3 * 60 * 1000;
 
 function normalizeEmploymentStatus(v) {
-  const allowed = ['active', 'inactive', 'training', 'on_leave'];
+  const allowed = ['active', 'inactive', 'training', 'interviewing', 'on_leave'];
   let s = String(v || 'active')
     .trim()
     .toLowerCase()
     .replace(/[\s-]+/g, '_');
   if (s === 'onleave' || s === 'leave') s = 'on_leave';
+  if (s === 'interview') s = 'interviewing';
   return allowed.includes(s) ? s : 'active';
 }
 

@@ -397,8 +397,10 @@ details.scrape-panel summary .scrape-hint{font-family:'DM Sans',sans-serif;font-
 .scrape-panel-body code,.scrape-cmd{font-family:ui-monospace,monospace;font-size:0.78rem;background:var(--cream);border:1px solid var(--border);padding:0.35rem 0.55rem;border-radius:3px;display:block;white-space:pre-wrap;word-break:break-all;margin:0.4rem 0;}
 .scrape-controls{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:0.75rem 1rem;margin-bottom:1rem;align-items:end;}
 .scrape-controls .form-group{margin-bottom:0;}
-.scrape-bar-wrap{height:8px;background:var(--border);border-radius:4px;overflow:hidden;margin:0.5rem 0 0.75rem;}
-.scrape-bar-fill{height:100%;background:var(--green);width:0%;transition:width 0.2s ease;}
+.scrape-bar-wrap{height:24px;background:var(--border);border-radius:6px;overflow:hidden;margin:0.5rem 0 0.75rem;position:relative;}
+.scrape-bar-fill{height:100%;background:linear-gradient(90deg,#22c55e,#16a34a);width:0%;transition:width 0.3s ease;border-radius:6px;}
+.scrape-bar-label{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:0.72rem;font-weight:700;color:var(--text);pointer-events:none;letter-spacing:0.03em;}
+.scrape-bar-wrap[data-active] .scrape-bar-label{color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.4);}
 .scrape-log{font-family:ui-monospace,monospace;font-size:0.72rem;line-height:1.45;max-height:140px;overflow-y:auto;background:var(--cream);border:1px solid var(--border);border-radius:4px;padding:0.5rem 0.65rem;color:var(--text);}
 .scrape-log .ok{color:var(--green);}
 .scrape-log .warn{color:var(--amber);}
@@ -864,7 +866,7 @@ details.scrape-panel summary .scrape-hint{font-family:'DM Sans',sans-serif;font-
           </div>
         <div class="scrape-panel-body">
           <div class="scrape-callout">
-            <strong>How it works:</strong> Pick a niche, then select a state or specific city. Set how many <em>new</em> leads you want per city — already scraped numbers are skipped automatically. The server pages through Google Maps results until your target is hit or listings run out. Run cities <em>at once</em> for speed. To get 1,000+ leads, target 50–100 per city and select "All Cities" in a state (or leave state blank for every indexed US metro — 650+ cities including expanded NY coverage). <strong>SCRAPINGDOG_API_KEY</strong> must be set in Vercel → Settings → Environment Variables.
+            <strong>How it works:</strong> Pick a niche, then select a state or specific city. Set how many <em>new</em> leads you want per city — already scraped numbers are skipped automatically by matching phone numbers. The server tries multiple search variations (e.g. "trucking company in Buffalo", "trucking services in Buffalo") at different zoom levels to find as many listings as possible, paging through Google Maps until your target is hit or all results are exhausted. If the primary provider (ScrapingDog) can't reach your target, Apify's Google Maps crawler is used as a backup. Run multiple cities <em>at once</em> for speed. Progress is saved after every batch so nothing is lost on long runs. After the scrape finishes, counts are verified automatically. To get 1,000+ leads, target 50–100 per city and select "All Cities" in a state (or leave state blank for every indexed US metro — 650+ cities including expanded NY coverage).
           </div>
           <div class="scrape-section-label">1 · What to search</div>
           <div class="form-row" style="margin-bottom:0.75rem;">
@@ -908,7 +910,7 @@ details.scrape-panel summary .scrape-hint{font-family:'DM Sans',sans-serif;font-
               </select>
             </div>
           </div>
-          <p style="font-size:0.78rem;color:var(--muted);margin:0 0 0.35rem;line-height:1.5;">Duplicates are skipped by <strong>10-digit phone</strong> match against your existing Lead Database. Metros without built-in coordinates are limited to <strong>20</strong> leads per city. Large runs use ScrapingDog credits — watch your dashboard there.</p>
+          <p style="font-size:0.78rem;color:var(--muted);margin:0 0 0.35rem;line-height:1.5;">Duplicates are skipped by <strong>10-digit phone</strong> match against your existing Lead Database. Metros without built-in coordinates are limited to <strong>20</strong> leads per city. Large runs use ScrapingDog + Apify credits. Data is saved after every batch to prevent loss.</p>
           <label style="display:flex;align-items:center;gap:0.4rem;font-size:0.82rem;color:var(--text);cursor:pointer;margin-bottom:0.5rem;user-select:none;">
             <input type="checkbox" id="scrapeAutoPush" checked> Auto-push new leads to Caller Queue
           </label>
@@ -919,7 +921,7 @@ details.scrape-panel summary .scrape-hint{font-family:'DM Sans',sans-serif;font-
             <button type="button" class="btn btn-ghost" id="scrapeStopBtn" onclick="scrapeStop()" disabled>Stop</button>
             <span id="scrapeSummary" style="font-size:0.8rem;color:var(--muted);"></span>
           </div>
-          <div class="scrape-bar-wrap" aria-hidden="true"><div class="scrape-bar-fill" id="scrapeBarFill"></div></div>
+          <div class="scrape-bar-wrap"><div class="scrape-bar-fill" id="scrapeBarFill"></div><div class="scrape-bar-label" id="scrapeBarLabel"></div></div>
           <div id="scrapeProgress" style="font-size:0.85rem;color:var(--muted);min-height:1.25em;margin-bottom:0.35rem;"></div>
           <div class="scrape-log" id="scrapeLog" style="display:none;"></div>
           <details style="margin-top:1rem;">
@@ -1675,11 +1677,21 @@ function pipelineTotalWeight(payload) {
 }
 
 function saveLocalOnly() {
-  localStorage.setItem('cb_leads', JSON.stringify(leads));
-  localStorage.setItem('cb_calllog', JSON.stringify(callLog));
-  localStorage.setItem('cb_appts', JSON.stringify(appointments));
-  localStorage.setItem('cb_removal_requests', JSON.stringify(leadRemovalRequests));
-  localStorage.setItem('cb_leaddb', JSON.stringify(leadDb));
+  try {
+    localStorage.setItem('cb_leads', JSON.stringify(leads));
+    localStorage.setItem('cb_calllog', JSON.stringify(callLog));
+    localStorage.setItem('cb_appts', JSON.stringify(appointments));
+    localStorage.setItem('cb_removal_requests', JSON.stringify(leadRemovalRequests));
+    localStorage.setItem('cb_leaddb', JSON.stringify(leadDb));
+  } catch (e) {
+    if (e && e.name === 'QuotaExceededError') {
+      toast('Browser storage full — export your leads as CSV from Lead Database before continuing. Some data may not have saved.');
+      console.error('localStorage quota exceeded. leadDb has', leadDb.length, 'rows. Approximate size:', Math.round(JSON.stringify(leadDb).length / 1024), 'KB');
+    } else {
+      toast('Error saving data: ' + (e && e.message ? e.message : 'unknown'));
+      console.error('saveLocalOnly error:', e);
+    }
+  }
 }
 
 function getPipelineSecret() {
@@ -5731,9 +5743,17 @@ function scrapeLogLine(text, cls) {
   log.scrollTop = log.scrollHeight;
 }
 
-function setScrapeBar(pct) {
-  const bar = document.getElementById('scrapeBarFill');
-  if (bar) bar.style.width = Math.min(100, Math.max(0, pct)) + '%';
+function setScrapeBar(pct, labelText) {
+  var p = Math.min(100, Math.max(0, pct));
+  var bar = document.getElementById('scrapeBarFill');
+  var label = document.getElementById('scrapeBarLabel');
+  var wrap = bar && bar.parentElement;
+  if (bar) bar.style.width = p + '%';
+  if (label) label.textContent = labelText || (p > 0 ? Math.round(p) + '%' : '');
+  if (wrap) {
+    if (p > 45) wrap.setAttribute('data-active', '');
+    else wrap.removeAttribute('data-active');
+  }
 }
 
 function updateScrapePreview() {
@@ -5853,20 +5873,22 @@ async function runScrapeFromSite() {
   btn.disabled = true;
   stopBtn.disabled = false;
   clearScrapeLog();
-  setScrapeBar(0);
+  setScrapeBar(0, '');
   if (summary) summary.textContent = '';
   let total = 0;
   let errs = 0;
   let skippedDup = 0;
   const n = batch.length;
   let done = 0;
+  var dbCountBefore = leadDb.length;
+  var queueCountBefore = leads.length;
 
   for (var base = 0; base < n; base += conc) {
     if (scrapeAborted) break;
     var slice = batch.slice(base, base + conc);
     prog.textContent =
       'Batch ' + (Math.floor(base / conc) + 1) + ' — cities ' + (base + 1) + '–' + (base + slice.length) + ' of ' + n + '…';
-    setScrapeBar((base / n) * 100);
+    setScrapeBar((base / n) * 100, done + ' / ' + n + ' cities  ·  ' + total + ' new leads');
 
     var outcomes;
     try {
@@ -5931,8 +5953,10 @@ async function runScrapeFromSite() {
           'ok'
         );
       }
-      setScrapeBar((done / n) * 100);
+      setScrapeBar((done / n) * 100, done + ' / ' + n + ' cities  ·  ' + total + ' new leads');
     }
+
+    saveDb();
 
     if (scrapeAborted) break;
     if (base + conc < n && delayMs && !scrapeAborted) {
@@ -5942,8 +5966,9 @@ async function runScrapeFromSite() {
     }
   }
 
-  if (!scrapeAborted) setScrapeBar(100);
+  if (!scrapeAborted) setScrapeBar(100, done + ' / ' + n + ' cities  ·  ' + total + ' new leads');
 
+  prog.textContent = 'Saving leads to database...';
   var autoPush = document.getElementById('scrapeAutoPush') && document.getElementById('scrapeAutoPush').checked;
   var pushed = 0;
   if (autoPush && total > 0) {
@@ -5966,15 +5991,38 @@ async function runScrapeFromSite() {
   }
 
   saveDb();
+
+  prog.textContent = 'Verifying...';
+  await new Promise(function(r){ setTimeout(r, 200); });
+  var dbCountAfter = leadDb.length;
+  var queueCountAfter = leads.length;
+  var expectedDb = dbCountBefore + total;
+  var dbMatch = dbCountAfter === expectedDb;
+  var expectedQueue = autoPush ? queueCountBefore + pushed : queueCountBefore;
+  var queueMatch = queueCountAfter === expectedQueue;
+
+  var verifyLines = [];
+  verifyLines.push('--- Verification ---');
+  verifyLines.push('Lead Database: ' + dbCountBefore + ' -> ' + dbCountAfter + (dbMatch ? ' OK' : ' MISMATCH (expected ' + expectedDb + ')'));
+  verifyLines.push('Caller Queue:  ' + queueCountBefore + ' -> ' + queueCountAfter + (queueMatch ? ' OK' : ' MISMATCH (expected ' + expectedQueue + ')'));
+  if (!dbMatch || !queueMatch) {
+    verifyLines.push('Storage may be full — try exporting leads as CSV and clearing old data.');
+  }
+  verifyLines.forEach(function(vl) {
+    scrapeLogLine(vl, (dbMatch && queueMatch) ? 'ok' : 'err');
+  });
+
   renderDatabase();
   renderDashboard();
   renderAll();
   const dupPart = skippedDup ? ' · ' + skippedDup + ' duplicate' + (skippedDup === 1 ? '' : 's') + ' skipped' : '';
   const pushPart = pushed > 0 ? ' · ' + pushed + ' pushed to queue' : '';
+  const verifyTag = (dbMatch && queueMatch) ? ' · Verified' : ' · STORAGE ERROR';
   const doneMsg = scrapeAborted
-    ? 'Stopped — ' + total + ' new leads' + dupPart + pushPart + (errs ? ' (' + errs + ' errors)' : '')
-    : 'Done — ' + total + ' new leads' + dupPart + pushPart + (errs ? ' (' + errs + ' cities skipped)' : '');
+    ? 'Stopped — ' + total + ' new leads' + dupPart + pushPart + (errs ? ' (' + errs + ' errors)' : '') + verifyTag
+    : 'Done — ' + total + ' new leads' + dupPart + pushPart + (errs ? ' (' + errs + ' cities skipped)' : '') + verifyTag;
   prog.textContent = doneMsg;
+  setScrapeBar(100, (dbMatch && queueMatch) ? 'Complete · Verified' : 'Complete · Storage Error');
   if (summary)
     summary.textContent = total || skippedDup
       ? total + ' new rows' + (pushed ? ' · ' + pushed + ' queued' : '') + (skippedDup ? ' · ' + skippedDup + ' dup skipped' : '') + ' · ' + (n - errs) + '/' + n + ' cities OK'

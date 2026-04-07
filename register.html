@@ -126,8 +126,11 @@
     <p class="sub">Create an account. You will be a <strong>Caller</strong> by default. An admin can change your role in <strong>Admin → Team members</strong>.</p>
 
     <form id="regForm" onsubmit="submitRegister(event);">
-      <label class="form-label" for="name">Display name (optional)</label>
-      <input type="text" class="form-input" id="name" name="name" autocomplete="name" placeholder="e.g. Alex">
+      <label class="form-label" for="firstName">First name</label>
+      <input type="text" class="form-input" id="firstName" name="firstName" required autocomplete="given-name" placeholder="First name">
+
+      <label class="form-label" for="lastName">Last name</label>
+      <input type="text" class="form-input" id="lastName" name="lastName" required autocomplete="family-name" placeholder="Last name">
 
       <label class="form-label" for="email">Email</label>
       <input type="email" class="form-input" id="email" name="email" required autocomplete="email" placeholder="you@company.com">
@@ -144,7 +147,7 @@
 
       <div class="err" id="regErr" aria-live="polite"></div>
 
-      <div class="hint-box">Data stays in <strong>this browser</strong> (localStorage demo). Do not use a password you reuse on important sites. <a href="reset-password.html" style="color:var(--green);">Forgot password?</a> works for accounts already stored here.</div>
+      <div class="hint-box">Account data is stored in <strong>this browser</strong>. New accounts are <strong>pending until an admin approves</strong> you in Admin → Signup approvals. You will get an email to admins if Resend is configured. Do not reuse an important password. <a href="reset-password.html" style="color:var(--green);">Forgot password?</a></div>
 
       <button type="submit" class="btn">Create account</button>
     </form>
@@ -154,7 +157,9 @@
   <script src="auth.js"></script>
   <script>
     seedUsersIfNeeded();
-    (function redirectIfLoggedIn() {
+    void (async function redirectIfLoggedIn() {
+      if (!getCurrentUser()) return;
+      await checkPortalAccessOrRedirect();
       if (!getCurrentUser()) return;
       window.location.replace('caller-dashboard.html');
     })();
@@ -183,7 +188,13 @@
     async function submitRegister(ev) {
       ev.preventDefault();
       document.getElementById('regErr').textContent = '';
-      var name = document.getElementById('name').value.trim();
+      var firstName = document.getElementById('firstName').value.trim();
+      var lastName = document.getElementById('lastName').value.trim();
+      if (!firstName || !lastName) {
+        document.getElementById('regErr').textContent = 'First name and last name are required';
+        return;
+      }
+      var name = firstName + ' ' + lastName;
       var email = document.getElementById('email').value.trim();
       var password = document.getElementById('password').value;
       var r = registerUser(email, password, name);
@@ -210,6 +221,8 @@
         window.location.href = 'login.html?return=caller-dashboard.html';
         return;
       }
+      var gate = await checkPortalAccessOrRedirect();
+      if (!gate) return;
       if (typeof syncPortalRosterToServer === 'function' && lr.user) {
         await syncPortalRosterToServer(lr.user);
       }

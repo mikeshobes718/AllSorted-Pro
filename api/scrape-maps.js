@@ -1,5 +1,27 @@
+const path = require('path');
+
 function sleep(ms) {
   return new Promise((r) => setTimeout(r, ms));
+}
+
+let METRO_COORDS = [];
+try {
+  METRO_COORDS = require(path.join(__dirname, '../metro-coords.json'));
+} catch (e) {
+  METRO_COORDS = [];
+}
+
+function findCoords(city, state, bodyLat, bodyLng) {
+  if (typeof bodyLat === 'number' && typeof bodyLng === 'number' && !Number.isNaN(bodyLat) && !Number.isNaN(bodyLng)) {
+    return [bodyLat, bodyLng];
+  }
+  const c = String(city || '').trim();
+  const s = String(state || '').trim().toUpperCase();
+  const m = METRO_COORDS.find((x) => x.city === c && String(x.state).toUpperCase() === s);
+  if (m && typeof m.lat === 'number' && typeof m.lng === 'number') {
+    return [m.lat, m.lng];
+  }
+  return null;
 }
 
 function normalizePhoneNANP(raw) {
@@ -147,11 +169,13 @@ module.exports = async (req, res) => {
   let maxLeads = 20;
   const rawR = body.results;
   if (typeof rawR === 'number' && !Number.isNaN(rawR)) {
-    maxLeads = Math.min(300, Math.max(1, Math.round(rawR)));
+    maxLeads = Math.min(2000, Math.max(1, Math.round(rawR)));
   } else if (rawR != null && rawR !== '') {
     const n = parseInt(String(rawR), 10);
-    if (!Number.isNaN(n)) maxLeads = Math.min(300, Math.max(1, n));
+    if (!Number.isNaN(n)) maxLeads = Math.min(2000, Math.max(1, n));
   }
+
+  const coords = findCoords(city, state, body.lat, body.lng);
 
   const PAGE_STEP = 20;
   const leads = [];
@@ -163,29 +187,66 @@ module.exports = async (req, res) => {
     return d.length === 10 ? d : d.length >= 7 ? d : '';
   }
 
-  for (let pageOffset = 0; leads.length < maxLeads && pageOffset <= 280; pageOffset += PAGE_STEP) {
+  if (Array.isArray(body.existingPhones)) {
+    for (const p of body.existingPhones) {
+      const k = phoneDedupeKey(p);
+      if (k) seenPhoneDigits.add(k);
+    }
+  }
+
+  for (let pageOffset = 0; leads.length < maxLeads && pageOffset <= 980; pageOffset += PAGE_STEP) {
+    if (!coords && pageOffset > 0) {
+      break;
+    }
+
     const url = new URL('https://api.scrapingdog.com/google_maps');
     url.searchParams.set('api_key', apiKey);
     url.searchParams.set('query', query);
     url.searchParams.set('results', String(PAGE_STEP));
     url.searchParams.set('page', String(pageOffset));
+    url.searchParams.set('country', 'us');
+    if (coords) {
+      url.searchParams.set('ll', `@${coords[0]},${coords[1]},12z`);
+    }
 
     let resp;
     let lastErr;
-    for (let attempt = 0; attempt <= 2; attempt++) {
+    for (let attempt = 0; attempt <= 3; attempt++) {
       try {
         const ctrl = new AbortController();
-        const t = setTimeout(() => ctrl.abort(), 28000);
+        const t = setTimeout(() => ctrl.abort(), 55000);
         resp = await fetch(url.toString(), { signal: ctrl.signal });
         clearTimeout(t);
         if (resp.status === 429) {
-          await sleep(10000);
+          await sleep(12000);
+          continue;
+        }
+        if (resp.status === 400 || resp.status === 403) {
+          let errText = '';
+          try {
+            const j = await resp.clone().json();
+            errText = j.message || j.error || JSON.stringify(j).slice(0, 200);
+          } catch {
+            errText = await resp.clone().text().catch(() => '');
+          }
+          if (attempt < 3) {
+            await sleep(2000 + attempt * 2500);
+            continue;
+          }
+          return res.status(502).json({
+            error: `ScrapingDog returned ${resp.status}`,
+            detail: errText || undefined,
+          });
+        }
+        if (resp.ok) break;
+        if (resp.status >= 500 && attempt < 3) {
+          await sleep(2000 + attempt * 1500);
           continue;
         }
         break;
       } catch (e) {
         lastErr = e;
-        if (attempt < 2) await sleep(5000);
+        if (attempt < 3) await sleep(4000 + attempt * 2000);
       }
     }
 
@@ -203,8 +264,13 @@ module.exports = async (req, res) => {
     }
 
     if (!resp.ok) {
+      const msg =
+        data && (data.message || data.error)
+          ? String(data.message || data.error)
+          : '';
       return res.status(502).json({
         error: `ScrapingDog returned ${resp.status}`,
+        detail: msg || undefined,
       });
     }
 
@@ -222,8 +288,8 @@ module.exports = async (req, res) => {
     }
 
     if (batch.length < PAGE_STEP) break;
-    await sleep(250);
+    await sleep(coords ? 280 : 400);
   }
 
-  return res.status(200).json({ ok: true, leads });
+  return res.status(200).json({ ok: true, leads, coordsUsed: !!coords });
 };

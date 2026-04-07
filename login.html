@@ -113,7 +113,7 @@
 <body>
   <div class="card">
     <div class="logo">AllSorted <span>Pro</span></div>
-    <p class="sub">Team portal — sign in with your account. New users register as <strong>Callers</strong>; an admin can promote accounts to Admin in the portal.</p>
+    <p class="sub">Team portal — sign in with your account. New registrations stay <strong>pending</strong> until an admin approves them in Admin → Signup approvals.</p>
 
     <form id="loginForm" onsubmit="submitLogin(event);">
       <label class="form-label" for="email">Email</label>
@@ -136,7 +136,9 @@
   <script src="auth.js"></script>
   <script>
     seedUsersIfNeeded();
-    (function redirectIfLoggedIn() {
+    void (async function redirectIfLoggedIn() {
+      if (!getCurrentUser()) return;
+      await checkPortalAccessOrRedirect();
       if (!getCurrentUser()) return;
       var params = new URLSearchParams(window.location.search);
       var ret = params.get('return');
@@ -165,6 +167,8 @@
         document.getElementById('loginErr').textContent = r.error || 'Login failed';
         return;
       }
+      var gate = await checkPortalAccessOrRedirect();
+      if (!gate) return;
       if (typeof syncPortalRosterToServer === 'function') {
         await syncPortalRosterToServer(r.user);
       }

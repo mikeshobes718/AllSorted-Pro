@@ -127,6 +127,14 @@
     seedUsersIfNeeded();
     var e = normalizeEmail(email);
     if (!e || !password) return { ok: false, error: 'Email and password are required' };
+    var displayName = String(name || '').trim();
+    if (!displayName) {
+      return { ok: false, error: 'First name and last name are required' };
+    }
+    var nameParts = displayName.split(/\s+/).filter(Boolean);
+    if (nameParts.length < 2) {
+      return { ok: false, error: 'Enter both first and last name' };
+    }
     var users = getUsers();
     if (users.some(function (u) { return u.email === e; })) {
       return { ok: false, error: 'An account with this email already exists' };
@@ -135,7 +143,7 @@
       id: 'u_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 9),
       email: e,
       password: password,
-      name: (name || '').trim(),
+      name: displayName,
       role: 'caller',
       employeeId: pickNewEmployeeId(users),
       createdAt: new Date().toISOString()
@@ -309,6 +317,35 @@
       });
   }
 
+  async function checkPortalAccessOrRedirect() {
+    var u = getCurrentUser();
+    if (!u || !u.email || u.role === 'admin') return true;
+    var secret = localStorage.getItem('cb_scraper_secret') || 'Free2026';
+    try {
+      var r = await fetch('/api/portal-access', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ secret: secret, email: u.email }),
+      });
+      var d = await r.json().catch(function () {
+        return {};
+      });
+      if (!d || d.ok !== true) return true;
+      if (d.configured === false) return true;
+      if (d.status === 'pending') {
+        window.location.replace('account-pending.html');
+        return false;
+      }
+      if (d.status === 'denied') {
+        window.location.replace('account-denied.html');
+        return false;
+      }
+      return true;
+    } catch (e) {
+      return true;
+    }
+  }
+
   function deleteUserAsAdmin(userId) {
     var cur = getCurrentUser();
     if (!cur || cur.role !== 'admin') return { ok: false, error: 'Admin only' };
@@ -342,4 +379,5 @@
   global.updateCurrentUserDisplayName = updateCurrentUserDisplayName;
   global.changePasswordForCurrentUser = changePasswordForCurrentUser;
   global.syncPortalRosterToServer = syncPortalRosterToServer;
+  global.checkPortalAccessOrRedirect = checkPortalAccessOrRedirect;
 })(typeof window !== 'undefined' ? window : this);

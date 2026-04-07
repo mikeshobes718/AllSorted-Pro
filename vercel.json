@@ -1,7 +1,15 @@
 {
+  "headers": [
+    {
+      "source": "/caller-dashboard.html",
+      "headers": [
+        { "key": "Cache-Control", "value": "no-cache, no-store, must-revalidate" }
+      ]
+    }
+  ],
   "functions": {
     "api/scrape-maps.js": {
-      "maxDuration": 60
+      "maxDuration": 300
     },
     "api/team-chat.js": {
       "maxDuration": 60
@@ -20,6 +28,12 @@
     },
     "api/portal-pipeline.js": {
       "maxDuration": 30
+    },
+    "api/portal-access.js": {
+      "maxDuration": 15
+    },
+    "api/portal-access-admin.js": {
+      "maxDuration": 15
     }
   }
 }

@@ -9,29 +9,32 @@
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 :root{
-  --black:#0d0d0d;
-  --white:#fafaf7;
-  --cream:#f2efe8;
-  --green:#1a3d2b;
-  --green-light:#2d6648;
-  --gold:#c9a84c;
-  --muted:#6b6b5f;
-  --muted2:#8c8c7f;
-  --border:rgba(13,13,13,0.1);
-  --border2:rgba(13,13,13,0.2);
-  --bg:var(--cream);
-  --surface:var(--white);
-  --surface2:#eae7df;
-  --text:var(--black);
-  --green-bg:rgba(26,61,43,0.08);
-  --red:#b91c1c;
-  --red-bg:rgba(185,28,28,0.08);
-  --amber:#b45309;
-  --amber-bg:rgba(180,83,9,0.08);
-  --blue:#1d4ed8;
-  --blue-bg:rgba(29,78,216,0.08);
-  --purple:#7e22ce;
-  --purple-bg:rgba(126,34,206,0.08);
+  --black:#0f172a;
+  --white:#ffffff;
+  --cream:#f8fafc;
+  --green:#166534;
+  --green-light:#22c55e;
+  --gold:#d97706;
+  --muted:#64748b;
+  --muted2:#94a3b8;
+  --border:#e2e8f0;
+  --border2:#cbd5e1;
+  --bg:#f1f5f9;
+  --surface:#ffffff;
+  --surface2:#f8fafc;
+  --text:#0f172a;
+  --green-bg:#f0fdf4;
+  --red:#dc2626;
+  --red-bg:#fef2f2;
+  --amber:#d97706;
+  --amber-bg:#fffbeb;
+  --blue:#2563eb;
+  --blue-bg:#eff6ff;
+  --purple:#7c3aed;
+  --purple-bg:#faf5ff;
+  --radius: 8px;
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
 }
 html{height:100%;}
 body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column;font-size:14px;}
@@ -98,56 +101,74 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .app{display:grid;grid-template-columns:220px 1fr;flex:1;overflow:hidden;height:calc(100vh - 52px);transition:grid-template-columns 0.22s ease;}
 .app.sidebar-collapsed{grid-template-columns:56px 1fr;}
 
-.sidebar{background:var(--surface);border-right:1px solid var(--border);padding:1.25rem 0;display:flex;flex-direction:column;overflow-y:auto;min-width:0;transition:padding 0.22s ease;}
-.sidebar-toggle-wrap{padding:0 0.75rem;margin-bottom:0.65rem;}
-.sidebar-toggle{width:100%;border:1px solid var(--border);background:var(--surface2);color:var(--muted);border-radius:4px;padding:0.4rem 0.5rem;font-size:0.78rem;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;transition:background 0.15s,color 0.15s;}
-.sidebar-toggle:hover{background:var(--cream);color:var(--text);}
-.app.sidebar-collapsed .sidebar-toggle{font-size:1rem;line-height:1;padding:0.45rem 0.35rem;}
-.app.sidebar-collapsed .sidebar{padding:0.75rem 0.35rem;}
-.app.sidebar-collapsed .sidebar-toggle-wrap{padding:0 0.35rem 0.5rem;margin-bottom:0.5rem;}
+.sidebar{background:var(--surface);border-right:1px solid var(--border);padding:1.5rem 0.75rem;display:flex;flex-direction:column;overflow-y:auto;min-width:0;transition:padding 0.2s ease;box-shadow:var(--shadow-sm);z-index:5;}
+.sidebar-toggle-wrap{padding:0 0.75rem;margin-bottom:1rem;}
+.sidebar-toggle{width:100%;border:1px solid var(--border);background:var(--surface);color:var(--muted);border-radius:6px;padding:0.5rem 0.75rem;font-size:0.8rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.15s;box-shadow:var(--shadow-sm);}
+.sidebar-toggle:hover{background:var(--surface2);color:var(--text);}
+.app.sidebar-collapsed .sidebar-toggle{font-size:1.1rem;line-height:1;padding:0.5rem 0.4rem;}
+.app.sidebar-collapsed .sidebar{padding:1.5rem 0.5rem;}
+.app.sidebar-collapsed .sidebar-toggle-wrap{padding:0 0.25rem 0.75rem;margin-bottom:0.75rem;}
 .app.sidebar-collapsed .nav-label{display:none;}
 .app.sidebar-collapsed .nav-text{display:none;}
 .app.sidebar-collapsed .nav-count{display:none;}
-.app.sidebar-collapsed .nav-item{justify-content:center;padding:0.5rem 0.25rem;}
-.app.sidebar-collapsed .nav-section{padding:0 0.35rem 0.85rem;margin-bottom:0.75rem;}
+.app.sidebar-collapsed .nav-item{justify-content:center;padding:0.6rem 0.25rem;}
+.app.sidebar-collapsed .nav-section{padding:0 0.25rem 1rem;margin-bottom:1rem;}
 .app.sidebar-collapsed .sidebar-bottom{display:none;}
 .nav-text{flex:1;text-align:left;}
-.nav-section{padding:0 1rem;margin-bottom:1.5rem;}
-.nav-label{font-size:0.65rem;font-weight:500;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted2);padding:0 0.5rem;margin-bottom:0.4rem;}
-.nav-item{display:flex;align-items:center;gap:0.65rem;padding:0.5rem 0.75rem;border-radius:4px;cursor:pointer;font-size:0.85rem;color:var(--muted);transition:all 0.15s;border:none;background:none;width:100%;text-align:left;}
+.nav-section{padding:0 0.5rem;margin-bottom:1.75rem;}
+.nav-label{font-size:0.7rem;font-weight:600;letter-spacing:0.05em;text-transform:uppercase;color:var(--muted2);padding:0 0.75rem;margin-bottom:0.5rem;}
+.nav-item{display:flex;align-items:center;gap:0.75rem;padding:0.6rem 0.75rem;border-radius:6px;cursor:pointer;font-size:0.88rem;color:var(--muted);transition:all 0.15s;border:none;background:none;width:100%;text-align:left;}
 .nav-item:hover{background:var(--surface2);color:var(--text);}
-.nav-item.active{background:var(--green);color:var(--white);border:1px solid var(--green);}
-.nav-icon{font-size:0.9rem;width:16px;text-align:center;}
-.nav-count{margin-left:auto;font-size:0.75rem;background:var(--border);padding:0.1rem 0.4rem;border-radius:2px;color:var(--muted);font-weight:500;}
-.nav-item.active .nav-count{background:rgba(255,255,255,0.2);color:var(--white);}
-.sidebar-bottom{margin-top:auto;padding:1rem;border-top:1px solid var(--border);}
-.commission-card{background:var(--cream);border:1px solid var(--border);border-radius:4px;padding:0.85rem;}
-.commission-label{font-size:0.65rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--green);font-weight:500;margin-bottom:0.3rem;}
-.commission-val{font-family:'Fraunces',serif;font-size:1.6rem;font-weight:700;color:var(--green);line-height:1;letter-spacing:-0.02em;}
-.commission-sub{font-size:0.75rem;color:var(--muted);margin-top:0.25rem;}
+.nav-item.active{background:var(--green-bg);color:var(--green);font-weight:500;}
+.nav-icon{font-size:1.1rem;width:20px;text-align:center;}
+.nav-count{margin-left:auto;font-size:0.75rem;background:var(--border);padding:0.15rem 0.5rem;border-radius:999px;color:var(--muted);font-weight:600;}
+.nav-item.active .nav-count{background:rgba(22,101,52,0.15);color:var(--green);}
+.sidebar-bottom{margin-top:auto;padding:1.5rem 1rem 1rem;border-top:1px solid var(--border);}
 
 .main{overflow-y:auto;padding:1.5rem;min-height:0;align-self:stretch;}
 
 .view{display:none;}
 .view.active{display:block;}
 
-.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:1.5rem;}
-.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:1.1rem 1.25rem;}
-.stat-label{font-size:0.7rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--muted);margin-bottom:0.5rem;font-weight:500;}
-.stat-val{font-family:'Fraunces',serif;font-size:1.8rem;font-weight:700;line-height:1;margin-bottom:0.25rem;letter-spacing:-0.02em;}
-.stat-sub{font-size:0.75rem;color:var(--muted);}
+.stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;margin-bottom:1.5rem;}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem 1.5rem;box-shadow:var(--shadow-sm);position:relative;overflow:hidden;}
+.stat-label{font-size:0.75rem;text-transform:uppercase;letter-spacing:0.05em;color:var(--muted);margin-bottom:0.5rem;font-weight:600;}
+.stat-val{font-family:'Fraunces',serif;font-size:2.25rem;font-weight:700;line-height:1;margin-bottom:0.25rem;letter-spacing:-0.02em;}
+.stat-sub{font-size:0.8rem;color:var(--muted2);}
 .stat-green .stat-val{color:var(--green);}
 .stat-amber .stat-val{color:var(--amber);}
 .stat-blue .stat-val{color:var(--blue);}
 .stat-purple .stat-val{color:var(--purple);}
 
-.panel{background:var(--surface);border:1px solid var(--border);border-radius:4px;margin-bottom:1rem;}
-.panel-header{padding:0.85rem 1.25rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
-.panel-title{font-family:'Fraunces',serif;font-size:1.1rem;font-weight:700;color:var(--black);letter-spacing:-0.01em;}
+.panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:1rem;box-shadow:var(--shadow-sm);}
+.panel-header{padding:1rem 1.25rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.panel-title{font-family:'Fraunces',serif;font-size:1.15rem;font-weight:700;color:var(--black);letter-spacing:-0.01em;}
 .panel-body{padding:1.25rem;}
 .appt-policy-hint{font-size:0.78rem;color:var(--muted);line-height:1.5;margin:0 0 1rem;padding:0.65rem 0.95rem;background:rgba(26,61,43,0.06);border-radius:6px;border:1px solid rgba(26,61,43,0.12);}
 .appt-policy-hint strong{color:var(--green);font-weight:600;}
 .appt-policy-hint--modal{margin:0.45rem 0 0;font-size:0.72rem;padding:0.5rem 0.65rem;}
+.appt-status-legend{margin:0 0 1.25rem;padding:0.75rem 1rem;background:var(--surface2);border-radius:6px;border:1px solid var(--border);}
+.appt-status-legend-title{font-size:0.7rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--muted);font-weight:600;margin:0 0 0.65rem;}
+.appt-status-legend-list{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:0.5rem;}
+.appt-status-legend-list li{margin:0;font-size:0.78rem;color:var(--muted);line-height:1.45;padding-left:0.65rem;border-left:2px solid rgba(26,61,43,0.2);}
+.appt-status-legend-list strong{color:var(--text);font-weight:600;}
+.dashboard-legend{margin:0 0 1.5rem;padding:1rem 1.25rem;background:var(--surface);border-radius:8px;border:1px solid var(--border);box-shadow:var(--shadow-sm);}
+.dashboard-legend > summary.dashboard-legend-summary{list-style:none;cursor:pointer;display:flex;align-items:flex-start;gap:0.75rem;padding:0.25rem 0;user-select:none;-webkit-tap-highlight-color:transparent;}
+.dashboard-legend > summary.dashboard-legend-summary::-webkit-details-marker{display:none;}
+.dashboard-legend-summary__marker{flex-shrink:0;width:1.25rem;font-size:0.75rem;line-height:1.6;color:var(--green);font-weight:700;transition:transform 0.15s ease;}
+.dashboard-legend[open] .dashboard-legend-summary__marker{transform:rotate(90deg);}
+.dashboard-legend-summary__text{flex:1;min-width:0;display:flex;flex-direction:column;gap:0.4rem;}
+.dashboard-legend-title{font-family:'Fraunces',serif;font-size:1.1rem;font-weight:700;color:var(--black);margin:0;letter-spacing:-0.01em;}
+.dashboard-legend-summary-hint{font-size:0.85rem;color:var(--muted);line-height:1.5;margin:0;max-width:44rem;}
+.dashboard-legend-callout-badge{align-self:flex-start;font-size:0.65rem;text-transform:uppercase;letter-spacing:0.05em;font-weight:600;color:var(--green);padding:0.25rem 0.6rem;border-radius:6px;background:var(--green-bg);border:1px solid rgba(22,101,52,0.15);}
+.dashboard-legend-panel{border-top:1px solid var(--border);margin-top:1rem;padding-top:1rem;}
+.dashboard-legend-intro{font-size:0.85rem;color:var(--muted);line-height:1.5;margin:0 0 1rem;}
+.dashboard-legend-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1.25rem 1.5rem;}
+.dashboard-legend-col{margin:0;}
+.dashboard-legend-sub{font-size:0.75rem;text-transform:uppercase;letter-spacing:0.05em;color:var(--muted);font-weight:600;margin:0 0 0.65rem;}
+.dashboard-legend-list{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:0.5rem;}
+.dashboard-legend-list li{margin:0;font-size:0.85rem;color:var(--muted);line-height:1.5;padding-left:0.75rem;border-left:2px solid rgba(22,101,52,0.2);}
+.dashboard-legend-list strong{color:var(--text);font-weight:600;}
 #view-resources.resources-view{padding:0 0 2rem;}
 .resources-section{margin:0 0 2.5rem;}
 .resources-section:last-child{margin-bottom:0;}
@@ -171,10 +192,11 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .resources-filter-chip--active:hover{background:var(--green-light);}
 .resources-filter-showall{display:inline;margin-top:0.65rem;padding:0;background:none;border:none;color:var(--green);font:inherit;font-weight:500;cursor:pointer;text-decoration:underline;}
 .resources-filter-showall:hover{color:var(--green-light);}
-.resources-card{border:1px solid var(--border);border-radius:10px;padding:1rem 1.1rem;background:var(--cream);display:flex;flex-direction:column;gap:0.45rem;min-height:9rem;}
-.resources-card-kind{font-size:0.62rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--blue);font-weight:600;}
-.resources-card-title{font-size:1rem;font-weight:600;color:var(--text);margin:0;line-height:1.35;}
-.resources-card-desc{font-size:0.82rem;color:var(--muted);margin:0;line-height:1.45;flex:1;}
+.resources-card{border:1px solid var(--border);border-radius:12px;padding:1.25rem 1.5rem;background:var(--surface);display:flex;flex-direction:column;gap:0.65rem;min-height:10rem;box-shadow:var(--shadow-sm);transition:all 0.15s;}
+.resources-card:hover{box-shadow:var(--shadow);border-color:var(--border2);transform:translateY(-2px);}
+.resources-card-kind{font-size:0.7rem;text-transform:uppercase;letter-spacing:0.05em;color:var(--blue);font-weight:600;}
+.resources-card-title{font-size:1.1rem;font-weight:600;color:var(--text);margin:0;line-height:1.35;letter-spacing:-0.01em;}
+.resources-card-desc{font-size:0.88rem;color:var(--muted);margin:0;line-height:1.55;flex:1;}
 .resources-card-cta{display:inline-flex;align-items:center;gap:0.35rem;font-size:0.85rem;font-weight:500;color:var(--green);text-decoration:none;margin-top:auto;}
 .resources-card-cta:hover{text-decoration:underline;}
 .resources-card-actions{display:flex;flex-wrap:wrap;gap:0.5rem;align-items:center;margin-top:auto;padding-top:0.35rem;}
@@ -192,90 +214,133 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .resources-admin-table td{vertical-align:middle;padding:0.4rem 0.5rem;}
 .resources-admin-table .form-input{font-size:0.82rem;padding:0.4rem 0.5rem;}
 
-.btn{display:inline-flex;align-items:center;gap:0.4rem;padding:0.4rem 0.9rem;border-radius:3px;font-size:0.8rem;font-weight:500;cursor:pointer;border:none;transition:all 0.15s;font-family:'DM Sans',sans-serif;}
-.btn-green{background:var(--green);color:var(--white);}
-.btn-green:hover{background:var(--green-light);}
-.btn-ghost{background:transparent;color:var(--muted);border:1px solid var(--border);}
-.btn-ghost:hover{background:var(--surface2);color:var(--text);}
-.btn-red{background:var(--red-bg);color:var(--red);border:1px solid rgba(185,28,28,0.2);}
-.btn-red:hover{background:rgba(185,28,28,0.15);}
-.btn-amber{background:var(--amber-bg);color:var(--amber);border:1px solid rgba(180,83,9,0.2);}
-.btn-sm{padding:0.3rem 0.65rem;font-size:0.75rem;}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:0.4rem;padding:0.5rem 1rem;border-radius:6px;font-size:0.85rem;font-weight:500;cursor:pointer;border:1px solid transparent;transition:all 0.15s;font-family:'DM Sans',sans-serif;box-shadow:var(--shadow-sm);}
+.btn-green{background:var(--black);color:var(--white);}
+.btn-green:hover{background:#334155;}
+.btn-ghost{background:var(--surface);color:var(--text);border-color:var(--border);}
+.btn-ghost:hover{background:var(--surface2);color:var(--black);}
+.btn-red{background:var(--red);color:var(--white);}
+.btn-red:hover{background:#b91c1c;}
+.btn-amber{background:var(--amber);color:var(--white);}
+.btn-sm{padding:0.35rem 0.75rem;font-size:0.8rem;}
 .btn:disabled{opacity:0.45;cursor:not-allowed;}
+#addApptModal .form-input:disabled,#addApptModal .form-select:disabled,#addApptModal .form-textarea:disabled{opacity:0.72;cursor:not-allowed;background:var(--surface2);color:var(--muted);}
+#addApptModal .form-input[readonly],#addApptModal .appt-form__readonly-input{opacity:1;cursor:default;background:var(--surface2);color:var(--text);border-color:var(--border);border-style:dashed;}
+.appt-modal{width:min(540px,96vw);max-width:96vw;}
+.appt-form{display:flex;flex-direction:column;gap:1rem;}
+.appt-form__step{border:1px solid var(--border);border-radius:8px;padding:1rem 1.15rem;background:var(--cream);box-sizing:border-box;}
+.appt-form__step--accent{border-color:rgba(26,61,43,0.28);background:linear-gradient(180deg,var(--surface) 0%,var(--cream) 100%);box-shadow:0 1px 0 rgba(0,0,0,0.04);}
+.appt-form__section-head{display:flex;align-items:flex-start;gap:0.75rem;margin-bottom:0.85rem;}
+.appt-form__badge{flex-shrink:0;display:inline-flex;align-items:center;justify-content:center;width:1.65rem;height:1.65rem;border-radius:8px;background:var(--green);color:var(--white);font-size:0.75rem;font-weight:700;}
+.appt-form__badge--muted{background:var(--border);color:var(--muted);}
+.appt-form__section-title{font-size:0.92rem;font-weight:700;color:var(--text);margin:0;line-height:1.25;}
+.appt-form__section-lead{font-size:0.76rem;color:var(--muted);margin:0.2rem 0 0;line-height:1.45;max-width:36rem;}
+.appt-form__input-wrap{margin-top:0.35rem;}
+.appt-form__footer-note{font-size:0.72rem;color:var(--muted);margin:0.75rem 0 0;line-height:1.45;padding-top:0.65rem;border-top:1px solid var(--border);}
+.appt-form__grid-2{display:grid;grid-template-columns:1fr 1fr;gap:0.65rem 1rem;}
+@media(max-width:520px){.appt-form__grid-2{grid-template-columns:1fr;}}
+.appt-form__micro{font-size:0.72rem;color:var(--muted);margin:0.45rem 0 0;line-height:1.4;}
+.appt-form__textarea{min-height:4.5rem;resize:vertical;}
+.appt-form__step--readonly{background:var(--surface2);border-color:rgba(0,0,0,0.06);}
+.appt-lead-notes-wrap{margin:0;}
+.appt-lead-notes-preview{border-radius:6px;padding:0.55rem 0.7rem;max-height:9.5rem;overflow-y:auto;font-size:0.7rem;line-height:1.4;box-sizing:border-box;cursor:default;}
+.appt-lead-notes-preview--readonly{background:rgba(0,0,0,0.06);border:1px solid rgba(0,0,0,0.1);color:#666;}
+.appt-lead-notes-preview--readonly .queue-notes-history{max-height:none;margin:0;padding:0;border:0;}
+.appt-lead-notes-preview--readonly .queue-note-entry{margin-bottom:0.5rem;}
+.appt-lead-notes-preview--readonly .queue-note-entry:last-child{margin-bottom:0;}
+.appt-lead-notes-preview--readonly .queue-note-stamp{color:#777;font-size:0.66rem;}
+.appt-lead-notes-preview--readonly .queue-note-body{color:#5a5a5a;}
+.appt-lead-notes-preview--readonly .queue-notes-empty{margin:0;font-size:0.72rem;color:#888;}
+.appt-lead-notes-placeholder{margin:0;font-size:0.74rem;color:var(--muted);line-height:1.45;}
 
-.table-wrap{overflow-x:auto;}
+.table-wrap{overflow-x:auto;border-radius:var(--radius);border:1px solid var(--border);background:var(--surface);box-shadow:var(--shadow-sm);}
 table{width:100%;border-collapse:collapse;}
-thead th{text-align:left;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--muted);padding:0.6rem 1rem;border-bottom:1px solid var(--border);font-weight:500;}
-tbody tr{border-bottom:1px solid var(--border);transition:background 0.1s;cursor:pointer;}
+thead th{text-align:left;font-size:0.75rem;text-transform:uppercase;letter-spacing:0.05em;color:var(--muted);padding:0.75rem 1rem;border-bottom:1px solid var(--border);font-weight:600;background:var(--bg);}
+tbody tr{border-bottom:1px solid var(--border);transition:background 0.15s;cursor:pointer;background:var(--surface);}
 tbody tr:last-child{border-bottom:none;}
 tbody tr:hover{background:var(--surface2);}
-tbody td{padding:0.75rem 1rem;font-size:0.85rem;color:var(--text);}
+tbody td{padding:0.85rem 1rem;font-size:0.88rem;color:var(--text);}
 .td-muted{color:var(--muted);}
 
-.badge{display:inline-flex;align-items:center;gap:4px;font-size:0.7rem;font-weight:500;padding:0.2rem 0.55rem;border-radius:2px;letter-spacing:0.03em;}
-.badge::before{content:'';width:5px;height:5px;border-radius:50%;}
-.badge-new{background:var(--blue-bg);color:var(--blue);}
+.badge{display:inline-flex;align-items:center;gap:6px;font-size:0.75rem;font-weight:600;padding:0.25rem 0.65rem;border-radius:999px;letter-spacing:0.02em;}
+.badge::before{content:'';width:6px;height:6px;border-radius:50%;}
+.badge-new{background:var(--blue-bg);color:var(--blue);border:1px solid rgba(37,99,235,0.2);}
 .badge-new::before{background:var(--blue);}
-.badge-called{background:var(--surface2);color:var(--muted);}
+.badge-called{background:var(--surface2);color:var(--muted);border:1px solid var(--border2);}
 .badge-called::before{background:var(--muted);}
-.badge-callback{background:var(--amber-bg);color:var(--amber);}
+.badge-callback{background:var(--amber-bg);color:var(--amber);border:1px solid rgba(217,119,6,0.2);}
 .badge-callback::before{background:var(--amber);}
-.badge-booked{background:var(--green-bg);color:var(--green);}
+.badge-booked{background:var(--green-bg);color:var(--green);border:1px solid rgba(22,101,52,0.2);}
 .badge-booked::before{background:var(--green);}
-.badge-nope{background:var(--red-bg);color:var(--red);}
+.badge-nope{background:var(--red-bg);color:var(--red);border:1px solid rgba(220,38,38,0.2);}
 .badge-nope::before{background:var(--red);}
-.badge-noanswer{background:var(--purple-bg);color:var(--purple);}
+.badge-noanswer{background:var(--purple-bg);color:var(--purple);border:1px solid rgba(124,58,237,0.2);}
 .badge-noanswer::before{background:var(--purple);}
 
-.filter-bar{display:flex;align-items:center;gap:0.75rem;margin-bottom:1rem;flex-wrap:wrap;}
-.filter-btn{padding:0.35rem 0.75rem;border-radius:3px;font-size:0.8rem;cursor:pointer;border:1px solid var(--border);background:transparent;color:var(--muted);font-family:'DM Sans',sans-serif;transition:all 0.15s;}
-.filter-btn:hover,.filter-btn.active{border-color:var(--green);color:var(--green);background:var(--green-bg);}
-.search-input{flex:1;max-width:260px;background:var(--surface);border:1px solid var(--border);border-radius:3px;padding:0.4rem 0.75rem;font-size:0.85rem;color:var(--text);font-family:'DM Sans',sans-serif;outline:none;}
-.search-input:focus{border-color:var(--green);}
+.filter-bar{display:flex;align-items:center;gap:0.75rem;margin-bottom:1.25rem;flex-wrap:wrap;background:var(--surface);padding:0.75rem;border-radius:var(--radius);border:1px solid var(--border);box-shadow:var(--shadow-sm);}
+.filter-btn{padding:0.4rem 0.85rem;border-radius:6px;font-size:0.85rem;cursor:pointer;border:1px solid transparent;background:transparent;color:var(--muted);font-family:'DM Sans',sans-serif;transition:all 0.15s;font-weight:500;}
+.filter-btn:hover{background:var(--surface2);color:var(--text);}
+.filter-btn.active{background:var(--black);color:var(--white);box-shadow:var(--shadow-sm);}
+.search-input{flex:1;max-width:320px;background:var(--surface);border:1px solid var(--border2);border-radius:6px;padding:0.5rem 0.85rem;font-size:0.88rem;color:var(--text);font-family:'DM Sans',sans-serif;outline:none;box-shadow:var(--shadow-sm);transition:all 0.15s;}
+.search-input:focus{border-color:var(--blue);box-shadow:0 0 0 3px var(--blue-bg);}
 .search-input::placeholder{color:var(--muted2);}
 
-.modal-overlay{position:fixed;inset:0;background:rgba(13,13,13,0.7);z-index:200;display:none;align-items:center;justify-content:center;}
+.modal-overlay{position:fixed;inset:0;background:rgba(15,23,42,0.6);backdrop-filter:blur(2px);z-index:200;display:none;align-items:center;justify-content:center;}
 .modal-overlay.open{display:flex;}
-.modal{background:var(--surface);border:1px solid var(--border);border-radius:6px;width:520px;max-width:95vw;max-height:90vh;overflow-y:auto;box-shadow:0 10px 25px rgba(0,0,0,0.1);}
-.modal-header{padding:1.1rem 1.5rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
-.modal-title{font-family:'Fraunces',serif;font-size:1.2rem;font-weight:700;}
-.modal-close{background:none;border:none;color:var(--muted);cursor:pointer;font-size:1.1rem;line-height:1;padding:0.2rem;}
-.modal-close:hover{color:var(--text);}
+.modal{background:var(--surface);border:1px solid var(--border);border-radius:12px;width:560px;max-width:95vw;max-height:90vh;overflow-y:auto;box-shadow:0 20px 25px -5px rgba(0,0,0,0.1),0 10px 10px -5px rgba(0,0,0,0.04);}
+.modal-header{padding:1.25rem 1.5rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:var(--surface);}
+.modal-title{font-family:'Fraunces',serif;font-size:1.35rem;font-weight:700;color:var(--text);letter-spacing:-0.01em;}
+.modal-close{background:var(--surface2);border:1px solid var(--border);border-radius:6px;color:var(--muted);cursor:pointer;font-size:1.2rem;line-height:1;padding:0.3rem 0.5rem;transition:all 0.15s;}
+.modal-close:hover{color:var(--text);background:var(--border);}
 .modal-body{padding:1.5rem;}
-.modal-footer{padding:1rem 1.5rem;border-top:1px solid var(--border);display:flex;gap:0.75rem;justify-content:flex-end;}
+.modal-footer{padding:1.25rem 1.5rem;border-top:1px solid var(--border);display:flex;gap:0.75rem;justify-content:flex-end;background:var(--bg);}
 
-.form-group{margin-bottom:1.1rem;}
-.form-label{display:block;font-size:0.72rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--muted);margin-bottom:0.4rem;font-weight:500;}
-.form-input,.form-select,.form-textarea{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:3px;padding:0.55rem 0.75rem;font-size:0.85rem;color:var(--text);font-family:'DM Sans',sans-serif;outline:none;transition:border 0.15s;}
-.form-input:focus,.form-select:focus,.form-textarea:focus{border-color:var(--green);}
+.form-group{margin-bottom:1.25rem;}
+.form-label{display:block;font-size:0.8rem;text-transform:none;letter-spacing:0;color:var(--text);margin-bottom:0.4rem;font-weight:500;}
+.form-input,.form-select,.form-textarea{width:100%;background:var(--surface);border:1px solid var(--border2);border-radius:6px;padding:0.5rem 0.75rem;font-size:0.88rem;color:var(--text);font-family:'DM Sans',sans-serif;outline:none;transition:all 0.15s;box-shadow:var(--shadow-sm);}
+.form-input:focus,.form-select:focus,.form-textarea:focus{border-color:var(--blue);box-shadow:0 0 0 3px var(--blue-bg);}
 .form-textarea{resize:vertical;min-height:80px;}
 .form-select option{background:var(--surface);}
 .form-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
 
-.outcome-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:0.5rem;margin-top:0.4rem;}
-.outcome-btn{padding:0.55rem;border-radius:3px;font-size:0.8rem;cursor:pointer;border:1px solid var(--border);background:transparent;color:var(--muted);font-family:'DM Sans',sans-serif;transition:all 0.15s;text-align:center;}
-.outcome-btn:hover,.outcome-btn.selected{border-width:1px;}
+.outcome-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:0.75rem;margin-top:0.5rem;}
+.outcome-btn{padding:0.65rem;border-radius:6px;font-size:0.85rem;cursor:pointer;border:1px solid var(--border);background:var(--surface);color:var(--text);font-family:'DM Sans',sans-serif;transition:all 0.15s;text-align:center;box-shadow:var(--shadow-sm);font-weight:500;}
+.outcome-btn:hover{background:var(--surface2);border-color:var(--border2);}
+.outcome-btn.selected{border-width:2px;box-shadow:none;}
 .outcome-btn[data-val="booked"].selected{background:var(--green-bg);color:var(--green);border-color:var(--green);}
 .outcome-btn[data-val="callback"].selected{background:var(--amber-bg);color:var(--amber);border-color:var(--amber);}
 .outcome-btn[data-val="not_interested"].selected{background:var(--red-bg);color:var(--red);border-color:var(--red);}
 .outcome-btn[data-val="no_answer"].selected{background:var(--purple-bg);color:var(--purple);border-color:var(--purple);}
-.outcome-btn[data-val="called"].selected{background:var(--surface2);color:var(--text);border-color:var(--border2);}
+.outcome-btn[data-val="called"].selected{background:var(--surface2);color:var(--text);border-color:var(--muted);}
 .outcome-btn[data-val="left_voicemail"].selected{background:var(--blue-bg);color:var(--blue);border-color:var(--blue);}
 
-.script-section{margin-bottom:2rem;}
-.script-section h3{font-size:0.75rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--green);font-weight:500;margin-bottom:0.75rem;}
-.script-box{background:var(--cream);border:1px solid var(--border);border-radius:4px;padding:1.25rem;font-size:0.9rem;line-height:1.7;color:var(--text);}
-.script-box em{color:var(--amber);font-style:normal;}
-.objection{background:var(--cream);border:1px solid var(--border);border-left:3px solid var(--amber);border-radius:0 4px 4px 0;padding:1rem;margin-bottom:0.75rem;}
-.objection-q{font-size:0.85rem;font-weight:500;color:var(--amber);margin-bottom:0.4rem;}
-.objection-a{font-size:0.85rem;color:var(--text);line-height:1.6;font-weight:300;}
+.script-section{margin-bottom:2.5rem;}
+.script-section h3{font-size:0.8rem;text-transform:uppercase;letter-spacing:0.05em;color:var(--green);font-weight:600;margin-bottom:1rem;}
+.script-box{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:1.5rem;font-size:0.95rem;line-height:1.75;color:var(--text);box-shadow:var(--shadow-sm);}
+.script-box em{color:var(--amber);font-style:normal;font-weight:500;}
+.objection{background:var(--surface);border:1px solid var(--border);border-left:4px solid var(--amber);border-radius:0 8px 8px 0;padding:1.25rem;margin-bottom:1rem;box-shadow:var(--shadow-sm);}
+.objection-q{font-size:0.95rem;font-weight:600;color:var(--amber);margin-bottom:0.5rem;letter-spacing:-0.01em;}
+.objection-a{font-size:0.95rem;color:var(--text);line-height:1.65;}
 
-.appt-card{background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:1.1rem 1.25rem;margin-bottom:0.75rem;display:flex;align-items:center;gap:1.25rem;}
-.appt-time{font-size:0.85rem;color:var(--muted);min-width:100px;font-weight:500;}
+.appt-card{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:1.25rem 1.5rem;margin-bottom:1rem;display:flex;align-items:center;gap:1.5rem;box-shadow:var(--shadow-sm);transition:all 0.15s;}
+.appt-card:hover{box-shadow:var(--shadow);border-color:var(--border2);}
+.appt-time{font-size:0.9rem;color:var(--muted);min-width:110px;font-weight:600;}
 .appt-info{flex:1;}
-.appt-name{font-size:0.95rem;font-weight:500;color:var(--text);margin-bottom:2px;}
-.appt-company{font-size:0.85rem;color:var(--muted);}
+.appt-name{font-size:1.05rem;font-weight:600;color:var(--text);margin-bottom:4px;letter-spacing:-0.01em;}
+.appt-company{font-size:0.88rem;color:var(--muted);}
 .appt-actions{display:flex;gap:0.5rem;}
+.appt-table-wrap{margin:0 0 0.5rem;}
+.appt-table-hint{font-size:0.74rem;color:var(--muted);line-height:1.45;margin:0 0 0.65rem;max-width:44rem;}
+.appt-table{font-size:0.78rem;width:100%;}
+.appt-table thead th{font-size:0.65rem;white-space:nowrap;}
+.appt-table tbody tr{cursor:default;}
+.appt-table tbody td{vertical-align:top;padding:0.6rem 0.65rem;}
+.appt-table tbody td.appt-table-notes{max-width:14rem;font-size:0.76rem;line-height:1.35;word-break:break-word;}
+.appt-visit-badge{display:inline-flex;align-items:center;font-size:0.64rem;font-weight:600;padding:0.15rem 0.45rem;border-radius:999px;background:var(--amber-bg);color:var(--amber);white-space:nowrap;line-height:1.2;}
+.appt-visit-badge--once{background:var(--surface2);color:var(--muted);font-weight:500;}
+.appt-table-select{width:100%;min-width:7.5rem;max-width:11rem;font-size:0.7rem;padding:0.28rem 0.45rem;margin-top:0.35rem;}
+.appt-table-statuscell{display:flex;flex-direction:column;align-items:flex-start;gap:0;}
+@media(max-width:900px){.appt-table{font-size:0.72rem;}.appt-table-wrap{overflow-x:auto;}}
 
 .empty{text-align:center;padding:3rem;color:var(--muted);}
 .empty-icon{font-size:2rem;margin-bottom:0.75rem;opacity:0.4;}
@@ -339,21 +404,35 @@ details.scrape-panel summary .scrape-hint{font-family:'DM Sans',sans-serif;font-
 .scrape-log .warn{color:var(--amber);}
 .scrape-log .err{color:#b33;}
 .scrape-preview{font-size:0.75rem;color:var(--muted);line-height:1.4;margin-bottom:0.75rem;}
+.scrape-callout{font-size:0.8rem;background:linear-gradient(135deg,rgba(26,61,43,0.08) 0%,rgba(201,168,76,0.06) 100%);border:1px solid var(--border);border-radius:6px;padding:0.75rem 1rem;margin-bottom:1rem;line-height:1.55;}
+.scrape-callout strong{color:var(--green);}
+.scrape-section-label{font-size:0.68rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--muted);font-weight:600;margin:0 0 0.5rem;}
+.scrape-estimate{font-size:0.82rem;color:var(--text);font-weight:500;margin:0 0 0.75rem;}
+.scrape-presets{display:flex;flex-wrap:wrap;gap:0.45rem;align-items:center;margin-bottom:0.85rem;}
+.scrape-presets .preset-hint{font-size:0.72rem;color:var(--muted);margin-right:0.25rem;}
+.scrape-log{max-height:min(42vh,280px);}
 @media(max-width:900px){.db-filter-row{grid-template-columns:1fr!important;}}
-.queue-table{width:100%;font-size:0.72rem;}
-.queue-table th,.queue-table td{padding:0.38rem 0.45rem;vertical-align:top;}
-.queue-table th{white-space:nowrap;font-size:0.68rem;text-transform:uppercase;letter-spacing:0.02em;color:var(--muted);font-weight:600;}
+.queue-table{width:100%;font-size:0.85rem;}
+.queue-table th,.queue-table td{padding:0.75rem 1rem;vertical-align:top;}
+.queue-table th{white-space:nowrap;font-size:0.75rem;text-transform:uppercase;letter-spacing:0.05em;color:var(--muted);font-weight:600;background:var(--bg);}
 .queue-table .queue-actions{white-space:nowrap;}
-.queue-notes-ta{width:100%;min-width:130px;max-width:240px;font-size:0.72rem!important;line-height:1.35;padding:0.35rem 0.45rem!important;resize:vertical;min-height:2.6rem;font-family:inherit;}
-.queue-notes-ta:focus{outline:2px solid rgba(26,61,43,0.25);border-color:var(--green);}
-.queue-group{cursor:default;}
+.queue-notes-stack{min-width:180px;max-width:320px;}
+.queue-notes-history{max-height:160px;overflow-y:auto;margin-bottom:0.5rem;padding:0.25rem 0;border-bottom:1px solid var(--border);}
+.queue-note-entry{margin-bottom:0.65rem;font-size:0.8rem;line-height:1.45;}
+.queue-note-stamp{color:var(--muted);font-size:0.7rem;margin-bottom:0.25rem;font-weight:500;}
+.queue-note-body{color:var(--text);word-break:break-word;}
+.queue-notes-new{width:100%;font-size:0.8rem!important;line-height:1.45;padding:0.5rem 0.65rem!important;resize:vertical;min-height:3rem;font-family:inherit;margin-bottom:0.5rem!important;border-radius:6px;border:1px solid var(--border2);box-shadow:var(--shadow-sm);}
+.queue-notes-new:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px var(--blue-bg);}
+.queue-notes-actions{display:flex;gap:0.5rem;flex-wrap:wrap;align-items:center;}
+.queue-notes-empty{font-size:0.8rem;margin-bottom:0.5rem;color:var(--muted);}
+.queue-group{cursor:pointer;background:var(--surface);transition:all 0.15s;}
+.queue-group:hover{background:var(--surface2);}
 .queue-group .queue-lead-detail{display:none;}
-.queue-group:hover .queue-lead-detail,
 .queue-group.queue-open .queue-lead-detail{display:table-row;}
-.queue-lead-detail td{background:var(--cream);border-top:1px solid var(--border);padding:0.65rem 0.85rem!important;box-shadow:inset 0 1px 0 rgba(0,0,0,0.04);width:100%;}
-.queue-detail-inner{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0.65rem 1.5rem;width:100%;max-width:100%;box-sizing:border-box;font-size:0.8rem;line-height:1.45;}
-.queue-detail-row{display:grid;grid-template-columns:minmax(88px,120px) minmax(0,1fr);gap:0.45rem 0.65rem;align-items:start;min-width:0;margin:0;}
-.queue-detail-row dt{margin:0;font-weight:600;font-size:0.68rem;text-transform:uppercase;letter-spacing:0.03em;color:var(--muted);}
+.queue-lead-detail td{background:var(--surface2);border-top:1px solid var(--border);padding:1.25rem 1.5rem!important;box-shadow:inset 0 2px 4px rgba(0,0,0,0.02);width:100%;}
+.queue-detail-inner{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:1rem 2rem;width:100%;max-width:100%;box-sizing:border-box;font-size:0.88rem;line-height:1.55;}
+.queue-detail-row{display:grid;grid-template-columns:minmax(100px,140px) minmax(0,1fr);gap:0.5rem 1rem;align-items:start;min-width:0;margin:0;}
+.queue-detail-row dt{margin:0;font-weight:600;font-size:0.75rem;text-transform:uppercase;letter-spacing:0.05em;color:var(--muted);}
 .queue-detail-row dd{margin:0;min-width:0;word-break:break-word;color:var(--text);}
 .queue-detail-notes-row{grid-column:1/-1;}
 .queue-detail-notes{white-space:pre-wrap;overflow:visible;max-height:none;word-break:break-word;}
@@ -378,7 +457,12 @@ details.scrape-panel summary .scrape-hint{font-family:'DM Sans',sans-serif;font-
 .chat-msg-bot{justify-content:flex-start;}
 .chat-msg-user .chat-msg-inner{display:inline-block;max-width:min(92%,52rem);text-align:left;background:var(--surface);color:var(--text);padding:0.65rem 0.95rem;border-radius:14px;border-bottom-right-radius:4px;border:1px solid var(--border);box-shadow:0 2px 8px rgba(13,13,13,0.06);white-space:pre-wrap;word-break:break-word;}
 .chat-msg-bot .chat-msg-inner{display:inline-block;max-width:min(96%,56rem);background:linear-gradient(145deg,rgba(26,61,43,0.14) 0%,rgba(26,61,43,0.09) 100%);color:var(--text);border:1px solid rgba(26,61,43,0.18);padding:0.65rem 0.95rem;border-radius:14px;border-bottom-left-radius:4px;white-space:pre-wrap;word-break:break-word;box-shadow:0 1px 4px rgba(26,61,43,0.08);}
-.chat-msg-loading .chat-msg-inner{color:var(--muted);font-style:italic;}
+.admin-tabs{display:flex;gap:0.25rem;border-bottom:1px solid var(--border);margin-bottom:1.5rem;overflow-x:auto;padding-bottom:0.15rem;}
+.admin-tab{background:transparent;border:none;padding:0.65rem 1rem;font-size:0.88rem;font-weight:500;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;transition:all 0.2s ease;white-space:nowrap;}
+.admin-tab:hover{color:var(--text);background:var(--surface);border-radius:6px 6px 0 0;}
+.admin-tab.active{color:var(--green);border-bottom-color:var(--green);font-weight:600;}
+.admin-tab-content{display:none;}
+.admin-tab-content.active{display:block;}
 .admin-transcripts-panel{border:1px solid var(--border);border-radius:8px;background:var(--cream);margin-bottom:1rem;width:100%;max-width:100%;box-sizing:border-box;}
 .admin-transcripts-summary{cursor:pointer;padding:0.55rem 0.85rem;font-weight:600;font-size:0.86rem;list-style:none;display:flex;align-items:center;gap:0.35rem;color:var(--text);}
 .admin-transcripts-summary::-webkit-details-marker{display:none;}
@@ -442,6 +526,10 @@ details.scrape-panel summary .scrape-hint{font-family:'DM Sans',sans-serif;font-
 <div class="topbar">
   <a href="/" class="topbar-logo">AllSorted Pro <span id="portalTitleSuffix">/ Caller Portal</span></a>
   <div class="topbar-right">
+    <div class="topbar-commission" style="display:flex;align-items:center;gap:0.4rem;background:var(--surface2);border:1px solid var(--border);padding:0.35rem 0.75rem;border-radius:999px;margin-right:0.5rem;" title="Your Commission ($25/showed appt)">
+      <span style="font-size:0.75rem;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:0.05em;">Commission</span>
+      <strong id="topbarCommission" style="color:var(--green);font-size:0.95rem;font-weight:700;letter-spacing:-0.02em;">$0</strong>
+    </div>
     <div class="topbar-user-chip" title="Signed in">
       <span class="profile-badge" id="profileBadge">Caller</span>
       <span id="profileNameDisplay" class="topbar-user-name"></span>
@@ -512,13 +600,6 @@ details.scrape-panel summary .scrape-hint{font-family:'DM Sans',sans-serif;font-
         <span class="nav-icon">🚪</span><span class="nav-text">Sign out</span>
       </button>
     </div>
-    <div class="sidebar-bottom">
-      <div class="commission-card">
-        <div class="commission-label">💰 My Commission</div>
-        <div class="commission-val" id="sidebarCommission">$0</div>
-        <div class="commission-sub">This month • $25/showed appt</div>
-      </div>
-    </div>
   </div>
 
   <!-- MAIN CONTENT -->
@@ -548,6 +629,62 @@ details.scrape-panel summary .scrape-hint{font-family:'DM Sans',sans-serif;font-
           <div class="stat-sub">$25 per showed appt</div>
         </div>
       </div>
+
+      <details class="dashboard-legend">
+        <summary class="dashboard-legend-summary">
+          <span class="dashboard-legend-summary__marker" aria-hidden="true">▸</span>
+          <span class="dashboard-legend-summary__text">
+            <span class="dashboard-legend-callout-badge">Self-serve tour</span>
+            <span class="dashboard-legend-title" id="dashboardLegendTitle">Caller guide</span>
+            <span class="dashboard-legend-summary-hint">Explains every sidebar page, the four stat cards, the two panels below them, and what each lead status means. Expand on your first day or anytime you need a refresher. You shouldn’t have to ask a manager what a screen is for.</span>
+          </span>
+        </summary>
+        <div class="dashboard-legend-panel" role="region" aria-labelledby="dashboardLegendTitle">
+          <p class="dashboard-legend-intro">Use Overview as home base. Everything you need to dial, follow up, and get paid lives in the left menu.</p>
+          <div class="dashboard-legend-grid">
+            <div class="dashboard-legend-col">
+              <h3 class="dashboard-legend-sub">Pages (left menu)</h3>
+              <ul class="dashboard-legend-list">
+                <li><strong>Overview</strong> — Snapshots for today and the week: call volume, bookings, show rate, commission, recent activity, and how many leads sit in each status.</li>
+                <li><strong>Lead Queue</strong> — Your working list. Pull the shared team queue, add companies, work down the list, and set each lead’s status after every attempt.</li>
+                <li><strong>Call Log</strong> — Full history of attempts and outcomes (voicemail, callback, booked, etc.). Use it to remember what happened on prior touches.</li>
+                <li><strong>Appointments</strong> — Table of every logged meeting (newest first). <strong>Contact #</strong> shows visit 1 of N when the same phone comes back.</li>
+                <li><strong>Script &amp; Objections</strong> — Talk tracks and rebuttals—keep this handy while you’re on the phone.</li>
+                <li><strong>Team assistant</strong> — AI helper for wording, questions, or quick coaching without leaving the portal.</li>
+                <li><strong>Resources</strong> — Files and references the team shares (PDFs, guides, links).</li>
+                <li><strong>Settings</strong> — Your profile and app options.</li>
+                <li><strong>Sign out</strong> — Ends your session; use it on shared machines or when you’re finished for the day.</li>
+                <li><strong>My commission</strong> (bottom of sidebar) — Showed or won appointments that were <strong>logged under your employee ID</strong>, at the rate on the card (needs Emp # on your account).</li>
+              </ul>
+            </div>
+            <div class="dashboard-legend-col">
+              <h3 class="dashboard-legend-sub">Numbers on this page</h3>
+              <ul class="dashboard-legend-list">
+                <li><strong>Calls Today</strong> — Dial attempts logged today. Log every try so activity stays accurate for you and the team.</li>
+                <li><strong>Booked This Week</strong> — Appointments set during the current calendar week.</li>
+                <li><strong>Show Rate</strong> — Of the meetings booked in scope, what share actually happened (showed). Higher means prospects are keeping commitments.</li>
+                <li><strong>Commission Earned</strong> — Your payout only: <em>showed</em> or <em>won</em> appointments that were logged with <strong>your employee ID</strong>, at the rate under the number.</li>
+              </ul>
+              <h3 class="dashboard-legend-sub">Panels below</h3>
+              <ul class="dashboard-legend-list">
+                <li><strong>Recent Call Activity</strong> — Latest outcomes; <strong>View all</strong> opens the full Call Log.</li>
+                <li><strong>Upcoming Appointments</strong> — Next meetings; <strong>View all</strong> opens the Appointments page.</li>
+              </ul>
+            </div>
+            <div class="dashboard-legend-col">
+              <h3 class="dashboard-legend-sub">Lead status breakdown</h3>
+              <ul class="dashboard-legend-list">
+                <li><strong>New</strong> — Not worked yet (or reset to fresh). Start here when you sync the queue.</li>
+                <li><strong>No Answer</strong> — You reached out but didn’t connect; try again or schedule a callback.</li>
+                <li><strong>Callback</strong> — They asked you to call back at a better time—don’t lose these.</li>
+                <li><strong>Booked</strong> — A meeting is on the books; follow up in Appointments as the date approaches.</li>
+                <li><strong>Not Interested</strong> — Declined or disqualified; stops active pursuit unless something changes.</li>
+                <li><strong>Called</strong> — You attempted contact; update to a clearer outcome (callback, booked, not interested, etc.) when you know it.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </details>
 
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
 
@@ -589,6 +726,7 @@ details.scrape-panel summary .scrape-hint{font-family:'DM Sans',sans-serif;font-
           <div class="panel-title">Lead Queue</div>
           <div style="display:flex;gap:0.5rem;align-items:center;flex-wrap:wrap;">
             <button type="button" class="btn btn-sm" onclick="syncPipelineFromServer()" title="Load the shared team queue from the server">Sync team queue</button>
+            <button type="button" class="btn btn-ghost btn-sm" onclick="clearLocalPipelineCache()" title="Clears this browser’s cached leads, call log, and appointments (not the Admin lead database)">Clear local cache</button>
             <button class="btn btn-green btn-sm" onclick="openAddLead()">+ Add Lead</button>
           </div>
         </div>
@@ -633,6 +771,7 @@ details.scrape-panel summary .scrape-hint{font-family:'DM Sans',sans-serif;font-
             <table>
               <thead>
                 <tr>
+                  <th>Employee ID</th>
                   <th>Time</th>
                   <th>Company</th>
                   <th>Phone</th>
@@ -656,7 +795,18 @@ details.scrape-panel summary .scrape-hint{font-family:'DM Sans',sans-serif;font-
           <button class="btn btn-green btn-sm" onclick="openAddAppt()">+ Log Appointment</button>
         </div>
         <div class="panel-body">
-          <p class="appt-policy-hint"><strong>Won</strong> is for closed-won clients only: mark it after <strong>payment has been received</strong> and they have been <strong>onboarded with us for at least two weeks</strong>. That keeps show rate, commission, and pipeline quality honest.</p>
+          <div class="appt-status-legend" role="region" aria-label="Appointment status meanings">
+            <div class="appt-status-legend-title">Status legend</div>
+            <ul class="appt-status-legend-list">
+              <li><strong>Scheduled</strong> — On the calendar; the appointment has not happened yet.</li>
+              <li><strong>Showed</strong> — They attended the sales appointment.</li>
+              <li><strong>No Show</strong> — They did not attend or no-showed.</li>
+              <li><strong>Won (paid + 2wk+)</strong> — Payment is in and they have completed at least <strong>two weeks</strong> of onboarding with us. Not for “the meeting went well” only.</li>
+              <li><strong>Lost</strong> — They did not become a client after the appointment (opportunity closed lost).</li>
+              <li><strong>Call log</strong> — Saving as <strong>Showed</strong>, <strong>No show</strong>, or <strong>Lost</strong> does <em>not</em> require a call log entry. If that contact is still on your <strong>lead queue</strong>, we may offer to open the call log so you can log a dial optionally.</li>
+              <li><strong>Contact # (table)</strong> — Same phone shares one thread: <em>Visit 2 of 3</em> means this is the second appointment on file for that number. If there is no phone, we match on name + company.</li>
+            </ul>
+          </div>
           <div id="apptList">
           <div class="empty"><div class="empty-icon">📅</div><p>No appointments yet. Book one and log it here.</p></div>
           </div>
@@ -666,89 +816,103 @@ details.scrape-panel summary .scrape-hint{font-family:'DM Sans',sans-serif;font-
 
     <!-- ADMIN: queues → pipeline → scrape/DB → assistant tools -->
     <div class="view" id="view-admin">
-      <p class="admin-intro">Work top to bottom: <strong>pipeline</strong>, then <strong>scrape / lead database</strong>, then <strong>team assistant &amp; training</strong>. <strong>Queues &amp; people</strong> (removal requests, team roster, clear-chat approvals) are at the bottom.</p>
-
-      <div class="admin-server-pass-row">
-        <label class="form-label" for="adminPortalSecret">Admin server password</label>
-        <input type="password" class="form-input admin-transcripts-pass" id="adminPortalSecret" placeholder="Password" value="Free2026" autocomplete="off" title="Same as Scrape password (SCRAPER_SECRET)">
-      </div>
-
-      <p class="admin-section-label">Lead pipeline</p>
-
-      <div class="stats-row">
-        <div class="stat-card stat-blue">
-          <div class="stat-label">Total in Database</div>
-          <div class="stat-val" id="dbTotal">0</div>
-          <div class="stat-sub">all scraped leads</div>
+      <div class="admin-header-row" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;">
+        <div>
+          <h2 style="font-size:1.5rem;font-weight:600;margin-bottom:0.25rem;letter-spacing:-0.02em;">Admin Settings</h2>
+          <p style="font-size:0.88rem;color:var(--muted);margin:0;">Manage leads, scraper, AI assistant, and team access.</p>
         </div>
-        <div class="stat-card stat-green">
-          <div class="stat-label">Pushed to Queue</div>
-          <div class="stat-val" id="dbPushed">0</div>
-          <div class="stat-sub">sent to callers</div>
-        </div>
-        <div class="stat-card stat-amber">
-          <div class="stat-label">Remaining</div>
-          <div class="stat-val" id="dbRemaining">0</div>
-          <div class="stat-sub">not yet queued</div>
-        </div>
-        <div class="stat-card stat-purple">
-          <div class="stat-label">Categories</div>
-          <div class="stat-val" id="dbCategories">0</div>
-          <div class="stat-sub">unique niches</div>
+        <div class="admin-server-pass-row" style="display:flex;align-items:center;gap:0.75rem;background:var(--surface);padding:0.5rem 0.75rem;border-radius:6px;border:1px solid var(--border);box-shadow:var(--shadow-sm);">
+          <label class="form-label" for="adminPortalSecret" style="margin:0;font-size:0.75rem;text-transform:uppercase;letter-spacing:0.05em;color:var(--muted);font-weight:600;">Portal password</label>
+          <input type="password" class="form-input admin-transcripts-pass" id="adminPortalSecret" placeholder="Password" value="Free2026" autocomplete="off" title="One password for scraper, team sync, AI/KV — must match SCRAPER_SECRET in Vercel" style="margin:0;padding:0.35rem 0.5rem;min-height:0;" oninput="persistPortalSecretFromInput()">
         </div>
       </div>
 
-      <p class="admin-section-label">Scrape &amp; import</p>
+      <div class="admin-tabs" style="display:flex;gap:0.25rem;border-bottom:1px solid var(--border);margin-bottom:1.5rem;overflow-x:auto;">
+        <button class="admin-tab active" onclick="switchAdminTab('scraper')">Scraper</button>
+        <button class="admin-tab" onclick="switchAdminTab('database')">Lead Database</button>
+        <button class="admin-tab" onclick="switchAdminTab('assistant')">AI &amp; Training</button>
+        <button class="admin-tab" onclick="switchAdminTab('team')">Team &amp; Queues</button>
+      </div>
 
-      <details class="scrape-panel" open>
-        <summary>
-          <span>Scrape Google Maps into database <span class="scrape-hint">(key lives in Vercel — not in this page)</span></span>
-          <span style="color:var(--muted);font-size:0.85rem;">▼</span>
-        </summary>
+      <div id="admin-tab-scraper" class="admin-tab-content" style="display:block;">
+        <div class="stats-row" style="margin-bottom:1.5rem;">
+          <div class="stat-card stat-blue">
+            <div class="stat-label">Total in Database</div>
+            <div class="stat-val" id="dbTotal">0</div>
+            <div class="stat-sub">all scraped leads</div>
+          </div>
+          <div class="stat-card stat-green">
+            <div class="stat-label">Pushed to Queue</div>
+            <div class="stat-val" id="dbPushed">0</div>
+            <div class="stat-sub">sent to callers</div>
+          </div>
+          <div class="stat-card stat-amber">
+            <div class="stat-label">Remaining</div>
+            <div class="stat-val" id="dbRemaining">0</div>
+            <div class="stat-sub">not yet queued</div>
+          </div>
+          <div class="stat-card stat-purple">
+            <div class="stat-label">Categories</div>
+            <div class="stat-val" id="dbCategories">0</div>
+            <div class="stat-sub">unique niches</div>
+          </div>
+        </div>
+
+        <div class="scrape-panel" style="background:var(--surface);border:1px solid var(--border);border-radius:8px;box-shadow:var(--shadow-sm);overflow:hidden;">
+          <div style="padding:1rem 1.25rem;border-bottom:1px solid var(--border);background:var(--bg);">
+            <h3 style="font-size:1.05rem;font-weight:600;margin:0;">Scrape Google Maps into database</h3>
+          </div>
         <div class="scrape-panel-body">
-          <p style="font-size:0.82rem;color:var(--muted);margin-bottom:1rem;line-height:1.55;">In <strong>Vercel</strong> → this project → <strong>Settings → Environment Variables</strong>, add <span class="mono" style="display:inline;padding:0.1rem 0.35rem;">SCRAPINGDOG_API_KEY</span> only. Redeploy after saving. Scraper password defaults to <span class="mono" style="display:inline;">Free2026</span> (override by setting <span class="mono" style="display:inline;">SCRAPER_SECRET</span> in Vercel). Each city is fetched on the server so your API key never ships to the browser.</p>
+          <div class="scrape-callout">
+            <strong>How it works:</strong> Pick a niche, then select a state or specific city. Set how many <em>new</em> leads you want per city — already scraped numbers are skipped automatically. The server pages through Google Maps results until your target is hit or listings run out. Run cities <em>at once</em> for speed. To get 1,000+ leads, target 50–100 per city and select "All Cities" in a state (or leave state blank for all 549 US cities). <strong>SCRAPINGDOG_API_KEY</strong> must be set in Vercel → Settings → Environment Variables.
+          </div>
+          <div class="scrape-section-label">1 · What to search</div>
           <div class="form-row" style="margin-bottom:0.75rem;">
             <div class="form-group" style="flex:1;min-width:200px;">
               <div class="form-label">Niche / search phrase</div>
               <input type="text" class="form-input" id="scrapeNiche" value="trucking company" placeholder="e.g. trucking company, plumbing contractors" oninput="updateScrapePreview()">
             </div>
-            <div class="form-group" style="max-width:220px;">
-              <div class="form-label">Scraper password</div>
-              <input type="password" class="form-input" id="scrapeSecret" value="Free2026" placeholder="Free2026" autocomplete="off">
-            </div>
           </div>
+          <p style="font-size:0.78rem;color:var(--muted);margin:-0.35rem 0 0.75rem;line-height:1.45;">Uses the <strong>Portal password</strong> at the top of this page (same as <code style="font-size:0.72rem;">SCRAPER_SECRET</code> in Vercel).</p>
+          <div class="scrape-section-label">2 · Location &amp; Target</div>
           <div class="scrape-controls">
             <div class="form-group">
-              <div class="form-label">Start at city #</div>
-              <input type="number" class="form-input" id="scrapeStart" min="1" max="20" value="1" title="1 = New York, … 20 = Memphis" oninput="updateScrapePreview()">
+              <div class="form-label">Country</div>
+              <select class="form-select" id="scrapeCountry" disabled><option value="US">United States</option></select>
             </div>
             <div class="form-group">
-              <div class="form-label">How many cities</div>
-              <input type="number" class="form-input" id="scrapeCount" min="1" max="20" value="20" oninput="updateScrapePreview()">
-            </div>
-            <div class="form-group">
-              <div class="form-label">Results / city (API)</div>
-              <input type="number" class="form-input" id="scrapeResults" min="1" max="300" value="20" title="Target leads per city (uses multiple API pages if &gt; 20; max 300)">
-            </div>
-            <div class="form-group">
-              <div class="form-label">Pause between cities</div>
-              <select class="form-select" id="scrapeDelaySec" style="font-size:0.85rem;">
-                <option value="0.5">0.5 sec</option>
-                <option value="1">1 sec</option>
-                <option value="2" selected>2 sec</option>
-                <option value="3">3 sec</option>
-                <option value="5">5 sec</option>
+              <div class="form-label">State</div>
+              <select class="form-select" id="scrapeState" onchange="onScrapeStateChange()">
+                <option value="">Loading...</option>
               </select>
             </div>
             <div class="form-group">
-              <div class="form-label">On city error</div>
-              <select class="form-select" id="scrapeOnError" style="font-size:0.85rem;">
-                <option value="continue" selected>Skip city &amp; continue</option>
-                <option value="stop">Stop entire run</option>
+              <div class="form-label">City</div>
+              <select class="form-select" id="scrapeCity" onchange="updateScrapePreview()">
+                <option value="">Select State First</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <div class="form-label">New leads per city</div>
+              <input type="number" class="form-input" id="scrapeResults" min="1" max="2000" value="20" title="Per-city target. Skips phones already in your database. Google Maps rarely has more than 200-400 per niche per city." oninput="updateScrapePreview()">
+            </div>
+            <div class="form-group">
+              <div class="form-label">Cities at once</div>
+              <select class="form-select" id="scrapeConcurrency" style="font-size:0.85rem;" onchange="updateScrapePreview()">
+                <option value="1">1 (safest)</option>
+                <option value="2" selected>2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+                <option value="6">6</option>
               </select>
             </div>
           </div>
-          <p style="font-size:0.78rem;color:var(--muted);margin:0 0 0.35rem;">Rows with a <strong>phone number already in the database</strong> are skipped (10-digit match; avoids duplicate scrapes). <strong>Results / city</strong> is capped at <strong>300</strong>; values above 20 use extra API pages (may take ~30–60s per city on large counts).</p>
+          <p style="font-size:0.78rem;color:var(--muted);margin:0 0 0.35rem;line-height:1.5;">Duplicates are skipped by <strong>10-digit phone</strong> match against your existing Lead Database. Metros without built-in coordinates are limited to <strong>20</strong> leads per city. Large runs use ScrapingDog credits — watch your dashboard there.</p>
+          <label style="display:flex;align-items:center;gap:0.4rem;font-size:0.82rem;color:var(--text);cursor:pointer;margin-bottom:0.5rem;user-select:none;">
+            <input type="checkbox" id="scrapeAutoPush" checked> Auto-push new leads to Caller Queue
+          </label>
+          <p class="scrape-estimate" id="scrapeEstimate"></p>
           <p class="scrape-preview" id="scrapePreview"></p>
           <div style="display:flex;flex-wrap:wrap;gap:0.75rem;align-items:center;margin-bottom:0.5rem;">
             <button type="button" class="btn btn-green" id="scrapeRunBtn" onclick="runScrapeFromSite()">Run scrape</button>
@@ -770,13 +934,13 @@ details.scrape-panel summary .scrape-hint{font-family:'DM Sans',sans-serif;font-
             <p style="margin-top:0.5rem;font-size:0.82rem;color:var(--muted);line-height:1.55;"><span class="mono" style="display:inline;">pip install -r scripts/requirements.txt</span> then <span class="mono" style="display:inline;">python scripts/scrape_maps_leads.py</span> — same cities; paste the CSV into Import CSV if you prefer the CLI.</p>
           </details>
         </div>
-      </details>
+      </div>
+      </div>
 
-      <p class="admin-section-label">Master lead list</p>
-
-      <div class="panel">
-        <div class="panel-header">
-          <div class="panel-title">Lead Database</div>
+      <div id="admin-tab-database" class="admin-tab-content" style="display:none;">
+        <div class="panel" style="box-shadow:var(--shadow-sm);border-radius:8px;overflow:hidden;">
+          <div class="panel-header" style="background:var(--bg);border-bottom:1px solid var(--border);padding:1rem 1.25rem;">
+            <div class="panel-title" style="font-size:1.05rem;font-weight:600;">Lead Database</div>
           <div style="display:flex;gap:0.5rem;">
             <button class="btn btn-ghost btn-sm" onclick="openDbImport()">⬆ Import CSV</button>
             <button class="btn btn-ghost btn-sm" onclick="exportDbCsv()">⬇ Export CSV</button>
@@ -850,11 +1014,12 @@ details.scrape-panel summary .scrape-hint{font-family:'DM Sans',sans-serif;font-
           </div>
         </div>
       </div>
+      </div>
 
-      <p class="admin-section-label">Team assistant &amp; training</p>
-      <p class="admin-meta" style="font-size:0.8rem;color:var(--muted);margin:-0.1rem 0 0.75rem;line-height:1.55;max-width:100%;">OpenRouter: default <code style="font-size:0.74rem;">anthropic/claude-sonnet-4.6</code> (override with <code style="font-size:0.74rem;">OPENROUTER_MODEL</code>). Then free fallbacks if the provider errors. Optional: <code style="font-size:0.74rem;">OPENROUTER_MODEL_FALLBACKS</code>. Set <code style="font-size:0.74rem;">OPENROUTER_API_KEY</code> in Vercel.</p>
+      <div id="admin-tab-assistant" class="admin-tab-content" style="display:none;">
+        <p class="admin-meta" style="font-size:0.85rem;color:var(--muted);margin:0 0 1rem;line-height:1.55;max-width:100%;background:var(--surface);padding:0.75rem 1rem;border-radius:6px;border:1px solid var(--border);"><strong>AI Config:</strong> OpenRouter defaults to <code style="font-size:0.74rem;background:var(--bg);padding:0.15rem 0.35rem;border-radius:3px;">anthropic/claude-sonnet-4.6</code> (override with <code style="font-size:0.74rem;background:var(--bg);padding:0.15rem 0.35rem;border-radius:3px;">OPENROUTER_MODEL</code>). Set <code style="font-size:0.74rem;background:var(--bg);padding:0.15rem 0.35rem;border-radius:3px;">OPENROUTER_API_KEY</code> in Vercel.</p>
 
-      <details class="admin-transcripts-panel">
+        <details class="admin-transcripts-panel" open>
         <summary class="admin-transcripts-summary">Knowledge base (AI)</summary>
         <div class="admin-transcripts-inner">
           <p class="admin-transcripts-hint">Merged into the AI system prompt (services, pricing, tone, FAQs). Uses the password above. Requires KV. The latest saved text loads automatically when you open <strong>Admin</strong>. To pull the server copy again after editing here, refresh the page.</p>
@@ -901,16 +1066,31 @@ details.scrape-panel summary .scrape-hint{font-family:'DM Sans',sans-serif;font-
           <div class="transcripts-scroll" id="teamChatTranscriptsList"></div>
         </div>
       </details>
+      </div>
+
+      <div id="admin-tab-team" class="admin-tab-content" style="display:none;">
+        <details class="admin-transcripts-panel" id="signupApprovalsPanel" open>
+        <summary class="admin-transcripts-summary">Signup approvals <span class="admin-transcripts-badge" id="signupApprovalsBadge" style="display:none;">0</span></summary>
+        <div class="admin-transcripts-inner">
+          <p class="admin-transcripts-hint">New registrations wait here until you approve. They cannot use the caller dashboard until approved (admins are not blocked).</p>
+          <div class="admin-transcripts-toolbar admin-transcripts-toolbar--full">
+            <button type="button" class="btn btn-ghost btn-sm" onclick="loadSignupApprovals()">Refresh</button>
+          </div>
+          <div class="transcripts-scroll" id="signupApprovalsList" style="max-height:280px;"></div>
+        </div>
+      </details>
 
       <p class="admin-section-label">Queues &amp; people</p>
 
-      <div class="panel" style="margin-bottom:1rem;">
-        <div class="panel-header">
-          <div class="panel-title">Caller queue — removal requests</div>
+      <details class="admin-transcripts-panel" id="removalRequestsPanel">
+        <summary class="admin-transcripts-summary" style="justify-content:space-between;gap:0.75rem;">
+          <span>Caller queue — removal requests</span>
           <span class="nav-count" id="removalPendingBadge" style="display:none;">0</span>
+        </summary>
+        <div class="admin-transcripts-inner">
+          <div id="removalRequestsPanelBody"></div>
         </div>
-        <div class="panel-body" id="removalRequestsPanelBody"></div>
-      </div>
+      </details>
 
       <div class="panel" id="teamMembersPanel" style="margin-bottom:1rem;display:none;">
         <div class="panel-header">
@@ -929,6 +1109,7 @@ details.scrape-panel summary .scrape-hint{font-family:'DM Sans',sans-serif;font-
           <div class="transcripts-scroll" id="teamChatClearRequestsList" style="max-height:220px;"></div>
         </div>
       </details>
+      </div>
     </div>
 
     <!-- SCRIPT VIEW -->
@@ -943,13 +1124,13 @@ details.scrape-panel summary .scrape-hint{font-family:'DM Sans',sans-serif;font-
                 <div class="script-box">
                   "Hi, is this <em>[Owner Name]</em>?<br><br>
                   Great, this is <em>[Your Name]</em> calling from AllSorted Pro. We do bookkeeping specifically for small business owners, a lot of owners we talk to are spending 5 to 10 hours a month dealing with their own books.<br><br>
-                  We're offering the first month completely free just to show you what we do. Is that something worth a quick 15-minute conversation?"
+                  We offer the first two weeks completely free — no credit card, no commitment — just to show you what we do. Is that something worth a quick 15-minute conversation?"
                 </div>
               </div>
               <div class="script-section">
                 <h3>If they say "what is this about?"</h3>
                 <div class="script-box">
-                  "Sure, we handle bookkeeping for business owners. We do everything in QuickBooks, reconciling your accounts, categorizing expenses, sending you a monthly report. Most owners save 6 to 8 hours a month. We're offering the first month free, does that sound like it could help you?"
+                  "Sure, we handle bookkeeping for business owners. We do everything in QuickBooks, reconciling your accounts, categorizing expenses, sending you a monthly report. Most owners save 6 to 8 hours a month. Your first two weeks are completely free, no credit card — does that sound like it could help you?"
                 </div>
               </div>
               <div class="script-section">
@@ -971,11 +1152,11 @@ details.scrape-panel summary .scrape-hint{font-family:'DM Sans',sans-serif;font-
               </div>
               <div class="objection">
                 <div class="objection-q">"I do it myself"</div>
-                <div class="objection-a">"Totally get it, how many hours would you say it takes you each month? Most owners tell us 5 to 10 hours. That's time back in your day for $97 a month, and your first month is free anyway. Worth a 15-minute chat?"</div>
+                <div class="objection-a">"Totally get it, how many hours would you say it takes you each month? Most owners tell us 5 to 10 hours. That's time back in your day. After the two-week free trial, it's $97 a month for three months while we prove our value, then $197 — still a fraction of a local bookkeeper. Worth a 15-minute chat?"</div>
               </div>
               <div class="objection">
                 <div class="objection-q">"How much does it cost?"</div>
-                <div class="objection-a">"$97 a month for our founding member rate, that's locked in forever. And the first month is completely free. Most business owners spend more than that on software they barely use."</div>
+                <div class="objection-a">"First two weeks are completely free — no credit card, no commitment. After that it's $97 a month for the first three months while we prove our value, then $197 a month. That's still a fraction of what a local bookkeeper charges. Most owners spend more than that on software they barely use."</div>
               </div>
               <div class="objection">
                 <div class="objection-q">"Not interested"</div>
@@ -999,7 +1180,7 @@ details.scrape-panel summary .scrape-hint{font-family:'DM Sans',sans-serif;font-
         <div class="panel-body" style="display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;">
           <div style="background:var(--cream);border:1px solid var(--border);border-radius:4px;padding:1rem;">
             <div style="font-size:0.68rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--green);margin-bottom:0.4rem;font-weight:500;">Pricing</div>
-            <div style="font-size:0.85rem;color:var(--text);line-height:1.6;">$97/mo founding rate (first 10 clients only). $197/mo standard. First month always free.</div>
+            <div style="font-size:0.85rem;color:var(--text);line-height:1.6;">First 2 weeks free (no card, no commitment). Then $97/mo for 3 months, then $197/mo — still less than most local bookkeepers.</div>
           </div>
           <div style="background:var(--cream);border:1px solid var(--border);border-radius:4px;padding:1rem;">
             <div style="font-size:0.68rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--amber);margin-bottom:0.4rem;font-weight:500;">What We Do</div>
@@ -1211,51 +1392,116 @@ details.scrape-panel summary .scrape-hint{font-family:'DM Sans',sans-serif;font-
 
 <!-- ADD APPOINTMENT MODAL -->
 <div class="modal-overlay" id="addApptModal">
-  <div class="modal">
+  <div class="modal appt-modal" role="dialog" aria-labelledby="apptModalTitle" aria-modal="true">
     <div class="modal-header">
-      <div class="modal-title">Log Appointment</div>
-      <button class="modal-close" onclick="closeModal('addApptModal')">✕</button>
+      <div class="modal-title" id="apptModalTitle">Log Appointment</div>
+      <button type="button" class="modal-close" onclick="closeModal('addApptModal')" aria-label="Close">✕</button>
     </div>
-    <div class="modal-body">
-      <div class="form-row">
-        <div class="form-group">
-          <div class="form-label">Business Owner Name *</div>
-          <input type="text" class="form-input" id="apptName" placeholder="John Smith">
+    <div class="modal-body appt-form">
+      <section class="appt-form__step appt-form__step--accent">
+        <div class="appt-form__section-head">
+          <span class="appt-form__badge" aria-hidden="true">1</span>
+          <div>
+            <div class="appt-form__section-title">Find the company</div>
+            <p class="appt-form__section-lead">Type or choose from suggestions. We match your <strong>lead queue</strong> and <strong>master database</strong>, then fill contact fields below.</p>
+          </div>
         </div>
-        <div class="form-group">
-          <div class="form-label">Company</div>
-          <input type="text" class="form-input" id="apptCompany" placeholder="Smith Trucking LLC">
+        <div class="form-group" style="margin-bottom:0;">
+          <label class="form-label" for="apptCompany">Company</label>
+          <div class="appt-form__input-wrap">
+            <input type="text" class="form-input" id="apptCompany" list="apptCompanySuggestions" autocomplete="organization" placeholder="Search or pick a company…" maxlength="200">
+            <datalist id="apptCompanySuggestions"></datalist>
+          </div>
         </div>
-      </div>
-      <div class="form-row">
-        <div class="form-group">
-          <div class="form-label">Date & Time *</div>
+        <p class="appt-form__footer-note">Leave this field (tab or click elsewhere) to run the match and unlock date, status, and notes.</p>
+      </section>
+
+      <section class="appt-form__step" aria-label="Contact from lookup">
+        <div class="appt-form__section-head">
+          <span class="appt-form__badge appt-form__badge--muted" aria-hidden="true">2</span>
+          <div>
+            <div class="appt-form__section-title">Contact</div>
+            <p class="appt-form__section-lead" id="apptContactSectionLead">Filled automatically when a lead matches — not editable here.</p>
+          </div>
+        </div>
+        <div class="appt-form__grid-2">
+          <div class="form-group" style="margin-bottom:0;">
+            <label class="form-label" for="apptFirstName">First name *</label>
+            <input type="text" class="form-input appt-form__readonly-input" id="apptFirstName" autocomplete="given-name" placeholder="—" maxlength="80" readonly tabindex="-1">
+          </div>
+          <div class="form-group" style="margin-bottom:0;">
+            <label class="form-label" for="apptLastName">Last name *</label>
+            <input type="text" class="form-input appt-form__readonly-input" id="apptLastName" autocomplete="family-name" placeholder="—" maxlength="80" readonly tabindex="-1">
+          </div>
+        </div>
+        <div class="form-group" style="margin-bottom:0;margin-top:0.65rem;">
+          <label class="form-label" for="apptPhone">Phone</label>
+          <input type="tel" class="form-input appt-form__readonly-input" id="apptPhone" inputmode="tel" autocomplete="tel" placeholder="—" maxlength="22" readonly tabindex="-1">
+        </div>
+      </section>
+
+      <section class="appt-form__step">
+        <div class="appt-form__section-head">
+          <span class="appt-form__badge" aria-hidden="true">3</span>
+          <div>
+            <div class="appt-form__section-title">Date &amp; time *</div>
+          </div>
+        </div>
+        <div class="form-group" style="margin-bottom:0;">
           <input type="datetime-local" class="form-input" id="apptDateTime">
+          <p class="appt-form__micro">Use the calendar and time controls — you don’t need to type.</p>
         </div>
-        <div class="form-group">
-          <div class="form-label">Phone</div>
-          <input type="text" class="form-input" id="apptPhone" placeholder="(555) 000-0000">
+      </section>
+
+      <section class="appt-form__step">
+        <div class="appt-form__section-head">
+          <span class="appt-form__badge" aria-hidden="true">4</span>
+          <div>
+            <div class="appt-form__section-title">Status</div>
+          </div>
         </div>
-      </div>
-      <div class="form-group">
-        <div class="form-label">Status</div>
-        <select class="form-select" id="apptStatus">
-          <option value="scheduled">Scheduled</option>
-          <option value="showed">Showed ✓</option>
-          <option value="noshow">No Show</option>
-          <option value="closed">Won — paid + 2+ weeks onboarded 🎉</option>
-          <option value="lost">Closed — Lost</option>
-        </select>
-        <p class="appt-policy-hint appt-policy-hint--modal">Use <strong>Won</strong> only when payment is in and they have completed at least <strong>two weeks</strong> of onboarding — not when the sales appointment goes well.</p>
-      </div>
-      <div class="form-group">
-        <div class="form-label">Notes</div>
-        <textarea class="form-textarea" id="apptNotes" placeholder="Anything relevant about this prospect..."></textarea>
-      </div>
+        <div class="form-group" style="margin-bottom:0;">
+          <select class="form-select" id="apptStatus">
+            <option value="scheduled">Scheduled</option>
+            <option value="showed">Showed ✓</option>
+            <option value="noshow">No Show</option>
+            <option value="closed">Won — paid + 2+ weeks onboarded 🎉</option>
+            <option value="lost">Closed — Lost</option>
+          </select>
+          <p class="appt-policy-hint appt-policy-hint--modal" style="margin-top:0.65rem;">Use <strong>Won</strong> only when payment is in and they have completed at least <strong>two weeks</strong> of onboarding — not when the sales appointment goes well.</p>
+        </div>
+      </section>
+
+      <section class="appt-form__step appt-form__step--readonly" aria-labelledby="apptLeadNotesTitle">
+        <div class="appt-form__section-head">
+          <span class="appt-form__badge appt-form__badge--muted" aria-hidden="true">5</span>
+          <div>
+            <div class="appt-form__section-title" id="apptLeadNotesTitle">Lead notes on file</div>
+            <p class="appt-form__section-lead">Team history for this lead from the queue. <strong>Read-only</strong> — not editable here and never changed when you save this appointment.</p>
+          </div>
+        </div>
+        <div class="appt-lead-notes-wrap">
+          <div id="apptLeadNotesPreview" class="appt-lead-notes-preview appt-lead-notes-preview--readonly" role="region" aria-label="Lead notes (read only)" tabindex="-1"></div>
+        </div>
+      </section>
+
+      <section class="appt-form__step">
+        <div class="appt-form__section-head">
+          <span class="appt-form__badge" aria-hidden="true">6</span>
+          <div>
+            <div class="appt-form__section-title">Add a note (optional)</div>
+            <p class="appt-form__section-lead">Only for <strong>this appointment</strong> — stored on the appointment, not added to the lead’s note history.</p>
+          </div>
+        </div>
+        <div class="form-group" style="margin-bottom:0;">
+          <label class="form-label" for="apptNotes" style="font-size:0.72rem;">Your text</label>
+          <textarea class="form-textarea appt-form__textarea" id="apptNotes" placeholder="e.g. meeting link, agenda, context for this visit…" rows="3" aria-label="Optional note for this appointment only"></textarea>
+        </div>
+      </section>
     </div>
     <div class="modal-footer">
-      <button class="btn btn-ghost" onclick="closeModal('addApptModal')">Cancel</button>
-      <button class="btn btn-green" onclick="submitAddAppt()">Save Appointment</button>
+      <button type="button" class="btn btn-ghost" onclick="closeModal('addApptModal')">Cancel</button>
+      <button type="button" class="btn btn-green" id="apptSaveBtn" onclick="submitAddAppt()">Save appointment</button>
     </div>
   </div>
 </div>
@@ -1580,6 +1826,25 @@ window.addEventListener('pipeline-sync-auth-fail', function () {
   } catch (e) {}
 });
 
+function clearLocalPipelineCache() {
+  if (
+    !confirm(
+      'Clear leads, call log, and appointments stored in this browser only?\n\nThe master lead database (Admin → Lead Database) is not deleted. The page will reload.'
+    )
+  ) {
+    return;
+  }
+  try {
+    localStorage.setItem('cb_leads', '[]');
+    localStorage.setItem('cb_calllog', '[]');
+    localStorage.setItem('cb_appts', '[]');
+  } catch (e) {
+    toast('Could not clear storage');
+    return;
+  }
+  location.reload();
+}
+
 async function syncPipelineFromServer() {
   const secret = getPipelineSecret();
   if (!secret) {
@@ -1706,6 +1971,9 @@ function normalizeAddressForCompare(s) {
 
 function migrateLegacyLeadRecord(l) {
   if (!l || typeof l !== 'object') return false;
+  if (Array.isArray(l.notesLog) && l.notesLog.length > 0) {
+    return false;
+  }
   let changed = false;
   const addr = effectiveAddress(l);
   let notes = String(l.notes || '').trim();
@@ -1753,6 +2021,25 @@ function migrateAllLeadsLegacyNotes() {
   }
 }
 
+function migrateCallLogEmptyEmployeeIds() {
+  if (typeof getCurrentUser !== 'function') return;
+  const u = getCurrentUser();
+  if (!u || u.employeeId == null || String(u.employeeId).trim() === '') return;
+  const emp = String(u.employeeId).trim();
+  let changed = false;
+  for (let i = 0; i < callLog.length; i++) {
+    const c = callLog[i];
+    if (!c) continue;
+    if (c.employeeId != null && String(c.employeeId).trim() !== '') continue;
+    c.employeeId = emp;
+    changed = true;
+  }
+  if (changed) {
+    saveLocalOnly();
+    schedulePipelineFlush();
+  }
+}
+
 function googleMapsRatingDisplay(l) {
   const r = (l && l.googleMapsRating != null ? String(l.googleMapsRating) : '').trim();
   return r || '—';
@@ -1764,10 +2051,89 @@ function effectiveAddress(l) {
   return deriveAddressFromNotes(l && l.notes);
 }
 
-function queueDetailNotesHtml(raw) {
-  const notes = (raw || '').trim();
-  if (!notes) return '—';
-  return escapeHtml(raw).replace(/\n/g, '<br>');
+function ensureLeadNotesLog(lead) {
+  if (!lead) return [];
+  if (Array.isArray(lead.notesLog) && lead.notesLog.length > 0) return lead.notesLog;
+  const legacy = String(lead.notes || '').trim();
+  if (Array.isArray(lead.notesLog) && lead.notesLog.length === 0) {
+    if (!legacy) return lead.notesLog;
+    lead.notesLog = [
+      {
+        id: 'legacy:' + String(lead.id || ''),
+        text: legacy,
+        legacy: true,
+        at: lead.createdAt || new Date().toISOString(),
+      },
+    ];
+    return lead.notesLog;
+  }
+  if (!legacy) {
+    lead.notesLog = [];
+    return lead.notesLog;
+  }
+  lead.notesLog = [
+    {
+      id: 'legacy:' + String(lead.id || ''),
+      text: legacy,
+      legacy: true,
+      at: lead.createdAt || new Date().toISOString(),
+    },
+  ];
+  return lead.notesLog;
+}
+
+function formatLeadNoteStampFromEntry(entry) {
+  const d = entry.at ? new Date(entry.at) : new Date();
+  if (isNaN(d.getTime())) return '[Note]';
+  const ts = d.toLocaleString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+    hour: 'numeric',
+    minute: '2-digit',
+  });
+  const empPart = entry.employeeId ? 'Emp #' + String(entry.employeeId) : '—';
+  return '[' + empPart + ' · ' + ts + ']';
+}
+
+function syncLeadNotesStringFromLog(lead) {
+  const log = ensureLeadNotesLog(lead);
+  if (!log.length) {
+    lead.notes = '';
+    return;
+  }
+  lead.notes = log
+    .map(function (e) {
+      if (e.legacy) return e.text;
+      return formatLeadNoteStampFromEntry(e) + '\n' + String(e.text || '').trim();
+    })
+    .join('\n\n');
+}
+
+function queueNotesLogEntriesHtml(lead) {
+  const log = ensureLeadNotesLog(lead);
+  if (!log.length) return '';
+  return log
+    .map(function (e) {
+      const stamp = e.legacy ? '[Earlier note]' : formatLeadNoteStampFromEntry(e);
+      const body = escapeHtml(e.text || '').replace(/\n/g, '<br>');
+      return (
+        '<div class="queue-note-entry"><div class="queue-note-stamp">' +
+        escapeHtml(stamp) +
+        '</div><div class="queue-note-body">' +
+        body +
+        '</div></div>'
+      );
+    })
+    .join('');
+}
+
+function queueNotesHistoryCellHtml(lead) {
+  const inner = queueNotesLogEntriesHtml(lead);
+  if (!inner) {
+    return '<div class="queue-notes-empty td-muted">No notes yet</div>';
+  }
+  return '<div class="queue-notes-history">' + inner + '</div>';
 }
 
 function queueDetailHtml(l) {
@@ -1775,7 +2141,8 @@ function queueDetailHtml(l) {
   const webHtml = web
     ? `<a href="${escapeHtml(web)}" target="_blank" rel="noopener noreferrer" class="queue-detail-link" onclick="event.stopPropagation()">${escapeHtml(web)}</a>`
     : '—';
-  const notesHtml = queueDetailNotesHtml(l.notes);
+  const notesInner = queueNotesLogEntriesHtml(l);
+  const notesHtml = notesInner ? '<div class="queue-notes-history">' + notesInner + '</div>' : '—';
   const dd = (t) => (t ? escapeHtml(t) : '—');
   const ratingDd = googleMapsRatingDisplay(l);
   return `
@@ -1798,6 +2165,7 @@ function queueGroupClick(ev) {
   if (ev.target.closest('a')) return;
   if (ev.target.closest('textarea')) return;
   if (ev.target.closest('.queue-lead-detail')) return;
+  if (ev.target.closest('.queue-notes-stack')) return;
   ev.currentTarget.classList.toggle('queue-open');
 }
 
@@ -1933,7 +2301,7 @@ function initSettingsPageListeners() {
 }
 
 var TEAM_CHAT_KEY = 'cb_team_chat_msgs';
-var TEAM_CHAT_SYSTEM = 'You are a helpful assistant for AllSorted Pro, a bookkeeping service for small business owners. Team members use you while calling leads and managing appointments. Help with: cold call scripts, objection handling, pricing ($97/mo founding rate, first month free), QuickBooks-style services we describe (reconciliation, categorization, monthly reports), and professional tone. Keep answers concise unless asked for more detail. If unsure about a policy, say to confirm with a manager. Team members may attach screenshots (CRM, lead lists, QuickBooks), photos of documents, or other images—you can see image attachments in the conversation. When they ask what is in an image or to describe it, you must answer: give a short neutral factual description (setting, people, clothing, objects, text, UI). Do not refuse "what is in this photo" or similar because the subject is not bookkeeping; a brief description is always appropriate. If the image clearly relates to sales or bookkeeping, add a short relevant tip. Do not refuse to help only because the message includes an image. Only decline requests that ask for explicit sexual content, illegal acts, or harassment—not neutral questions about attached images.';
+var TEAM_CHAT_SYSTEM = 'You are a helpful assistant for AllSorted Pro, a bookkeeping service for small business owners. Team members use you while calling leads and managing appointments. Help with: cold call scripts, objection handling, pricing (first 2 weeks free, no credit card; then $97/mo for 3 months; then $197/mo — a fraction of typical local bookkeeper fees), QuickBooks-style services we describe (reconciliation, categorization, monthly reports), and professional tone. Keep answers concise unless asked for more detail. If unsure about a policy, say to confirm with a manager. Team members may attach screenshots (CRM, lead lists, QuickBooks), photos of documents, or other images—you can see image attachments in the conversation. When they ask what is in an image or to describe it, you must answer: give a short neutral factual description (setting, people, clothing, objects, text, UI). Do not refuse "what is in this photo" or similar because the subject is not bookkeeping; a brief description is always appropriate. If the image clearly relates to sales or bookkeeping, add a short relevant tip. Do not refuse to help only because the message includes an image. Only decline requests that ask for explicit sexual content, illegal acts, or harassment—not neutral questions about attached images.';
 var teamChatMessages = [];
 var teamChatPending = [];
 var TEAM_CHAT_MAX_FILES = 6;
@@ -2564,19 +2932,32 @@ function syncTeamChatToServer() {
   }).catch(function () {});
 }
 
+function persistPortalSecretFromInput() {
+  var el = document.getElementById('adminPortalSecret');
+  if (!el) return;
+  var v = String(el.value || '').trim();
+  try {
+    localStorage.setItem('cb_scraper_secret', v || 'Free2026');
+  } catch (e) {}
+}
+
 function getAdminPortalSecret() {
   var el = document.getElementById('adminPortalSecret');
-  return el ? String(el.value || '').trim() : '';
+  var v = el ? String(el.value || '').trim() : '';
+  if (v) return v;
+  try {
+    v = localStorage.getItem('cb_scraper_secret') || '';
+  } catch (e) {}
+  return v ? v : '';
 }
 
 function getPortalServerSecret() {
-  var el = document.getElementById('scrapeSecret');
-  return el ? String(el.value || '').trim() || 'Free2026' : 'Free2026';
+  var s = getAdminPortalSecret();
+  return s || 'Free2026';
 }
 
 function resolvePortalPresenceSecret() {
-  var a = getAdminPortalSecret();
-  return a ? a : getPortalServerSecret();
+  return getPortalServerSecret();
 }
 
 function formatPresenceDt(iso) {
@@ -2738,17 +3119,127 @@ async function denyTeamChatClearRequest(userId) {
   }
 }
 
-function ensureAssistantKbDetailsOpen() {
-  var ta = document.getElementById('assistantKbTextarea');
-  if (!ta) return;
-  var det = ta.closest('details');
-  if (det) det.open = true;
+async function loadSignupApprovals() {
+  var me = getCurrentUser();
+  if (!me || me.role !== 'admin') return;
+  var secret = getAdminPortalSecret() || getPortalServerSecret();
+  if (!secret) {
+    toast('Enter the admin server password above');
+    return;
+  }
+  var el = document.getElementById('signupApprovalsList');
+  var badge = document.getElementById('signupApprovalsBadge');
+  if (el) el.innerHTML = '<div class="transcripts-empty">Loading…</div>';
+  try {
+    var r = await fetch('/api/portal-access-admin', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ secret: secret, action: 'list' }),
+    });
+    var data = await r.json().catch(function () {
+      return {};
+    });
+    if (!r.ok) {
+      if (el) el.innerHTML = '<div class="transcripts-empty">' + escapeHtml(data.error || 'Error') + '</div>';
+      return;
+    }
+    if (!data.configured) {
+      if (el) el.innerHTML = '<div class="transcripts-empty">Supabase not configured.</div>';
+      if (badge) badge.style.display = 'none';
+      return;
+    }
+    var rows = data.pending || [];
+    if (badge) {
+      badge.textContent = String(rows.length);
+      badge.style.display = rows.length ? 'inline' : 'none';
+    }
+    if (!rows.length) {
+      if (el) el.innerHTML = '<div class="transcripts-empty">No pending signups.</div>';
+      return;
+    }
+    el.innerHTML = rows
+      .map(function (row) {
+        var em = row.email || '';
+        return (
+          '<div style="padding:0.5rem 0.65rem;border-bottom:1px solid var(--border);font-size:0.78rem;">' +
+          '<div style="font-weight:600;">' +
+          escapeHtml(em) +
+          '</div>' +
+          (row.display_name
+            ? '<div style="color:var(--muted);">' + escapeHtml(row.display_name) + '</div>'
+            : '') +
+          '<div style="margin-top:0.4rem;display:flex;gap:0.35rem;flex-wrap:wrap;">' +
+          '<button type="button" class="btn btn-green btn-sm" onclick=\'approvePortalSignup(' +
+          JSON.stringify(em) +
+          ')\'>Approve</button>' +
+          '<button type="button" class="btn btn-ghost btn-sm" onclick=\'denyPortalSignup(' +
+          JSON.stringify(em) +
+          ')\'>Deny</button></div></div>'
+        );
+      })
+      .join('');
+  } catch (e) {
+    if (el) el.innerHTML = '<div class="transcripts-empty">Network error</div>';
+  }
+}
+
+async function approvePortalSignup(email) {
+  if (!email) return;
+  var secret = getAdminPortalSecret() || getPortalServerSecret();
+  if (!secret) {
+    toast('Enter the admin server password above');
+    return;
+  }
+  try {
+    var r = await fetch('/api/portal-access-admin', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ secret: secret, action: 'approve', email: email }),
+    });
+    var data = await r.json().catch(function () {
+      return {};
+    });
+    if (!r.ok) {
+      toast(data.error || 'Approve failed');
+      return;
+    }
+    toast('Approved — they can open the dashboard');
+    loadSignupApprovals();
+  } catch (e) {
+    toast('Network error');
+  }
+}
+
+async function denyPortalSignup(email) {
+  if (!email) return;
+  var secret = getAdminPortalSecret() || getPortalServerSecret();
+  if (!secret) {
+    toast('Enter the admin server password above');
+    return;
+  }
+  try {
+    var r = await fetch('/api/portal-access-admin', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ secret: secret, action: 'deny', email: email }),
+    });
+    var data = await r.json().catch(function () {
+      return {};
+    });
+    if (!r.ok) {
+      toast(data.error || 'Deny failed');
+      return;
+    }
+    toast('Signup denied');
+    loadSignupApprovals();
+  } catch (e) {
+    toast('Network error');
+  }
 }
 
 async function prefetchAssistantKbForAdmin() {
   var secret = getAdminPortalSecret();
   if (!secret) return;
-  ensureAssistantKbDetailsOpen();
   var ta = document.getElementById('assistantKbTextarea');
   if (!ta) return;
   var snapshot = ta.value;
@@ -3405,7 +3896,20 @@ function renderTeamChatTranscriptsList(users) {
 }
 
 // NAVIGATION
-function showView(name) {
+function switchAdminTab(tabId) {
+  document.querySelectorAll('.admin-tab').forEach(function(btn) {
+    btn.classList.remove('active');
+  });
+  document.querySelectorAll('.admin-tab-content').forEach(function(content) {
+    content.style.display = 'none';
+  });
+  var activeBtn = document.querySelector('.admin-tab[onclick="switchAdminTab(\'' + tabId + '\')"]');
+  if (activeBtn) activeBtn.classList.add('active');
+  var activeContent = document.getElementById('admin-tab-' + tabId);
+  if (activeContent) activeContent.style.display = 'block';
+}
+
+function showView(name, skipHashUpdate) {
   if (name === 'admin' && (!getCurrentUser() || getCurrentUser().role !== 'admin')) {
     toast('Admin access required — ask an admin to promote your account, or use the seeded admin account.');
     return;
@@ -3418,6 +3922,9 @@ function showView(name) {
   if (navBtn) navBtn.classList.add('active');
   else if (typeof event !== 'undefined' && event && event.currentTarget && event.currentTarget.classList) {
     event.currentTarget.classList.add('active');
+  }
+  if (!skipHashUpdate) {
+    window.location.hash = name;
   }
   renderAll();
   if (name === 'assistant') {
@@ -3442,6 +3949,20 @@ function showView(name) {
     prefetchAssistantKbForAdmin();
   }
 }
+
+window.addEventListener('hashchange', function () {
+  var h = window.location.hash.replace('#', '');
+  var valid = ['dashboard','leads','log','appointments','admin','script','assistant','resources','settings'];
+  if (valid.indexOf(h) !== -1) showView(h, true);
+});
+
+(function restoreViewFromHash() {
+  var h = window.location.hash.replace('#', '');
+  var valid = ['dashboard','leads','log','appointments','admin','script','assistant','resources','settings'];
+  if (valid.indexOf(h) !== -1) {
+    setTimeout(function () { showView(h, true); }, 50);
+  }
+})();
 
 function setSidebarCollapsed(collapsed) {
   const app = document.getElementById('appRoot');
@@ -3494,24 +4015,382 @@ function openLogCall(leadId) {
   openModal('logCallModal');
 }
 
+function splitLeadOwnerName(owner) {
+  const t = String(owner || '').trim();
+  if (!t) return { first: '', last: '' };
+  const sp = t.indexOf(' ');
+  if (sp === -1) return { first: t, last: '' };
+  return { first: t.slice(0, sp).trim(), last: t.slice(sp + 1).trim() };
+}
+
+function setApptNameFieldsToDefaultClosed() {
+  const fnEl = document.getElementById('apptFirstName');
+  const lnEl = document.getElementById('apptLastName');
+  const leadP = document.getElementById('apptContactSectionLead');
+  [fnEl, lnEl].forEach(function (el) {
+    if (!el) return;
+    el.readOnly = true;
+    el.tabIndex = -1;
+    el.classList.add('appt-form__readonly-input');
+  });
+  if (leadP) {
+    leadP.textContent =
+      'Filled automatically when a lead matches — not editable here.';
+  }
+}
+
+function applyApptNameFieldsStateAfterLookup(parts) {
+  const fnEl = document.getElementById('apptFirstName');
+  const lnEl = document.getElementById('apptLastName');
+  const leadP = document.getElementById('apptContactSectionLead');
+  const complete = !!(parts && parts.first && parts.last);
+  [fnEl, lnEl].forEach(function (el) {
+    if (!el) return;
+    el.readOnly = complete;
+    el.tabIndex = complete ? -1 : 0;
+    if (complete) el.classList.add('appt-form__readonly-input');
+    else el.classList.remove('appt-form__readonly-input');
+  });
+  if (leadP) {
+    leadP.textContent = complete
+      ? 'Filled automatically when a lead matches — not editable here.'
+      : 'This lead has no full name on file (common for scraped listings). Enter first and last name below. Phone comes from the matched lead when available.';
+  }
+}
+
+function normalizePhoneDigitsForMatch(raw) {
+  let d = String(raw || '').replace(/\D/g, '');
+  if (d.length === 11 && d[0] === '1') d = d.slice(1);
+  return d;
+}
+
+function normalizeCompanyMatch(s) {
+  return String(s || '')
+    .toLowerCase()
+    .replace(/[\u2013\u2014\-]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+function findLeadRecordForAppt(companyRaw, phoneRaw) {
+  const phoneDigits = normalizePhoneDigitsForMatch(phoneRaw);
+  if (phoneDigits.length === 10) {
+    for (let i = 0; i < (leads || []).length; i++) {
+      const row = leads[i];
+      if (normalizePhoneDigitsForMatch(row && row.phone) === phoneDigits) return row;
+    }
+    for (let j = 0; j < (leadDb || []).length; j++) {
+      const row = leadDb[j];
+      if (normalizePhoneDigitsForMatch(row && row.phone) === phoneDigits) return row;
+    }
+  }
+  const c = normalizeCompanyMatch(companyRaw);
+  if (c.length < 2) return null;
+
+  function eachPool(fn) {
+    let i;
+    for (i = 0; i < (leads || []).length; i++) {
+      if (fn(leads[i])) return leads[i];
+    }
+    for (i = 0; i < (leadDb || []).length; i++) {
+      if (fn(leadDb[i])) return leadDb[i];
+    }
+    return null;
+  }
+
+  let hit = eachPool(function (row) {
+    const comp = normalizeCompanyMatch(row && row.company);
+    return comp && comp === c;
+  });
+  if (hit) return hit;
+
+  if (c.length >= 3) {
+    hit = eachPool(function (row) {
+      const comp = normalizeCompanyMatch(row && row.company);
+      if (!comp) return false;
+      return comp.indexOf(c) === 0 || c.indexOf(comp) === 0;
+    });
+    if (hit) return hit;
+  }
+
+  if (c.length >= 4) {
+    hit = eachPool(function (row) {
+      const comp = normalizeCompanyMatch(row && row.company);
+      if (!comp) return false;
+      return comp.indexOf(c) >= 0 || c.indexOf(comp) >= 0;
+    });
+    if (hit) return hit;
+  }
+
+  return null;
+}
+
+function findQueueLeadIdForAppointment(appt) {
+  if (!appt) return null;
+  const list = leads || [];
+  const pd = normalizePhoneDigitsForMatch(appt.phone);
+  if (pd.length === 10) {
+    for (let i = 0; i < list.length; i++) {
+      if (normalizePhoneDigitsForMatch(list[i] && list[i].phone) === pd) return list[i].id;
+    }
+  }
+  const c = normalizeCompanyMatch(appt.company);
+  if (c.length >= 2) {
+    for (let j = 0; j < list.length; j++) {
+      if (normalizeCompanyMatch(list[j] && list[j].company) === c) return list[j].id;
+    }
+  }
+  return null;
+}
+
+function refreshApptLeadNotesPreview(leadOverride) {
+  const preview = document.getElementById('apptLeadNotesPreview');
+  if (!preview) return;
+  let row = leadOverride;
+  if (!row) {
+    const companyEl = document.getElementById('apptCompany');
+    const phoneEl = document.getElementById('apptPhone');
+    if (companyEl && phoneEl) row = findLeadRecordForAppt(companyEl.value, phoneEl.value);
+  }
+  if (!row) {
+    preview.innerHTML =
+      '<p class="appt-lead-notes-placeholder">Match the company in step 1 to load notes from the lead record. This area stays read-only.</p>';
+    return;
+  }
+  preview.innerHTML = queueNotesHistoryCellHtml(row);
+}
+
+function tryAutofillApptFromLeadData(opts) {
+  const clearIfNoMatch = opts && opts.clearIfNoMatch;
+  const companyEl = document.getElementById('apptCompany');
+  const phoneEl = document.getElementById('apptPhone');
+  const fnEl = document.getElementById('apptFirstName');
+  const lnEl = document.getElementById('apptLastName');
+  if (!companyEl || !phoneEl || !fnEl || !lnEl) return;
+  const companyRaw = companyEl.value;
+  const phoneRaw = phoneEl.value;
+  const pd = normalizePhoneDigitsForMatch(phoneRaw);
+  if (!String(companyRaw || '').trim() && pd.length < 10) {
+    refreshApptLeadNotesPreview(null);
+    return;
+  }
+  const row = findLeadRecordForAppt(companyRaw, phoneRaw);
+  if (!row) {
+    if (clearIfNoMatch) {
+      fnEl.value = '';
+      lnEl.value = '';
+      phoneEl.value = '';
+      setApptNameFieldsToDefaultClosed();
+    }
+    refreshApptLeadNotesPreview(null);
+    return;
+  }
+  const parts = splitLeadOwnerName(row.owner);
+  const before =
+    fnEl.value +
+    '|' +
+    lnEl.value +
+    '|' +
+    companyEl.value +
+    '|' +
+    phoneEl.value;
+  fnEl.value = parts.first || fnEl.value;
+  lnEl.value = parts.last || lnEl.value;
+  companyEl.value = String(row.company || '').trim() || companyEl.value;
+  if (row.phone) {
+    phoneEl.value = normalizePhoneForStorage(row.phone) || String(row.phone).trim();
+  }
+  const after =
+    fnEl.value +
+    '|' +
+    lnEl.value +
+    '|' +
+    companyEl.value +
+    '|' +
+    phoneEl.value;
+  if (before !== after) toast('Loaded from lead queue / database');
+  applyApptNameFieldsStateAfterLookup(parts);
+  refreshApptLeadNotesPreview(row);
+}
+
+function refreshApptCompanyDatalist() {
+  const dl = document.getElementById('apptCompanySuggestions');
+  if (!dl) return;
+  const seen = new Set();
+  const frag = document.createDocumentFragment();
+  function addCompany(val) {
+    const c = String(val || '').trim();
+    if (!c) return;
+    const k = c.toLowerCase();
+    if (seen.has(k)) return;
+    seen.add(k);
+    const opt = document.createElement('option');
+    opt.value = c;
+    frag.appendChild(opt);
+  }
+  (leads || []).forEach(function (l) {
+    addCompany(l && l.company);
+  });
+  (leadDb || []).forEach(function (l) {
+    addCompany(l && l.company);
+  });
+  dl.innerHTML = '';
+  dl.appendChild(frag);
+}
+
+function setApptModalLocked(locked) {
+  ['apptDateTime', 'apptStatus', 'apptNotes'].forEach(function (id) {
+    const el = document.getElementById(id);
+    if (el) el.disabled = !!locked;
+  });
+  const saveBtn = document.getElementById('apptSaveBtn');
+  if (saveBtn) saveBtn.disabled = !!locked;
+}
+
+function unlockApptModalAfterCompanyEntered() {
+  const c = document.getElementById('apptCompany');
+  if (c && String(c.value || '').trim().length >= 1) setApptModalLocked(false);
+}
+
+function bindApptCompanyAutofillOnce() {
+  const c = document.getElementById('apptCompany');
+  if (!c || c.dataset.autofillBound === '1') return;
+  c.dataset.autofillBound = '1';
+  function runLookup() {
+    unlockApptModalAfterCompanyEntered();
+    tryAutofillApptFromLeadData();
+  }
+  c.addEventListener('input', runLookup);
+  c.addEventListener('change', runLookup);
+  c.addEventListener('blur', function () {
+    unlockApptModalAfterCompanyEntered();
+    tryAutofillApptFromLeadData({ clearIfNoMatch: true });
+  });
+}
+
 function openAddAppt() {
-  ['apptName','apptCompany','apptPhone','apptNotes'].forEach(id => document.getElementById(id).value = '');
+  ['apptFirstName', 'apptLastName', 'apptCompany', 'apptPhone', 'apptNotes'].forEach((id) => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+  setApptNameFieldsToDefaultClosed();
+  refreshApptLeadNotesPreview(null);
   document.getElementById('apptDateTime').value = '';
   document.getElementById('apptStatus').value = 'scheduled';
+  refreshApptCompanyDatalist();
+  bindApptCompanyAutofillOnce();
+  setApptModalLocked(true);
   openModal('addApptModal');
+  requestAnimationFrame(function () {
+    const co = document.getElementById('apptCompany');
+    if (co) co.focus();
+  });
 }
 
 function openAddApptPrefilled(lead, notesFromCall) {
-  document.getElementById('apptName').value = (lead && lead.owner) ? lead.owner.trim() : '';
-  document.getElementById('apptCompany').value = (lead && lead.company) ? lead.company.trim() : '';
-  document.getElementById('apptPhone').value = (lead && lead.phone) ? String(lead.phone).trim() : '';
+  const parts = splitLeadOwnerName(lead && lead.owner);
+  document.getElementById('apptFirstName').value = parts.first;
+  document.getElementById('apptLastName').value = parts.last;
+  document.getElementById('apptCompany').value = lead && lead.company ? String(lead.company).trim() : '';
+  const ph = lead && lead.phone ? String(lead.phone).trim() : '';
+  document.getElementById('apptPhone').value = ph ? normalizePhoneForStorage(ph) || ph : '';
   document.getElementById('apptNotes').value = notesFromCall || '';
   document.getElementById('apptDateTime').value = '';
   document.getElementById('apptStatus').value = 'scheduled';
+  applyApptNameFieldsStateAfterLookup(parts);
+  refreshApptLeadNotesPreview(lead);
+  refreshApptCompanyDatalist();
+  bindApptCompanyAutofillOnce();
+  setApptModalLocked(false);
   openModal('addApptModal');
   requestAnimationFrame(() => {
     const el = document.getElementById('apptDateTime');
     if (el) el.focus();
+  });
+}
+
+function getCurrentEmployeeIdForCallLog() {
+  if (typeof getCurrentUser !== 'function') return '';
+  const u = getCurrentUser();
+  if (!u || u.employeeId == null) return '';
+  const s = String(u.employeeId).trim();
+  return s;
+}
+
+function appointmentAttributedToCurrentUser(a) {
+  const mine = getCurrentEmployeeIdForCallLog();
+  if (!mine) return false;
+  if (!a || a.employeeId == null) return false;
+  const theirs = String(a.employeeId).trim();
+  if (!theirs) return false;
+  return mine === theirs;
+}
+
+function getNoteAttributionMeta() {
+  if (typeof getCurrentUser !== 'function') return { emp: '', name: '' };
+  const u = getCurrentUser();
+  if (!u) return { emp: '', name: '' };
+  const emp =
+    u.employeeId != null && String(u.employeeId).trim() !== '' ? String(u.employeeId).trim() : '';
+  const name = (u.name || '').trim();
+  return { emp, name };
+}
+
+function findQueueNewNoteTa(leadId) {
+  const list = document.querySelectorAll('textarea[data-queue-new-note]');
+  for (let i = 0; i < list.length; i++) {
+    if (list[i].getAttribute('data-queue-new-note') === leadId) return list[i];
+  }
+  return null;
+}
+
+function submitQueueLeadNote(leadId) {
+  if (!leadId) return;
+  const lead = leads.find((l) => l.id === leadId);
+  if (!lead) return;
+  const ta = findQueueNewNoteTa(leadId);
+  const text = ta ? ta.value.trim() : '';
+  if (!text) {
+    toast('Type a note first');
+    return;
+  }
+  ensureLeadNotesLog(lead);
+  const meta = getNoteAttributionMeta();
+  lead.notesLog.push({
+    id: Date.now().toString(),
+    employeeId: meta.emp,
+    name: meta.name,
+    text: text,
+    at: new Date().toISOString(),
+  });
+  syncLeadNotesStringFromLog(lead);
+  save();
+  if (ta) ta.value = '';
+  renderAll();
+  toast('Note added ✓');
+}
+
+function cancelQueueLeadNoteDraft(leadId) {
+  const ta = findQueueNewNoteTa(leadId);
+  if (ta) ta.value = '';
+}
+
+function initQueueNotesDelegation() {
+  const table = document.getElementById('queueLeadsTable');
+  if (!table || table.dataset.notesDeleg === '1') return;
+  table.dataset.notesDeleg = '1';
+  table.addEventListener('click', function (ev) {
+    const add = ev.target.closest('.queue-note-btn-add');
+    if (add) {
+      ev.stopPropagation();
+      submitQueueLeadNote(add.getAttribute('data-lead-id'));
+      return;
+    }
+    const cancel = ev.target.closest('.queue-note-btn-cancel');
+    if (cancel) {
+      ev.stopPropagation();
+      cancelQueueLeadNoteDraft(cancel.getAttribute('data-lead-id'));
+    }
   });
 }
 
@@ -3523,6 +4402,7 @@ function applyCallLogSave() {
   callLog.unshift({
     id: Date.now().toString(),
     leadId: currentLeadId,
+    employeeId: getCurrentEmployeeIdForCallLog(),
     company: lead.company,
     phone: normalizePhoneForStorage(lead.phone) || lead.phone,
     outcome: selectedOutcome,
@@ -3602,7 +4482,9 @@ function submitAddLead() {
   const company = document.getElementById('newCompany').value.trim();
   const phone = normalizePhoneForStorage(document.getElementById('newPhone').value.trim());
   if (!company || !phone) { toast('Company and phone are required'); return; }
-  leads.push({
+  const noteText = document.getElementById('newNotes').value.trim();
+  const meta = getNoteAttributionMeta();
+  const newLead = {
     id: Date.now().toString(),
     company,
     owner: document.getElementById('newOwner').value.trim(),
@@ -3616,12 +4498,27 @@ function submitAddLead() {
     fleet: document.getElementById('newFleet').value.trim(),
     email: document.getElementById('newEmail').value.trim(),
     googleMapsRating: '',
-    notes: document.getElementById('newNotes').value.trim(),
+    notes: '',
     source: 'Manual',
     status: 'new',
     lastContact: null,
     createdAt: new Date().toISOString()
-  });
+  };
+  if (noteText) {
+    newLead.notesLog = [
+      {
+        id: Date.now().toString(),
+        employeeId: meta.emp,
+        name: meta.name,
+        text: noteText,
+        at: new Date().toISOString(),
+      },
+    ];
+    syncLeadNotesStringFromLog(newLead);
+  } else {
+    newLead.notesLog = [];
+  }
+  leads.push(newLead);
   save();
   closeModal('addLeadModal');
   renderAll();
@@ -3638,23 +4535,45 @@ function submitCallLog() {
 }
 
 function submitAddAppt() {
-  const name = document.getElementById('apptName').value.trim();
+  const first = document.getElementById('apptFirstName').value.trim();
+  const last = document.getElementById('apptLastName').value.trim();
+  const name = [first, last].filter(Boolean).join(' ').trim();
+  if (!first || !last) {
+    toast('Enter first and last name. If they didn’t auto-fill, the lead may only have company + phone — type the contact name.');
+    return;
+  }
   const dt = document.getElementById('apptDateTime').value;
-  if (!name || !dt) { toast('Name and date/time are required'); return; }
+  if (!dt) {
+    toast('Choose a date and time using the picker');
+    return;
+  }
   const st = document.getElementById('apptStatus').value;
   if (st === 'closed') {
     if (!confirm('Mark as Won?\n\n' + APPT_WON_CONFIRM)) return;
   }
   const apptPhoneRaw = document.getElementById('apptPhone').value.trim();
+  if (apptPhoneRaw) {
+    const digits = apptPhoneRaw.replace(/\D/g, '');
+    let d = digits;
+    if (d.length === 11 && d[0] === '1') d = d.slice(1);
+    if (d.length !== 10) {
+      toast('Phone must be 10 digits (US) or leave it blank');
+      return;
+    }
+  }
   const apptPhone = apptPhoneRaw ? (normalizePhoneForStorage(apptPhoneRaw) || apptPhoneRaw) : '';
+  const companyTrim = document.getElementById('apptCompany').value.trim();
+  const matchedRow = findLeadRecordForAppt(companyTrim, apptPhoneRaw);
+  if (matchedRow && name) matchedRow.owner = name;
   appointments.push({
     id: Date.now().toString(),
     name,
-    company: document.getElementById('apptCompany').value.trim(),
+    company: companyTrim,
     phone: apptPhone,
     dateTime: dt,
     status: st,
     notes: document.getElementById('apptNotes').value.trim(),
+    employeeId: getCurrentEmployeeIdForCallLog(),
     createdAt: new Date().toISOString()
   });
   save();
@@ -3677,6 +4596,20 @@ function updateApptStatus(id, val) {
   save();
   renderAll();
   toast('Status updated ✓');
+
+  const callLogNudgeStatuses = ['showed', 'noshow', 'lost'];
+  if (callLogNudgeStatuses.indexOf(val) === -1 || prev === val) return;
+  const queueLeadId = findQueueLeadIdForAppointment(appt);
+  if (!queueLeadId) return;
+  setTimeout(function () {
+    if (
+      confirm(
+        'Add a call log entry too?\n\nOptional — only if you also had a phone touch you want on the dial history. Cancel skips.'
+      )
+    ) {
+      openLogCall(queueLeadId);
+    }
+  }, 350);
 }
 
 let currentRemovalLeadId = null;
@@ -3956,6 +4889,7 @@ async function renderTeamMembers() {
             <th style="text-align:left;padding:0.5rem 0.65rem;border-bottom:1px solid var(--border);font-size:0.68rem;text-transform:uppercase;letter-spacing:0.06em;color:var(--muted);">Emp. ID</th>
             <th style="text-align:left;padding:0.5rem 0.65rem;border-bottom:1px solid var(--border);font-size:0.68rem;text-transform:uppercase;letter-spacing:0.06em;color:var(--muted);">Email</th>
             <th style="text-align:left;padding:0.5rem 0.65rem;border-bottom:1px solid var(--border);font-size:0.68rem;text-transform:uppercase;letter-spacing:0.06em;color:var(--muted);">Name</th>
+            <th style="text-align:left;padding:0.5rem 0.65rem;border-bottom:1px solid var(--border);font-size:0.68rem;text-transform:uppercase;letter-spacing:0.06em;color:var(--muted);">Commission</th>
             <th style="text-align:left;padding:0.5rem 0.65rem;border-bottom:1px solid var(--border);font-size:0.68rem;text-transform:uppercase;letter-spacing:0.06em;color:var(--muted);">Where</th>
             <th style="text-align:left;padding:0.5rem 0.65rem;border-bottom:1px solid var(--border);font-size:0.68rem;text-transform:uppercase;letter-spacing:0.06em;color:var(--muted);">Online</th>
             <th style="text-align:left;padding:0.5rem 0.65rem;border-bottom:1px solid var(--border);font-size:0.68rem;text-transform:uppercase;letter-spacing:0.06em;color:var(--muted);">Session since</th>
@@ -3981,11 +4915,16 @@ async function renderTeamMembers() {
             const whereLabel = sr
               ? '<span style="font-size:0.75rem;color:var(--muted);" title="Seen from another device (KV roster)">Server roster</span>'
               : '<span style="font-size:0.75rem;color:var(--muted);">This browser</span>';
+            const showedMine = appointments.filter(
+              a => (a.status === 'showed' || a.status === 'closed') && a.employeeId != null && String(a.employeeId).trim() === empDisp
+            ).length;
+            const comm = empDisp !== '—' ? '$' + (showedMine * COMMISSION_PER_SHOWED_APPT) : '—';
             return `
             <tr>
               <td style="padding:0.55rem 0.65rem;border-bottom:1px solid var(--border);font-variant-numeric:tabular-nums;font-weight:600;color:var(--text);">${empDisp}</td>
               <td style="padding:0.55rem 0.65rem;border-bottom:1px solid var(--border);">${escapeHtml(u.email)}</td>
               <td style="padding:0.55rem 0.65rem;border-bottom:1px solid var(--border);">${escapeHtml(u.name || '—')}</td>
+              <td style="padding:0.55rem 0.65rem;border-bottom:1px solid var(--border);font-weight:600;color:var(--green);">${comm}</td>
               <td style="padding:0.55rem 0.65rem;border-bottom:1px solid var(--border);">${whereLabel}</td>
               <td style="padding:0.55rem 0.65rem;border-bottom:1px solid var(--border);white-space:nowrap;">${dot}</td>
               <td style="padding:0.55rem 0.65rem;border-bottom:1px solid var(--border);color:var(--muted);font-size:0.78rem;">${pr && pr.sessionStartedAt ? formatPresenceDt(pr.sessionStartedAt) : '—'}</td>
@@ -4082,23 +5021,35 @@ function renderLeads() {
     tb.innerHTML = `
     <tr class="queue-lead-main">
       <td>
-        <div style="display:flex;align-items:flex-start;gap:0.4rem;justify-content:space-between;">
-          <div><strong>${escapeHtml(l.company || '')}</strong>${l.owner ? `<br><span class="td-muted" style="font-size:0.72rem;">${escapeHtml(l.owner)}</span>` : ''}</div>
-          <span class="queue-chevron" aria-hidden="true">▼</span>
+        <div style="display:flex;align-items:flex-start;gap:0.5rem;justify-content:space-between;">
+          <div style="line-height:1.4;">
+            <strong style="color:var(--text);font-size:0.95rem;">${escapeHtml(l.company || '')}</strong>
+            ${l.owner ? `<br><span class="td-muted" style="font-size:0.8rem;">${escapeHtml(l.owner)}</span>` : ''}
+          </div>
+          <span class="queue-chevron" aria-hidden="true" style="color:var(--muted2);font-size:0.75rem;">▼</span>
         </div>
       </td>
-      <td class="td-muted phone-cell" style="white-space:nowrap;">${formatPhoneDisplay(l.phone)}</td>
-      <td class="td-muted">${loc ? escapeHtml(loc) : '—'}</td>
-      <td>${l.category ? `<span class="badge badge-new" style="font-size:0.65rem;padding:0.12rem 0.4rem;">${escapeHtml(l.category)}</span>` : '—'}</td>
-      <td class="queue-notes-wrap"><textarea class="form-input queue-notes-ta" rows="2" data-queue-lead-id="${escapeHtml(l.id)}" placeholder="Caller notes…">${escapeHtml(l.notes || '')}</textarea></td>
+      <td class="td-muted phone-cell" style="white-space:nowrap;font-size:0.85rem;">${formatPhoneDisplay(l.phone)}</td>
+      <td class="td-muted" style="font-size:0.85rem;">${loc ? escapeHtml(loc) : '—'}</td>
+      <td>${l.category ? `<span class="badge badge-new" style="font-size:0.7rem;padding:0.15rem 0.5rem;">${escapeHtml(l.category)}</span>` : '—'}</td>
+      <td class="queue-notes-wrap">
+        <div class="queue-notes-stack">
+          ${queueNotesHistoryCellHtml(l)}
+          <textarea class="form-input queue-notes-new" rows="2" data-queue-new-note="${escapeHtml(l.id)}" placeholder="Add a note…"></textarea>
+          <div class="queue-notes-actions">
+            <button type="button" class="btn btn-green btn-sm queue-note-btn-add" data-lead-id="${escapeHtml(l.id)}">Save note</button>
+            <button type="button" class="btn btn-ghost btn-sm queue-note-btn-cancel" data-lead-id="${escapeHtml(l.id)}">Cancel</button>
+          </div>
+        </div>
+      </td>
       <td>${statusBadge(l.status)}</td>
-      <td class="td-muted" style="font-size:0.72rem;white-space:nowrap;">${l.lastContact ? new Date(l.lastContact).toLocaleDateString() : 'Never'}</td>
+      <td class="td-muted" style="font-size:0.8rem;white-space:nowrap;">${l.lastContact ? new Date(l.lastContact).toLocaleDateString() : 'Never'}</td>
       <td class="queue-actions">
-        <div style="display:flex;gap:0.35rem;flex-wrap:wrap;align-items:center;">
-          <button type="button" class="btn btn-green btn-sm queue-btn-log">Log Call</button>
+        <div style="display:flex;gap:0.5rem;flex-wrap:wrap;align-items:center;">
+          <button type="button" class="btn btn-green btn-sm queue-btn-log" style="padding:0.4rem 0.85rem;">Log Call</button>
           ${pendingRm
-            ? '<button type="button" class="btn btn-red btn-sm" disabled title="Removal request pending admin approval">✕</button>'
-            : '<button type="button" class="btn btn-red btn-sm queue-btn-del" title="Request removal (requires admin approval)">✕</button>'}
+            ? '<button type="button" class="btn btn-ghost btn-sm" disabled title="Removal request pending admin approval" style="padding:0.4rem 0.6rem;color:var(--muted2);">✕</button>'
+            : '<button type="button" class="btn btn-ghost btn-sm queue-btn-del" title="Request removal (requires admin approval)" style="padding:0.4rem 0.6rem;color:var(--muted);">✕</button>'}
         </div>
       </td>
     </tr>
@@ -4108,36 +5059,24 @@ function renderLeads() {
     tb.querySelector('.queue-actions')?.addEventListener('click', stopAct);
     tb.querySelector('.queue-btn-log')?.addEventListener('click', (e) => { stopAct(e); openLogCall(l.id); });
     tb.querySelector('.queue-btn-del')?.addEventListener('click', (e) => { stopAct(e); openRequestRemovalModal(l.id); });
-    const ta = tb.querySelector('.queue-notes-ta');
-    const notesDd = tb.querySelector('.queue-detail-notes');
-    if (ta) {
-      ['mousedown','click'].forEach((ev) => ta.addEventListener(ev, stopAct));
-      ta.addEventListener('input', () => {
-        if (notesDd) notesDd.innerHTML = queueDetailNotesHtml(ta.value);
-      });
-      ta.addEventListener('blur', () => {
-        const id = ta.getAttribute('data-queue-lead-id');
-        const lead = leads.find((x) => x.id === id);
-        if (!lead) return;
-        const v = ta.value.trim();
-        if (v === (lead.notes || '').trim()) return;
-        lead.notes = v;
-        save();
-        toast('Notes saved ✓');
-      });
+    const taNew = tb.querySelector('.queue-notes-new');
+    if (taNew) {
+      ['mousedown', 'click'].forEach((ev) => taNew.addEventListener(ev, stopAct));
     }
   });
+  initQueueNotesDelegation();
 }
 
 function renderCallLog() {
   const tbody = document.getElementById('callLogTable');
   if (!tbody) return;
   if (callLog.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="6"><div class="empty"><div class="empty-icon">📞</div><p>No calls logged yet</p></div></td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="7"><div class="empty"><div class="empty-icon">📞</div><p>No calls logged yet</p></div></td></tr>`;
     return;
   }
   tbody.innerHTML = callLog.map(c => `
     <tr>
+      <td class="td-muted mono" style="white-space:nowrap;">${c.employeeId != null && String(c.employeeId).trim() !== '' ? escapeHtml(String(c.employeeId).trim()) : '—'}</td>
       <td class="td-muted mono" style="white-space:nowrap;">${new Date(c.timestamp).toLocaleString('en-US',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'})}</td>
       <td><strong>${c.company}</strong></td>
       <td class="td-muted phone-cell">${formatPhoneDisplay(c.phone)}</td>
@@ -4148,34 +5087,138 @@ function renderCallLog() {
   `).join('');
 }
 
+function appointmentContactGroupKey(a) {
+  const d = normalizePhoneDigitsForMatch(a && a.phone);
+  if (d.length === 10) return 'p:' + d;
+  const co = String((a && a.company) || '')
+    .toLowerCase()
+    .replace(/\s+/g, ' ')
+    .trim();
+  const nm = String((a && a.name) || '')
+    .toLowerCase()
+    .replace(/\s+/g, ' ')
+    .trim();
+  return 'n:' + co + '|' + nm;
+}
+
+function buildAppointmentVisitMeta(list) {
+  const meta = {};
+  const sortedAsc = [...list].sort((x, y) => new Date(x.dateTime) - new Date(y.dateTime));
+  const totals = {};
+  sortedAsc.forEach(function (a) {
+    const k = appointmentContactGroupKey(a);
+    totals[k] = (totals[k] || 0) + 1;
+  });
+  const perKey = {};
+  sortedAsc.forEach(function (a) {
+    const k = appointmentContactGroupKey(a);
+    perKey[k] = (perKey[k] || 0) + 1;
+    meta[a.id] = { visit: perKey[k], total: totals[k] };
+  });
+  return meta;
+}
+
 function renderAppointments() {
   const el = document.getElementById('apptList');
   if (!el) return;
-  const sorted = [...appointments].sort((a,b) => new Date(a.dateTime) - new Date(b.dateTime));
-  if (sorted.length === 0) {
+  if (appointments.length === 0) {
     el.innerHTML = `<div class="empty"><div class="empty-icon">📅</div><p>No appointments yet. Book one and log it here.</p></div>`;
     return;
   }
-  el.innerHTML = sorted.map(a => `
-    <div class="appt-card">
-      <div class="appt-time">${new Date(a.dateTime).toLocaleDateString('en-US',{month:'short',day:'numeric'})}<br>${new Date(a.dateTime).toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'})}</div>
-      <div class="appt-info">
-        <div class="appt-name">${a.name}</div>
-        <div class="appt-company">${a.company || ''} ${a.phone ? '· '+formatPhoneDisplay(a.phone) : ''}</div>
-        ${a.notes ? `<div style="font-size:0.75rem;color:var(--muted);margin-top:4px;">${a.notes}</div>` : ''}
-      </div>
-      <div class="appt-actions">
-        ${apptStatusBadge(a.status)}
-        <select class="form-select" style="width:auto;padding:0.3rem 0.5rem;font-size:0.72rem;" onchange="updateApptStatus('${a.id}',this.value)">
-          <option value="scheduled" ${a.status==='scheduled'?'selected':''}>Scheduled</option>
-          <option value="showed" ${a.status==='showed'?'selected':''}>Showed</option>
-          <option value="noshow" ${a.status==='noshow'?'selected':''}>No Show</option>
-          <option value="closed" ${a.status==='closed'?'selected':''}>Won (paid + 2wk+)</option>
-          <option value="lost" ${a.status==='lost'?'selected':''}>Lost</option>
-        </select>
-      </div>
-    </div>
-  `).join('');
+  const visitMeta = buildAppointmentVisitMeta(appointments);
+  const sortedDesc = [...appointments].sort((a, b) => new Date(b.dateTime) - new Date(a.dateTime));
+  const rows = sortedDesc
+    .map(function (a) {
+      const v = visitMeta[a.id] || { visit: 1, total: 1 };
+      const visitLabel =
+        v.total > 1
+          ? '<span class="appt-visit-badge" title="Chronological visit number for this phone (or name + company)">Visit ' +
+            v.visit +
+            ' of ' +
+            v.total +
+            '</span>'
+          : '<span class="appt-visit-badge appt-visit-badge--once" title="Only appointment on file for this contact key">1 appt</span>';
+      const emp =
+        a.employeeId != null && String(a.employeeId).trim() !== ''
+          ? escapeHtml(String(a.employeeId).trim())
+          : '—';
+      const rawNotesTrim = a.notes != null ? String(a.notes).trim() : '';
+      const hasNotes = rawNotesTrim.length > 0;
+      const notesCell = hasNotes ? escapeHtml(rawNotesTrim) : '<span style="color:var(--muted2);font-style:italic;">No notes</span>';
+      const companyCell = a.company ? escapeHtml(a.company) : '—';
+      const phoneCell = a.phone ? escapeHtml(formatPhoneDisplay(a.phone)) : '—';
+      const dt = new Date(a.dateTime);
+      
+      return (
+        '<tr>' +
+        '<td class="td-muted mono" style="font-size:0.85rem;">' +
+        emp +
+        '</td>' +
+        '<td style="white-space:nowrap;">' +
+        '<div style="font-weight:600;color:var(--text);font-size:0.9rem;margin-bottom:2px;">' +
+        dt.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) +
+        '</div>' +
+        '<div style="font-size:0.8rem;color:var(--muted);">' +
+        dt.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }) +
+        '</div>' +
+        '</td>' +
+        '<td>' +
+        '<div style="font-weight:600;color:var(--text);font-size:0.95rem;margin-bottom:2px;">' +
+        companyCell +
+        '</div>' +
+        '<div style="font-size:0.85rem;color:var(--muted);">' +
+        escapeHtml(a.name || '') +
+        '</div>' +
+        '</td>' +
+        '<td class="td-muted phone-cell" style="font-size:0.85rem;">' +
+        phoneCell +
+        '</td>' +
+        '<td class="appt-table-notes" style="font-size:0.85rem;">' +
+        notesCell +
+        '</td>' +
+        '<td class="appt-table-statuscell">' +
+        '<div style="margin-bottom:0.4rem;">' +
+        visitLabel +
+        '</div>' +
+        '<select class="form-select appt-table-select" style="font-size:0.8rem;padding:0.35rem 0.5rem;" onchange="updateApptStatus(\'' +
+        a.id +
+        '\',this.value)">' +
+        '<option value="scheduled"' +
+        (a.status === 'scheduled' ? ' selected' : '') +
+        '>Scheduled</option>' +
+        '<option value="showed"' +
+        (a.status === 'showed' ? ' selected' : '') +
+        '>Showed</option>' +
+        '<option value="noshow"' +
+        (a.status === 'noshow' ? ' selected' : '') +
+        '>No Show</option>' +
+        '<option value="closed"' +
+        (a.status === 'closed' ? ' selected' : '') +
+        '>Won (paid + 2wk+)</option>' +
+        '<option value="lost"' +
+        (a.status === 'lost' ? ' selected' : '') +
+        '>Lost</option>' +
+        '</select>' +
+        '</td>' +
+        '</tr>'
+      );
+    })
+    .join('');
+
+  el.innerHTML =
+    '<p class="appt-table-hint" style="margin-bottom:1rem;">Sorted <strong>newest first</strong>. <strong>Visit #</strong> tracks multiple appointments for the same phone number.</p>' +
+    '<div class="table-wrap appt-table-wrap">' +
+    '<table class="queue-table appt-table">' +
+    '<thead><tr>' +
+    '<th>Emp #</th>' +
+    '<th>Date &amp; Time</th>' +
+    '<th>Company &amp; Contact</th>' +
+    '<th>Phone</th>' +
+    '<th>Notes</th>' +
+    '<th>Status &amp; History</th>' +
+    '</tr></thead><tbody>' +
+    rows +
+    '</tbody></table></div>';
 }
 
 function renderDashboard() {
@@ -4195,10 +5238,14 @@ function renderDashboard() {
   const showRate = totalBooked > 0 ? Math.round((showed/totalBooked)*100)+'%' : '—';
   document.getElementById('statShowRate').textContent = showRate;
 
-  // Commission
-  const commission = showed * COMMISSION_PER_SHOWED_APPT;
+  // Commission: only appointments saved with this user's employee ID (showed or won)
+  const showedMine = appointments.filter(
+    a =>
+      (a.status === 'showed' || a.status === 'closed') && appointmentAttributedToCurrentUser(a)
+  ).length;
+  const commission = showedMine * COMMISSION_PER_SHOWED_APPT;
   document.getElementById('statCommission').textContent = '$'+commission;
-  document.getElementById('sidebarCommission').textContent = '$'+commission;
+  document.getElementById('topbarCommission').textContent = '$'+commission;
 
   // Nav counts
   document.getElementById('navNewCount').textContent = leads.filter(l=>l.status==='new').length;
@@ -4230,8 +5277,8 @@ function renderDashboard() {
     upcomingEl.innerHTML = upcoming.map(a => `
       <div style="display:flex;align-items:center;justify-content:space-between;padding:0.6rem 0;border-bottom:1px solid var(--border);">
         <div>
-          <div style="font-size:0.82rem;font-weight:500;">${a.name}</div>
-          <div style="font-size:0.72rem;color:var(--muted);">${new Date(a.dateTime).toLocaleDateString('en-US',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'})}</div>
+          <div style="font-size:0.82rem;font-weight:500;">${escapeHtml(a.name)}</div>
+          <div style="font-size:0.72rem;color:var(--muted);">${new Date(a.dateTime).toLocaleDateString('en-US',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'})}${a.employeeId != null && String(a.employeeId).trim() !== '' ? ' · Emp #' + escapeHtml(String(a.employeeId).trim()) : ''}</div>
         </div>
         ${apptStatusBadge(a.status)}
       </div>
@@ -4592,12 +5639,72 @@ if(leadDb.length===0){
 }
 
 
-const SCRAPE_CITIES = [
+const SCRAPE_CITIES_FALLBACK = [
   ['New York','NY'],['Los Angeles','CA'],['Chicago','IL'],['Houston','TX'],['Phoenix','AZ'],
   ['Philadelphia','PA'],['San Antonio','TX'],['Dallas','TX'],['San Diego','CA'],['Jacksonville','FL'],
   ['Austin','TX'],['Fort Worth','TX'],['Columbus','OH'],['Charlotte','NC'],['Indianapolis','IN'],
   ['San Francisco','CA'],['Seattle','WA'],['Denver','CO'],['Nashville','TN'],['Memphis','TN'],
 ];
+let SCRAPE_CITIES = SCRAPE_CITIES_FALLBACK.slice();
+
+function populateScrapeDropdowns() {
+  var stateSel = document.getElementById('scrapeState');
+  var citySel = document.getElementById('scrapeCity');
+  if (!stateSel || !citySel) return;
+  var states = Array.from(new Set(SCRAPE_CITIES.map(x => x[1]))).sort();
+  var currState = stateSel.value;
+  stateSel.innerHTML = '<option value="">All States (' + SCRAPE_CITIES.length + ' cities)</option>' +
+    states.map(s => '<option value="' + s + '">' + s + '</option>').join('');
+  if (states.includes(currState)) stateSel.value = currState;
+  onScrapeStateChange();
+}
+
+function onScrapeStateChange() {
+  var stateSel = document.getElementById('scrapeState');
+  var citySel = document.getElementById('scrapeCity');
+  if (!stateSel || !citySel) return;
+  var state = stateSel.value;
+  var currCity = citySel.value;
+  if (!state) {
+    citySel.innerHTML = '<option value="">All Cities in US</option>';
+    citySel.disabled = true;
+  } else {
+    var cities = SCRAPE_CITIES.filter(x => x[1] === state).map(x => x[0]).sort();
+    citySel.innerHTML = '<option value="">All Cities in ' + state + ' (' + cities.length + ')</option>' +
+      cities.map(c => '<option value="' + c + '">' + c + '</option>').join('');
+    citySel.disabled = false;
+    if (cities.includes(currCity)) citySel.value = currCity;
+  }
+  updateScrapePreview();
+}
+
+async function loadScrapeMetros() {
+  SCRAPE_CITIES = SCRAPE_CITIES_FALLBACK.slice();
+  try {
+    const r = await fetch('/metro-coords.json');
+    if (r.ok) {
+      const data = await r.json();
+      if (Array.isArray(data) && data.length) {
+        SCRAPE_CITIES = data.map(function (x) {
+          return [x.city, x.state];
+        });
+      }
+    }
+  } catch (e) {}
+  populateScrapeDropdowns();
+}
+
+function getScrapeBatch() {
+  var state = document.getElementById('scrapeState') ? document.getElementById('scrapeState').value : '';
+  var city = document.getElementById('scrapeCity') ? document.getElementById('scrapeCity').value : '';
+  if (!state) return SCRAPE_CITIES;
+  if (!city) return SCRAPE_CITIES.filter(x => x[1] === state);
+  return SCRAPE_CITIES.filter(x => x[0] === city && x[1] === state);
+}
+
+function applyScrapePreset(start, nCities, perCity) {
+  // Presets disabled in new location UI
+}
 
 let scrapeAborted = false;
 
@@ -4630,58 +5737,108 @@ function setScrapeBar(pct) {
 }
 
 function updateScrapePreview() {
-  const startEl = document.getElementById('scrapeStart');
-  const countEl = document.getElementById('scrapeCount');
   const prev = document.getElementById('scrapePreview');
+  const est = document.getElementById('scrapeEstimate');
   const runBtn = document.getElementById('scrapeRunBtn');
-  if (!startEl || !countEl || !prev) return;
-  const start = Math.max(1, Math.min(SCRAPE_CITIES.length, parseInt(startEl.value, 10) || 1));
-  startEl.value = start;
-  const want = Math.max(1, parseInt(countEl.value, 10) || 1);
-  const startIdx = start - 1;
-  const batch = SCRAPE_CITIES.slice(startIdx, startIdx + want);
+  const batch = getScrapeBatch();
+  var rsEl = document.getElementById('scrapeResults');
+  var resultsPer = rsEl ? Math.min(10000, Math.max(1, parseInt(rsEl.value, 10) || 20)) : 20;
+  var concEl = document.getElementById('scrapeConcurrency');
+  var conc = concEl ? Math.min(6, Math.max(1, parseInt(concEl.value, 10) || 2)) : 2;
+  if (est) {
+    const cap = batch.length * resultsPer;
+    est.textContent =
+      resultsPer +
+      ' new leads per city × ' +
+      batch.length +
+      ' cit' +
+      (batch.length === 1 ? 'y' : 'ies') +
+      ' = up to ' +
+      cap.toLocaleString() +
+      ' total new leads · ' +
+      conc +
+      ' at a time';
+  }
   if (batch.length === 0) {
-    prev.textContent = 'No cities in range — lower “Start at” or raise “How many”.';
+    if (prev) prev.textContent = 'No cities selected.';
     if (runBtn) runBtn.textContent = 'Run scrape';
     return;
   }
-  const fromN = start;
-  const toN = start + batch.length - 1;
   const names = batch.map(([c, s]) => c + ', ' + s).join(' · ');
-  prev.textContent =
-    'This run: ' +
+  if (prev) prev.textContent =
+    'Will scrape (' +
     batch.length +
-    ' cit' +
-    (batch.length === 1 ? 'y' : 'ies') +
-    ' (#' +
-    fromN +
-    '–#' +
-    toN +
-    '). ' +
-    (names.length > 140 ? names.slice(0, 140) + '…' : names);
-  if (runBtn) runBtn.textContent = 'Run scrape — ' + batch.length + ' cit' + (batch.length === 1 ? 'y' : 'ies');
+    '): ' +
+    (names.length > 300 ? names.slice(0, 300) + '… (+' + (batch.length - names.slice(0,300).split('·').length) + ' more)' : names);
+  if (runBtn) runBtn.textContent = 'Run scrape — ' + batch.length + ' cit' + (batch.length === 1 ? 'y' : 'ies') + ' · up to ' + (batch.length * resultsPer).toLocaleString() + ' leads';
+}
+
+async function fetchOneScrapeCity(secret, niche, city, st, resultsPer) {
+  const label = city + ', ' + st;
+  const existingPhones = leadDb.filter(function(l) { return l.city === city && l.state === st; }).map(function(l) { return l.phone; }).filter(Boolean);
+  let r;
+  try {
+    r = await fetch('/api/scrape-maps', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ secret, niche, city, state: st, results: resultsPer, existingPhones: existingPhones }),
+    });
+  } catch (e) {
+    return { ok: false, label, status: 0, data: {}, err: 'Network: ' + (e && e.message ? e.message : 'failed') };
+  }
+  let data;
+  try {
+    data = await r.json();
+  } catch {
+    data = {};
+  }
+  if (!r.ok) {
+    var msg = data.error || 'HTTP ' + r.status;
+    if (data.detail) msg = msg + (msg.indexOf(data.detail) >= 0 ? '' : ' — ' + data.detail);
+    return { ok: false, label, status: r.status, data, err: msg };
+  }
+  return { ok: true, label, status: r.status, data, err: null };
+}
+
+function ingestScrapeRows(rows) {
+  var cityNew = 0;
+  var cityDup = 0;
+  for (var ri = 0; ri < rows.length; ri++) {
+    var row = rows[ri];
+    var phoneNorm = normalizePhoneForStorage(row.phone || '') || row.phone || '';
+    var pk = dbPhoneKey(phoneNorm);
+    if (pk && leadDbHasPhoneKey(pk)) {
+      cityDup++;
+      continue;
+    }
+    leadDb.push({
+      id: Date.now().toString() + Math.random().toString(36).slice(2, 8),
+      ...row,
+      phone: phoneNorm,
+      pushed: false,
+      createdAt: new Date().toISOString(),
+    });
+    cityNew++;
+  }
+  return { cityNew: cityNew, cityDup: cityDup };
 }
 
 async function runScrapeFromSite() {
   const niche = (document.getElementById('scrapeNiche').value || '').trim() || 'trucking company';
-  const secret = (document.getElementById('scrapeSecret').value || '').trim() || 'Free2026';
+  const secret = getPortalServerSecret();
   localStorage.setItem('cb_scraper_secret', secret);
 
-  const start = Math.max(1, Math.min(SCRAPE_CITIES.length, parseInt(document.getElementById('scrapeStart').value, 10) || 1));
-  document.getElementById('scrapeStart').value = start;
-  const want = Math.max(1, parseInt(document.getElementById('scrapeCount').value, 10) || 1);
-  const startIdx = start - 1;
-  const batch = SCRAPE_CITIES.slice(startIdx, startIdx + want);
-  const resultsPer = Math.min(300, Math.max(1, parseInt(document.getElementById('scrapeResults').value, 10) || 20));
+  const batch = getScrapeBatch();
+  const resultsPer = Math.min(10000, Math.max(1, parseInt(document.getElementById('scrapeResults').value, 10) || 20));
   document.getElementById('scrapeResults').value = resultsPer;
-  const delayMs = Math.max(0, parseFloat(document.getElementById('scrapeDelaySec').value) || 2) * 1000;
-  const onError = document.getElementById('scrapeOnError').value === 'stop' ? 'stop' : 'continue';
+  const conc = Math.min(6, Math.max(1, parseInt(document.getElementById('scrapeConcurrency').value, 10) || 2));
+  const delayMs = 0; // Removed delay dropdown
+  const onError = 'continue'; // Removed error dropdown
 
-  localStorage.setItem('cb_scrape_start', String(start));
-  localStorage.setItem('cb_scrape_count', String(want));
+  localStorage.setItem('cb_scrape_state', document.getElementById('scrapeState') ? document.getElementById('scrapeState').value : '');
+  localStorage.setItem('cb_scrape_city', document.getElementById('scrapeCity') ? document.getElementById('scrapeCity').value : '');
   localStorage.setItem('cb_scrape_results', String(resultsPer));
-  localStorage.setItem('cb_scrape_delay', document.getElementById('scrapeDelaySec').value);
-  localStorage.setItem('cb_scrape_onerror', onError);
+  localStorage.setItem('cb_scrape_concurrency', String(conc));
 
   if (batch.length === 0) {
     toast('No cities to scrape — check start & count');
@@ -4702,23 +5859,24 @@ async function runScrapeFromSite() {
   let errs = 0;
   let skippedDup = 0;
   const n = batch.length;
+  let done = 0;
 
-  for (let i = 0; i < n; i++) {
+  for (var base = 0; base < n; base += conc) {
     if (scrapeAborted) break;
-    const [city, st] = batch[i];
-    const label = city + ', ' + st;
-    prog.textContent = 'City ' + (i + 1) + '/' + n + ': ' + label + '…';
-    setScrapeBar((i / n) * 100);
+    var slice = batch.slice(base, base + conc);
+    prog.textContent =
+      'Batch ' + (Math.floor(base / conc) + 1) + ' — cities ' + (base + 1) + '–' + (base + slice.length) + ' of ' + n + '…';
+    setScrapeBar((base / n) * 100);
 
-    let r;
+    var outcomes;
     try {
-      r = await fetch('/api/scrape-maps', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ secret, niche, city, state: st, results: resultsPer }),
-      });
+      outcomes = await Promise.all(
+        slice.map(function ([city, st]) {
+          return fetchOneScrapeCity(secret, niche, city, st, resultsPer);
+        })
+      );
     } catch (e) {
-      prog.textContent = 'Network error — open the deployed site (allsortedpro.com), not a local file.';
+      prog.textContent = 'Network error — use the deployed site (allsortedpro.com), not a local file.';
       scrapeLogLine('Network error: ' + (e && e.message ? e.message : 'failed'), 'err');
       toast('Scrape failed: network');
       btn.disabled = false;
@@ -4727,82 +5885,88 @@ async function runScrapeFromSite() {
       return;
     }
 
-    let data;
-    try {
-      data = await r.json();
-    } catch {
-      data = {};
+    for (var oi = 0; oi < outcomes.length; oi++) {
+      if (scrapeAborted) break;
+      var out = outcomes[oi];
+      done++;
+      if (!out.ok) {
+        scrapeLogLine('✗ ' + out.label + ' — ' + out.err, 'err');
+        errs++;
+        if (onError === 'stop' || out.status === 401) {
+          prog.textContent = 'Stopped: ' + out.err;
+          toast(out.err);
+          scrapeAborted = true;
+          break;
+        }
+      } else {
+        var rows = out.data.leads && out.data.leads.length ? out.data.leads : [];
+        var ing = ingestScrapeRows(rows);
+        total += ing.cityNew;
+        skippedDup += ing.cityDup;
+        var coordsNote = out.data.coordsUsed === false ? ' (no GPS coords on file; pagination limited)' : '';
+        scrapeLogLine(
+          '✓ ' +
+            out.label +
+            ' — ' +
+            ing.cityNew +
+            ' new' +
+            (ing.cityDup ? ', ' + ing.cityDup + ' dup skipped' : '') +
+            coordsNote,
+          'ok'
+        );
+      }
+      setScrapeBar((done / n) * 100);
     }
 
-    if (!r.ok) {
-      const msg = data.error || 'HTTP ' + r.status;
-      scrapeLogLine('✗ ' + label + ' — ' + msg, 'err');
-      errs++;
-      if (onError === 'stop' || r.status === 401) {
-        setScrapeBar(((i + 1) / n) * 100);
-        prog.textContent = 'Stopped: ' + msg;
-        toast(msg);
-        break;
-      }
-      prog.textContent = 'Skipped ' + label + ' — continuing…';
-      setScrapeBar(((i + 1) / n) * 100);
-      if (i < n - 1 && !scrapeAborted && delayMs) await new Promise((res) => setTimeout(res, delayMs));
-      continue;
-    }
-
-    const rows = data.leads && data.leads.length ? data.leads : [];
-    let cityNew = 0;
-    let cityDup = 0;
-    for (const row of rows) {
-      const phoneNorm = normalizePhoneForStorage(row.phone || '') || row.phone || '';
-      const pk = dbPhoneKey(phoneNorm);
-      if (pk && leadDbHasPhoneKey(pk)) {
-        cityDup++;
-        skippedDup++;
-        continue;
-      }
-      leadDb.push({
-        id: Date.now().toString() + Math.random().toString(36).slice(2, 8),
-        ...row,
-        phone: phoneNorm,
-        pushed: false,
-        createdAt: new Date().toISOString(),
+    if (scrapeAborted) break;
+    if (base + conc < n && delayMs && !scrapeAborted) {
+      await new Promise(function (res) {
+        setTimeout(res, delayMs);
       });
-      cityNew++;
-      total++;
     }
-    scrapeLogLine(
-      '✓ ' +
-        label +
-        ' — ' +
-        cityNew +
-        ' new' +
-        (cityDup ? ', ' + cityDup + ' duplicate' + (cityDup === 1 ? '' : 's') + ' skipped' : ''),
-      'ok'
-    );
-
-    if (i < n - 1 && !scrapeAborted && delayMs) await new Promise((res) => setTimeout(res, delayMs));
-    setScrapeBar(((i + 1) / n) * 100);
   }
 
   if (!scrapeAborted) setScrapeBar(100);
 
+  var autoPush = document.getElementById('scrapeAutoPush') && document.getElementById('scrapeAutoPush').checked;
+  var pushed = 0;
+  if (autoPush && total > 0) {
+    leadDb.forEach(function(l) {
+      if (!l.pushed) {
+        leads.push({
+          id: 'db_' + l.id, company: l.company, owner: l.owner,
+          phone: normalizePhoneForStorage(l.phone || '') || l.phone,
+          state: l.state || '', city: l.city || '', country: l.country || '',
+          address: effectiveAddress(l) || '',
+          category: l.category || '', website: l.website || '', email: l.email || '',
+          googleMapsRating: l.googleMapsRating || '', notes: l.notes || '', source: l.source || '',
+          fleet: '', status: 'new', lastContact: null, createdAt: new Date().toISOString()
+        });
+        l.pushed = true;
+        pushed++;
+      }
+    });
+    save();
+  }
+
   saveDb();
   renderDatabase();
   renderDashboard();
+  renderAll();
   const dupPart = skippedDup ? ' · ' + skippedDup + ' duplicate' + (skippedDup === 1 ? '' : 's') + ' skipped' : '';
+  const pushPart = pushed > 0 ? ' · ' + pushed + ' pushed to queue' : '';
   const doneMsg = scrapeAborted
-    ? 'Stopped — ' + total + ' new leads' + dupPart + (errs ? ' (' + errs + ' errors)' : '')
-    : 'Done — ' + total + ' new leads' + dupPart + (errs ? ' (' + errs + ' cities skipped)' : '');
+    ? 'Stopped — ' + total + ' new leads' + dupPart + pushPart + (errs ? ' (' + errs + ' errors)' : '')
+    : 'Done — ' + total + ' new leads' + dupPart + pushPart + (errs ? ' (' + errs + ' cities skipped)' : '');
   prog.textContent = doneMsg;
   if (summary)
     summary.textContent = total || skippedDup
-      ? total + ' new rows' + (skippedDup ? ' · ' + skippedDup + ' dup skipped' : '') + ' · ' + (n - errs) + '/' + n + ' cities OK'
+      ? total + ' new rows' + (pushed ? ' · ' + pushed + ' queued' : '') + (skippedDup ? ' · ' + skippedDup + ' dup skipped' : '') + ' · ' + (n - errs) + '/' + n + ' cities OK'
       : errs
         ? errs + ' error(s)'
         : '';
   toast(
-    scrapeAborted ? 'Scrape stopped' : 'Added ' + total + ' new leads' + (skippedDup ? ' (' + skippedDup + ' duplicates skipped)' : '') + ' ✓'
+    scrapeAborted ? 'Scrape stopped' : 'Added ' + total + ' new leads' + (pushed ? ', ' + pushed + ' pushed to caller queue' : '') + (skippedDup ? ' (' + skippedDup + ' duplicates skipped)' : '') + ' ✓'
   );
   btn.disabled = false;
   stopBtn.disabled = true;
@@ -4810,22 +5974,20 @@ async function runScrapeFromSite() {
 }
 
 (function initScrapeSecret() {
-  const el = document.getElementById('scrapeSecret');
-  if (el) {
-    const s = localStorage.getItem('cb_scraper_secret');
-    el.value = s || 'Free2026';
+  var adminEl = document.getElementById('adminPortalSecret');
+  if (adminEl) {
+    var s = localStorage.getItem('cb_scraper_secret');
+    adminEl.value = s || 'Free2026';
   }
-  const st = localStorage.getItem('cb_scrape_start');
-  const ct = localStorage.getItem('cb_scrape_count');
+  const st = localStorage.getItem('cb_scrape_state');
+  const ct = localStorage.getItem('cb_scrape_city');
   const rs = localStorage.getItem('cb_scrape_results');
-  const dl = localStorage.getItem('cb_scrape_delay');
-  const oe = localStorage.getItem('cb_scrape_onerror');
-  if (st && document.getElementById('scrapeStart')) document.getElementById('scrapeStart').value = st;
-  if (ct && document.getElementById('scrapeCount')) document.getElementById('scrapeCount').value = ct;
+  if (st && document.getElementById('scrapeState')) document.getElementById('scrapeState').value = st;
+  if (ct && document.getElementById('scrapeCity')) document.getElementById('scrapeCity').value = ct;
   if (rs && document.getElementById('scrapeResults')) document.getElementById('scrapeResults').value = rs;
-  if (dl && document.getElementById('scrapeDelaySec')) document.getElementById('scrapeDelaySec').value = dl;
-  if (oe && document.getElementById('scrapeOnError')) document.getElementById('scrapeOnError').value = oe;
-  updateScrapePreview();
+  var cconc = localStorage.getItem('cb_scrape_concurrency');
+  if (cconc && document.getElementById('scrapeConcurrency')) document.getElementById('scrapeConcurrency').value = cconc;
+  void loadScrapeMetros();
 })();
 
 void (async function bootstrapPortal() {
@@ -4849,6 +6011,12 @@ void (async function bootstrapPortal() {
     window.location.replace('login.html?return=' + encodeURIComponent('caller-dashboard.html'));
     return;
   }
+  var _gateUser = getCurrentUser();
+  if (_gateUser && _gateUser.role !== 'admin') {
+    var _allowed = await checkPortalAccessOrRedirect();
+    if (!_allowed) return;
+  }
+  migrateCallLogEmptyEmployeeIds();
   initSidebar();
   document.addEventListener('click', function (e) {
     var filterChip = e.target.closest('button[data-training-filter]');
@@ -4889,6 +6057,10 @@ void (async function bootstrapPortal() {
     setInterval(function () {
       void renderTeamMembers();
     }, 30000);
+    void loadSignupApprovals();
+    setInterval(function () {
+      void loadSignupApprovals();
+    }, 60000);
   }
 })();
 </script>

@@ -3999,13 +3999,13 @@ function showView(name, skipHashUpdate) {
 
 window.addEventListener('hashchange', function () {
   var h = window.location.hash.replace('#', '');
-  var valid = ['dashboard','leads','log','appointments','admin','script','assistant','resources','settings'];
+  var valid = ['dashboard','leads','log','appointments','admin','script','assistant','resources','settings','goals'];
   if (valid.indexOf(h) !== -1) showView(h, true);
 });
 
 (function restoreViewFromHash() {
   var h = window.location.hash.replace('#', '');
-  var valid = ['dashboard','leads','log','appointments','admin','script','assistant','resources','settings'];
+  var valid = ['dashboard','leads','log','appointments','admin','script','assistant','resources','settings','goals'];
   if (valid.indexOf(h) !== -1) {
     setTimeout(function () { showView(h, true); }, 50);
   }
@@ -5482,7 +5482,7 @@ function renderVaGoals(container, userId, isAdmin) {
   `;
 }
 
-function renderCallerGoals(container, userId) {
+function renderCallerGoals(container, empId) {
   let dialsToday = 0;
   let convsToday = 0;
   let interestedToday = 0;
@@ -5490,62 +5490,77 @@ function renderCallerGoals(container, userId) {
   let dialsMonth = 0;
   let closesMonth = 0;
   let activeClients = 0;
+  let bookedMonth = 0;
+  let showedMonth = 0;
 
-  const convOutcomes = ['callback', 'booked', 'not-interested'];
+  const convOutcomes = ['callback', 'booked', 'not_interested', 'not-interested'];
   const interestedOutcomes = ['callback', 'booked'];
+  const closeStatuses = ['won', 'closed'];
+  const showedStatuses = ['showed', 'won', 'closed'];
 
-  const team = getUsers();
-  callLog.forEach(c => {
-    if (c.caller === userId || c.callerId === userId || c.caller === team.find(m=>m.id===userId)?.name) {
-      if (isToday(c.timestamp)) {
-        dialsToday++;
-        if (convOutcomes.includes(c.outcome)) convsToday++;
-        if (interestedOutcomes.includes(c.outcome)) interestedToday++;
-      }
-      if (isThisMonth(c.timestamp)) {
-        dialsMonth++;
-      }
+  function matchesEmp(entryEmpId) {
+    if (!empId) return false;
+    var e = entryEmpId == null ? '' : String(entryEmpId).trim();
+    return e !== '' && e === empId;
+  }
+
+  callLog.forEach(function(c) {
+    if (!matchesEmp(c.employeeId)) return;
+    if (isToday(c.timestamp)) {
+      dialsToday++;
+      if (convOutcomes.indexOf(c.outcome) >= 0) convsToday++;
+      if (interestedOutcomes.indexOf(c.outcome) >= 0) interestedToday++;
+    }
+    if (isThisMonth(c.timestamp)) {
+      dialsMonth++;
     }
   });
 
-  appointments.forEach(a => {
-    if (a.owner === userId || a.ownerId === userId) {
-      if (a.status === 'won') {
-        activeClients++;
-        if (isThisMonth(a.updatedAt || a.createdAt)) closesMonth++;
-        if (isToday(a.updatedAt || a.createdAt)) closesToday++;
-      }
+  appointments.forEach(function(a) {
+    if (!matchesEmp(a.employeeId)) return;
+    var ts = a.updatedAt || a.createdAt;
+    if (closeStatuses.indexOf(a.status) >= 0) {
+      activeClients++;
+      if (isThisMonth(ts)) closesMonth++;
+      if (isToday(ts)) closesToday++;
+    }
+    if (showedStatuses.indexOf(a.status) >= 0) {
+      if (isThisMonth(ts)) showedMonth++;
+    }
+    if (a.status === 'booked' || a.status === 'scheduled') {
+      if (isThisMonth(a.createdAt)) bookedMonth++;
     }
   });
 
-  let ghostDays = 0;
-  const today = new Date();
-  const year = today.getFullYear();
-  const month = today.getMonth();
-  for (let day = 1; day <= today.getDate(); day++) {
-    const d = new Date(year, month, day);
-    const dayOfWeek = d.getDay();
+  var ghostDays = 0;
+  var today = new Date();
+  var year = today.getFullYear();
+  var month = today.getMonth();
+  for (var day = 1; day <= today.getDate(); day++) {
+    var d = new Date(year, month, day);
+    var dayOfWeek = d.getDay();
     if (dayOfWeek !== 0 && dayOfWeek !== 6) {
-      const dialsOnDay = callLog.filter(c => {
-        if (c.caller !== userId && c.callerId !== userId && c.caller !== team.find(m=>m.id===userId)?.name) return false;
-        const cd = new Date(c.timestamp);
-        return cd.getDate() === day && cd.getMonth() === month && cd.getFullYear() === year;
-      }).length;
+      var dialsOnDay = 0;
+      for (var ci = 0; ci < callLog.length; ci++) {
+        var c = callLog[ci];
+        if (!matchesEmp(c.employeeId)) continue;
+        var cd = new Date(c.timestamp);
+        if (cd.getDate() === day && cd.getMonth() === month && cd.getFullYear() === year) dialsOnDay++;
+      }
       if (dialsOnDay === 0 && day < today.getDate()) {
         ghostDays++;
       }
     }
   }
 
-  let workdaysPast = 0;
-  for (let day = 1; day < today.getDate(); day++) {
-    const d = new Date(year, month, day);
-    const dayOfWeek = d.getDay();
-    if (dayOfWeek !== 0 && dayOfWeek !== 6) workdaysPast++;
+  var workdaysPast = 0;
+  for (var wd = 1; wd < today.getDate(); wd++) {
+    var dw = new Date(year, month, wd);
+    if (dw.getDay() !== 0 && dw.getDay() !== 6) workdaysPast++;
   }
-  const avgDials = workdaysPast > 0 ? dialsMonth / workdaysPast : dialsToday;
-  const basePay = (avgDials >= 80 || dialsToday >= 80) ? 200 : 0;
-  const commission = basePay + (closesMonth * 25) + (activeClients * 10);
+  var avgDials = workdaysPast > 0 ? dialsMonth / workdaysPast : dialsToday;
+  var basePay = (avgDials >= 80 || dialsToday >= 80) ? 200 : 0;
+  var commission = basePay + (closesMonth * 25) + (activeClients * 10);
 
   const dialPct = Math.min(100, (dialsToday / 80) * 100);
   const dialColor = dialPct >= 100 ? 'goal-green' : (dialPct >= 50 ? 'goal-yellow' : 'goal-red');
@@ -5559,103 +5574,123 @@ function renderCallerGoals(container, userId) {
   const monthClosePct = Math.min(100, (closesMonth / 5) * 100);
   const monthCloseColor = monthClosePct >= 100 ? 'goal-green' : (monthClosePct >= 50 ? 'goal-yellow' : 'goal-red');
 
-  container.innerHTML = `
-    <div class="goals-grid">
-      <div class="goal-section">
-        <h3>Today's Stats</h3>
-        <div class="goal-row">
-          <span class="goal-label">Dials today</span>
-          <span class="goal-val">${dialsToday} / 80</span>
-        </div>
-        <div class="goal-progress-wrap"><div class="goal-progress-fill ${dialColor}" style="width:${dialPct}%"></div></div>
+  var totalCallLogForEmp = callLog.filter(function(c) { return matchesEmp(c.employeeId); }).length;
+  var totalApptsForEmp = appointments.filter(function(a) { return matchesEmp(a.employeeId); }).length;
 
-        <div class="goal-row" style="margin-top:1.25rem;">
-          <span class="goal-label">Conversations today</span>
-          <span class="goal-val">${convsToday} / 14</span>
-        </div>
-        <div class="goal-progress-wrap"><div class="goal-progress-fill ${convColor}" style="width:${convPct}%"></div></div>
+  container.innerHTML = '\
+    <div style="margin-bottom:1rem;padding:0.75rem 1rem;background:var(--bg);border:1px solid var(--border);border-radius:0.5rem;font-size:0.8rem;color:var(--muted);">\
+      <strong style="color:var(--text);">Data sources:</strong> ' + totalCallLogForEmp + ' call log entries · ' + totalApptsForEmp + ' appointments — all matched by Employee ID <code>#' + (empId || '—') + '</code>\
+    </div>\
+    <div class="goals-grid">\
+      <div class="goal-section">\
+        <h3>Today\\'s Stats</h3>\
+        <div class="goal-row">\
+          <span class="goal-label">Dials today</span>\
+          <span class="goal-val">' + dialsToday + ' / 80</span>\
+        </div>\
+        <div class="goal-progress-wrap"><div class="goal-progress-fill ' + dialColor + '" style="width:' + dialPct + '%"></div></div>\
+        <div class="goal-row" style="margin-top:1.25rem;">\
+          <span class="goal-label">Conversations today</span>\
+          <span class="goal-val">' + convsToday + ' / 14</span>\
+        </div>\
+        <div class="goal-progress-wrap"><div class="goal-progress-fill ' + convColor + '" style="width:' + convPct + '%"></div></div>\
+        <div class="goal-row" style="margin-top:1.25rem;">\
+          <span class="goal-label">Interested leads today</span>\
+          <span class="goal-val">' + interestedToday + '</span>\
+        </div>\
+        <div class="goal-row">\
+          <span class="goal-label">Closes today</span>\
+          <span class="goal-val">' + closesToday + '</span>\
+        </div>\
+        <div class="goal-row">\
+          <span class="goal-label">Call log submitted</span>\
+          <span class="goal-val" style="color: ' + (dialsToday > 0 ? 'var(--green)' : '#ef4444') + '">' + (dialsToday > 0 ? 'Yes' : 'No') + '</span>\
+        </div>\
+      </div>\
+      <div class="goal-section">\
+        <h3>This Month\\'s Stats</h3>\
+        <div class="goal-row">\
+          <span class="goal-label">Total dials</span>\
+          <span class="goal-val">' + dialsMonth + ' / 1,600</span>\
+        </div>\
+        <div class="goal-progress-wrap"><div class="goal-progress-fill ' + monthDialColor + '" style="width:' + monthDialPct + '%"></div></div>\
+        <div class="goal-row" style="margin-top:1.25rem;">\
+          <span class="goal-label">Total closes (won/closed appts)</span>\
+          <span class="goal-val">' + closesMonth + ' / 5</span>\
+        </div>\
+        <div class="goal-progress-wrap"><div class="goal-progress-fill ' + monthCloseColor + '" style="width:' + monthClosePct + '%"></div></div>\
+        <div class="goal-row" style="margin-top:1.25rem;">\
+          <span class="goal-label">Appointments showed</span>\
+          <span class="goal-val">' + showedMonth + '</span>\
+        </div>\
+        <div class="goal-row">\
+          <span class="goal-label">Appointments booked</span>\
+          <span class="goal-val">' + bookedMonth + '</span>\
+        </div>\
+        <div class="goal-row" style="margin-top:1.25rem;">\
+          <span class="goal-label">Active clients (all time)</span>\
+          <span class="goal-val">' + activeClients + '</span>\
+        </div>\
+        <div class="goal-row">\
+          <span class="goal-label">Commission earned</span>\
+          <span class="goal-val" style="color:var(--green)">$' + commission + ' <span style="font-size:0.75rem;color:var(--muted);font-weight:normal;">($' + basePay + ' base + $' + (closesMonth * 25) + ' closes + $' + (activeClients * 10) + ' recurring)</span></span>\
+        </div>\
+        <div class="goal-row">\
+          <span class="goal-label">Ghost days</span>\
+          <span class="goal-val" style="color: ' + (ghostDays === 0 ? 'var(--green)' : '#ef4444') + '">' + ghostDays + ' / 0</span>\
+        </div>\
+      </div>\
+    </div>';
 
-        <div class="goal-row" style="margin-top:1.25rem;">
-          <span class="goal-label">Interested leads today</span>
-          <span class="goal-val">${interestedToday}</span>
-        </div>
-        <div class="goal-row">
-          <span class="goal-label">Closes today</span>
-          <span class="goal-val">${closesToday}</span>
-        </div>
-        <div class="goal-row">
-          <span class="goal-label">Call log submitted</span>
-          <span class="goal-val" style="color: ${dialsToday > 0 ? 'var(--green)' : '#ef4444'}">${dialsToday > 0 ? 'Yes' : 'No'}</span>
-        </div>
-      </div>
+}
 
-      <div class="goal-section">
-        <h3>This Month's Stats</h3>
-        <div class="goal-row">
-          <span class="goal-label">Total dials</span>
-          <span class="goal-val">${dialsMonth} / 1,600</span>
-        </div>
-        <div class="goal-progress-wrap"><div class="goal-progress-fill ${monthDialColor}" style="width:${monthDialPct}%"></div></div>
-
-        <div class="goal-row" style="margin-top:1.25rem;">
-          <span class="goal-label">Total closes</span>
-          <span class="goal-val">${closesMonth} / 5</span>
-        </div>
-        <div class="goal-progress-wrap"><div class="goal-progress-fill ${monthCloseColor}" style="width:${monthClosePct}%"></div></div>
-
-        <div class="goal-row" style="margin-top:1.25rem;">
-          <span class="goal-label">Active clients</span>
-          <span class="goal-val">${activeClients}</span>
-        </div>
-        <div class="goal-row">
-          <span class="goal-label">Commission earned</span>
-          <span class="goal-val" style="color:var(--green)">$${commission} <span style="font-size:0.75rem;color:var(--muted);font-weight:normal;">(base + bonuses + recurring)</span></span>
-        </div>
-        <div class="goal-row">
-          <span class="goal-label">Ghost days</span>
-          <span class="goal-val" style="color: ${ghostDays === 0 ? 'var(--green)' : '#ef4444'}">${ghostDays} / 0</span>
-        </div>
-      </div>
-    </div>
-  `;
+function resolveEmployeeId(user) {
+  if (!user || user.employeeId == null) return '';
+  var n = parseInt(String(user.employeeId), 10);
+  return (n >= 100 && n <= 999) ? String(n) : '';
 }
 
 function renderGoals() {
-  const container = document.getElementById('goalsContent');
-  const adminSelector = document.getElementById('goalsAdminSelector');
-  const employeeSelect = document.getElementById('goalsEmployeeSelect');
+  var container = document.getElementById('goalsContent');
+  var adminSelector = document.getElementById('goalsAdminSelector');
+  var employeeSelect = document.getElementById('goalsEmployeeSelect');
   if (!container) return;
 
-  const currentUser = getCurrentUser();
+  var currentUser = getCurrentUser();
   if (!currentUser) return;
 
-  let targetUserId = currentUser.id;
-  let targetUserRole = currentUser.role || 'caller';
+  var targetUser = currentUser;
+  var targetUserRole = currentUser.role || 'caller';
 
   if (currentUser.role === 'admin') {
     adminSelector.style.display = 'flex';
+    var allUsers = getUsers();
     if (employeeSelect.options.length === 0) {
-      employeeSelect.innerHTML = '<option value="' + currentUser.id + '">My Goals</option>';
-      getUsers().forEach(member => {
+      var myEmp = resolveEmployeeId(currentUser);
+      employeeSelect.innerHTML = '<option value="' + currentUser.id + '">My Goals' + (myEmp ? ' (Emp #' + myEmp + ')' : '') + '</option>';
+      allUsers.forEach(function(member) {
         if (member.id !== currentUser.id) {
-          const opt = document.createElement('option');
+          var emp = resolveEmployeeId(member);
+          var opt = document.createElement('option');
           opt.value = member.id;
-          opt.textContent = member.name + ' (' + (member.role || 'caller') + ')';
+          opt.textContent = (member.name || member.email || 'Unknown') + (emp ? ' (Emp #' + emp + ')' : '') + ' — ' + (member.role || 'caller');
           employeeSelect.appendChild(opt);
         }
       });
     }
-    targetUserId = employeeSelect.value;
-    const selectedMember = getUsers().find(m => m.id === targetUserId);
-    if (selectedMember) targetUserRole = selectedMember.role || 'caller';
+    var selectedId = employeeSelect.value;
+    targetUser = allUsers.find(function(m) { return m.id === selectedId; }) || currentUser;
+    targetUserRole = targetUser.role || 'caller';
   } else {
     adminSelector.style.display = 'none';
   }
 
+  var empId = resolveEmployeeId(targetUser);
+
   if (targetUserRole === 'va') {
-    renderVaGoals(container, targetUserId, currentUser.role === 'admin');
+    renderVaGoals(container, targetUser.id, currentUser.role === 'admin');
   } else {
-    renderCallerGoals(container, targetUserId);
+    renderCallerGoals(container, empId);
   }
 }
 

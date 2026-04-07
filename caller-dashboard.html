@@ -5903,7 +5903,12 @@ async function runScrapeFromSite() {
         var ing = ingestScrapeRows(rows);
         total += ing.cityNew;
         skippedDup += ing.cityDup;
-        var coordsNote = out.data.coordsUsed === false ? ' (no GPS coords on file; pagination limited)' : '';
+        var coordsNote = out.data.coordsUsed === false ? ' (no GPS — 1 page only)' : '';
+        var pagesNote = out.data.pagesFetched ? ' [' + out.data.pagesFetched + ' pg' + (out.data.pagesFetched === 1 ? '' : 's') + ']' : '';
+        var reasonNote = '';
+        if (out.data.stopReason === 'google_maps_exhausted') reasonNote = ' (Google Maps exhausted)';
+        else if (out.data.stopReason === 'no_coords_pagination') reasonNote = ' (no coords — 1 page)';
+        else if (out.data.stopReason === 'page_limit') reasonNote = ' (reached page limit)';
         scrapeLogLine(
           '✓ ' +
             out.label +
@@ -5911,7 +5916,7 @@ async function runScrapeFromSite() {
             ing.cityNew +
             ' new' +
             (ing.cityDup ? ', ' + ing.cityDup + ' dup skipped' : '') +
-            coordsNote,
+            pagesNote + reasonNote + coordsNote,
           'ok'
         );
       }

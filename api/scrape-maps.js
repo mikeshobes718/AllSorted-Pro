@@ -37,7 +37,8 @@ function normalizePhoneNANP(raw) {
 
 function parseResults(data, city, state, nicheLabel) {
   const rows = [];
-  if (!data) return rows;
+  let rawPlacesCount = 0;
+  if (!data) return { rows, rawPlacesCount };
 
   let places =
     data.search_results ||
@@ -48,6 +49,7 @@ function parseResults(data, city, state, nicheLabel) {
   if (typeof places === 'object' && !Array.isArray(places)) {
     places = Object.values(places);
   }
+  rawPlacesCount = Array.isArray(places) ? places.length : 0;
 
   for (const place of places) {
     if (!place || typeof place !== 'object') continue;
@@ -122,7 +124,7 @@ function parseResults(data, city, state, nicheLabel) {
     });
   }
 
-  return rows;
+  return { rows, rawPlacesCount };
 }
 
 module.exports = async (req, res) => {
@@ -180,6 +182,9 @@ module.exports = async (req, res) => {
   const PAGE_STEP = 20;
   const leads = [];
   const seenPhoneDigits = new Set();
+  let pagesFetched = 0;
+  let emptyPagesInRow = 0;
+  let stopReason = 'max_leads';
 
   function phoneDedupeKey(phoneStr) {
     let d = String(phoneStr || '').replace(/\D/g, '');
@@ -196,6 +201,7 @@ module.exports = async (req, res) => {
 
   for (let pageOffset = 0; leads.length < maxLeads && pageOffset <= 980; pageOffset += PAGE_STEP) {
     if (!coords && pageOffset > 0) {
+      stopReason = 'no_coords_pagination';
       break;
     }
 
@@ -274,8 +280,19 @@ module.exports = async (req, res) => {
       });
     }
 
-    const batch = parseResults(data, city, state, nicheLabel);
-    if (batch.length === 0) break;
+    const { rows: batch, rawPlacesCount } = parseResults(data, city, state, nicheLabel);
+    pagesFetched++;
+
+    if (rawPlacesCount === 0) {
+      emptyPagesInRow++;
+      if (emptyPagesInRow >= 2 || pagesFetched === 1) {
+        stopReason = 'google_maps_exhausted';
+        break;
+      }
+      await sleep(400);
+      continue;
+    }
+    emptyPagesInRow = 0;
 
     for (const row of batch) {
       const k = phoneDedupeKey(row.phone);
@@ -287,9 +304,21 @@ module.exports = async (req, res) => {
       if (leads.length >= maxLeads) break;
     }
 
-    if (batch.length < PAGE_STEP) break;
+    if (rawPlacesCount < PAGE_STEP) {
+      stopReason = 'google_maps_exhausted';
+      break;
+    }
     await sleep(coords ? 280 : 400);
   }
 
-  return res.status(200).json({ ok: true, leads, coordsUsed: !!coords });
+  if (leads.length >= maxLeads) stopReason = 'max_leads';
+  else if (stopReason === 'max_leads') stopReason = 'page_limit';
+
+  return res.status(200).json({
+    ok: true,
+    leads,
+    coordsUsed: !!coords,
+    pagesFetched,
+    stopReason,
+  });
 };

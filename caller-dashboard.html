@@ -132,6 +132,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 
 .stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;margin-bottom:1.5rem;}
 .stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem 1.5rem;box-shadow:var(--shadow-sm);position:relative;overflow:hidden;}
+.stat-card[title],.aa-conv-card[title],.aa-status-cell[title]{cursor:help;}
 .stat-label{font-size:0.75rem;text-transform:uppercase;letter-spacing:0.05em;color:var(--muted);margin-bottom:0.5rem;font-weight:600;}
 .stat-val{font-family:'Fraunces',serif;font-size:2.25rem;font-weight:700;line-height:1;margin-bottom:0.25rem;letter-spacing:-0.02em;}
 .stat-sub{font-size:0.8rem;color:var(--muted2);}
@@ -763,22 +764,22 @@ details.scrape-panel summary .scrape-hint{font-family:'DM Sans',sans-serif;font-
     <!-- DASHBOARD VIEW -->
     <div class="view active" id="view-dashboard">
       <div class="stats-row">
-        <div class="stat-card stat-green">
+        <div class="stat-card stat-green" title="Dial attempts logged today (your local date). Each row in the Call Log with today’s timestamp counts as one. Log every try so this matches reality.">
           <div class="stat-label">Calls Today</div>
           <div class="stat-val" id="statCallsToday">0</div>
           <div class="stat-sub">logged attempts</div>
         </div>
-        <div class="stat-card stat-amber">
+        <div class="stat-card stat-amber" title="Call-log rows with outcome &quot;Booked&quot; whose timestamp falls in the last 7 rolling days (not calendar week). That is &quot;meetings set from a dial&quot; in that window — not the Appointments table count.">
           <div class="stat-label">Booked This Week</div>
           <div class="stat-val" id="statBooked">0</div>
           <div class="stat-sub">appointments set</div>
         </div>
-        <div class="stat-card stat-blue">
+        <div class="stat-card stat-blue" title="Of all appointments on the calendar, what share are Showed or Won (closed). Formula: (appointments with status Showed or Won) divided by (total appointments). If there are no appointments yet, this shows an em dash.">
           <div class="stat-label">Show Rate</div>
           <div class="stat-val" id="statShowRate">—</div>
           <div class="stat-sub">showed / booked</div>
         </div>
-        <div class="stat-card stat-purple">
+        <div class="stat-card stat-purple" title="Your payout only: $25 × count of Won appointments that qualify (paid + onboarded) and are attributed to your employee ID. Showed alone does not pay; expand &quot;Caller guide&quot; below for detail.">
           <div class="stat-label">Commission Earned</div>
           <div class="stat-val" id="statCommission">$0</div>
           <div class="stat-sub">$25 per Won appt</div>
@@ -961,7 +962,7 @@ details.scrape-panel summary .scrape-hint{font-family:'DM Sans',sans-serif;font-
       </div>
 
       <div class="panel" style="margin-top:1rem;">
-        <div class="panel-header"><div class="panel-title">Lead Status Breakdown</div></div>
+        <div class="panel-header"><div class="panel-title" style="cursor:help;" title="Counts leads in the shared queue by their current status. Hover each tile for what that status means.">Lead Status Breakdown</div></div>
         <div class="panel-body">
           <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:0.75rem;" id="statusBreakdown">
           </div>
@@ -971,8 +972,8 @@ details.scrape-panel summary .scrape-hint{font-family:'DM Sans',sans-serif;font-
       <!-- TEAM PULSE — admin only -->
       <div id="teamPulseSection" style="display:none;margin-top:1rem;">
         <div class="panel">
-          <div class="panel-header" style="justify-content:space-between;align-items:center;">
-            <div class="panel-title">Team Pulse</div>
+            <div class="panel-header" style="justify-content:space-between;align-items:center;">
+            <div class="panel-title" style="cursor:help;" title="Team-wide metrics from the Call Log and Appointments. Hover stat cards and sections for how each number is calculated.">Team Pulse</div>
             <span style="font-size:0.75rem;color:var(--muted);">Admin only — live team performance</span>
           </div>
           <div class="panel-body" style="padding:0;">
@@ -981,17 +982,17 @@ details.scrape-panel summary .scrape-hint{font-family:'DM Sans',sans-serif;font-
 
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:0;" id="pulseGridWrap">
               <div style="border-right:1px solid var(--border);padding:1rem;">
-                <h4 style="font-size:0.82rem;font-weight:600;margin:0 0 0.75rem;color:var(--text);">Dials Today by Employee</h4>
+                <h4 style="font-size:0.82rem;font-weight:600;margin:0 0 0.75rem;color:var(--text);cursor:help;" title="Each caller’s share of today’s call-log rows (matched by employee ID on each log). Hover a row for dial count.">Dials Today by Employee</h4>
                 <div id="pulseDialsToday" style="font-size:0.82rem;"></div>
               </div>
               <div style="padding:1rem;">
-                <h4 style="font-size:0.82rem;font-weight:600;margin:0 0 0.75rem;color:var(--text);">Outcome Breakdown (7 days)</h4>
+                <h4 style="font-size:0.82rem;font-weight:600;margin:0 0 0.75rem;color:var(--text);cursor:help;" title="Share of all dials in the last 7 days by call outcome (from the Call Log). Percentages are of weekly dials, not of today only.">Outcome Breakdown (7 days)</h4>
                 <div id="pulseOutcomes" style="font-size:0.82rem;"></div>
               </div>
             </div>
 
             <div style="border-top:1px solid var(--border);padding:1rem;">
-              <h4 style="font-size:0.82rem;font-weight:600;margin:0 0 0.75rem;color:var(--text);">Weekly Comparison</h4>
+              <h4 style="font-size:0.82rem;font-weight:600;margin:0 0 0.75rem;color:var(--text);cursor:help;" title="Rolling 7-day windows: This week = last 7 days; Last week = 7 days before that. Dials and Booked come from the Call Log; Appointments counts rows whose meeting date falls in each window.">Weekly Comparison</h4>
               <div id="pulseWeekly" style="font-size:0.82rem;"></div>
             </div>
 
@@ -1009,7 +1010,7 @@ details.scrape-panel summary .scrape-hint{font-family:'DM Sans',sans-serif;font-
 
         <div class="panel" style="margin-bottom:1rem;">
           <div class="panel-header" style="justify-content:space-between;align-items:center;">
-            <div class="panel-title">Sales Analytics</div>
+            <div class="panel-title" style="cursor:help;" title="Conversion cards use the Call Log and Appointments tables. Hover each card for the exact formula. Funnel and charts below use the same live data.">Sales Analytics</div>
             <span style="font-size:0.75rem;color:var(--muted);">Admin only — pipeline &amp; performance intelligence</span>
           </div>
         </div>
@@ -1018,32 +1019,32 @@ details.scrape-panel summary .scrape-hint{font-family:'DM Sans',sans-serif;font-
 
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem;" class="aa-two-col">
           <div class="panel">
-            <div class="panel-header"><div class="panel-title" style="font-size:0.88rem;">Sales Pipeline Funnel</div></div>
+            <div class="panel-header"><div class="panel-title" style="font-size:0.88rem;cursor:help;" title="Visual width shows each count vs total leads. Hover each row in the funnel for definitions.">Sales Pipeline Funnel</div></div>
             <div class="panel-body" id="aaFunnel"></div>
           </div>
           <div class="panel">
-            <div class="panel-header"><div class="panel-title" style="font-size:0.88rem;">Revenue Tracker</div></div>
+            <div class="panel-header"><div class="panel-title" style="font-size:0.88rem;cursor:help;" title="Estimated revenue uses a fixed dollars-per-won-deal assumption. Won = appointments marked closed/won in the portal.">Revenue Tracker</div></div>
             <div class="panel-body" id="aaRevenue"></div>
           </div>
         </div>
 
         <div class="panel" style="margin-bottom:1rem;">
-          <div class="panel-header"><div class="panel-title" style="font-size:0.88rem;">Employee Leaderboard</div></div>
+          <div class="panel-header"><div class="panel-title" style="font-size:0.88rem;cursor:help;" title="Ranked by call volume. Names come from the roster when possible; otherwise Emp # from call log and appointments.">Employee Leaderboard</div></div>
           <div class="panel-body" style="padding:0;overflow-x:auto;" id="aaLeaderboard"></div>
         </div>
 
         <div class="panel" style="margin-bottom:1rem;">
-          <div class="panel-header"><div class="panel-title" style="font-size:0.88rem;">Daily Activity — Last 14 Days</div></div>
+          <div class="panel-header"><div class="panel-title" style="font-size:0.88rem;cursor:help;" title="Each column is one calendar day. The number on top is total call-log rows that day. Hover colored segments in the stack to see counts by outcome.">Daily Activity — Last 14 Days</div></div>
           <div class="panel-body" id="aaDailyChart"></div>
         </div>
 
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem;" class="aa-two-col">
           <div class="panel">
-            <div class="panel-header"><div class="panel-title" style="font-size:0.88rem;">Lead Source / Region Performance</div></div>
+            <div class="panel-header"><div class="panel-title" style="font-size:0.88rem;cursor:help;" title="Uses state/country on lead records. Bar length is lead volume; label shows rough conversion where booked status exists.">Lead Source / Region Performance</div></div>
             <div class="panel-body" id="aaRegion"></div>
           </div>
           <div class="panel">
-            <div class="panel-header"><div class="panel-title" style="font-size:0.88rem;">Time-of-Day Heatmap</div></div>
+            <div class="panel-header"><div class="panel-title" style="font-size:0.88rem;cursor:help;" title="Call-log timestamps bucketed by local hour (8am–7pm) and weekday. Darker blue = more dials in that slot. Hover a cell for the count.">Time-of-Day Heatmap</div></div>
             <div class="panel-body" id="aaHeatmap"></div>
           </div>
         </div>
@@ -6680,15 +6681,15 @@ function renderDashboard() {
   const statusCounts = {};
   leads.forEach(l => { statusCounts[l.status] = (statusCounts[l.status]||0)+1; });
   const statuses = [
-    {key:'new',label:'New',color:'var(--blue)'},
-    {key:'no_answer',label:'No Answer',color:'var(--purple)'},
-    {key:'callback',label:'Callback',color:'var(--amber)'},
-    {key:'booked',label:'Booked',color:'var(--green)'},
-    {key:'not_interested',label:'Not Interested',color:'var(--red)'},
-    {key:'called',label:'Called',color:'var(--muted)'},
+    {key:'new',label:'New',color:'var(--blue)',tip:'Count of leads in the shared queue with status New — not worked yet or reset to fresh.'},
+    {key:'no_answer',label:'No Answer',color:'var(--purple)',tip:'Lead status: you attempted contact but did not connect (ring/no pickup).'},
+    {key:'callback',label:'Callback',color:'var(--amber)',tip:'Lead status: follow-up scheduled; they asked you to call back at a better time.'},
+    {key:'booked',label:'Booked',color:'var(--green)',tip:'Lead status: a sales meeting is on the calendar — track details under Appointments.'},
+    {key:'not_interested',label:'Not Interested',color:'var(--red)',tip:'Lead status: declined or disqualified; no active pursuit unless something changes.'},
+    {key:'called',label:'Called',color:'var(--muted)',tip:'Lead status: generic attempt logged; update to a clearer outcome when known.'},
   ];
   document.getElementById('statusBreakdown').innerHTML = statuses.map(s => `
-    <div style="background:var(--cream);border:1px solid var(--border);border-radius:4px;padding:1rem;text-align:center;">
+    <div class="aa-status-cell" style="background:var(--cream);border:1px solid var(--border);border-radius:4px;padding:1rem;text-align:center;" title="${escapeHtml(s.tip)}">
       <div style="font-family:'Fraunces',serif;font-size:1.5rem;font-weight:700;color:${s.color};line-height:1;margin-bottom:0.3rem;">${statusCounts[s.key]||0}</div>
       <div style="font-size:0.68rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--muted);">${s.label}</div>
     </div>
@@ -6785,19 +6786,19 @@ function renderTeamPulse() {
     var deltaColor = weekDelta >= 0 ? 'var(--green)' : 'var(--red)';
     var deltaArrow = weekDelta >= 0 ? '+' : '';
     cardsEl.innerHTML =
-      '<div style="padding:1rem;text-align:center;border-right:1px solid var(--border);">' +
+      '<div style="padding:1rem;text-align:center;border-right:1px solid var(--border);cursor:help;" title="All call-log entries with today’s date (team-wide).">' +
         '<div style="font-family:\'Fraunces\',serif;font-size:1.6rem;font-weight:700;color:var(--blue);">' + totalDialsToday + '</div>' +
         '<div style="font-size:0.68rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--muted);">Dials Today</div>' +
       '</div>' +
-      '<div style="padding:1rem;text-align:center;border-right:1px solid var(--border);">' +
+      '<div style="padding:1rem;text-align:center;border-right:1px solid var(--border);cursor:help;" title="Call-log rows with outcome Booked in the last 7 rolling days (team-wide).">' +
         '<div style="font-family:\'Fraunces\',serif;font-size:1.6rem;font-weight:700;color:var(--green);">' + bookedThisWeek + '</div>' +
         '<div style="font-size:0.68rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--muted);">Booked This Week</div>' +
       '</div>' +
-      '<div style="padding:1rem;text-align:center;border-right:1px solid var(--border);">' +
+      '<div style="padding:1rem;text-align:center;border-right:1px solid var(--border);cursor:help;" title="Booked outcomes divided by total dials this week (same 7-day window as &quot;Booked This Week&quot;).">' +
         '<div style="font-family:\'Fraunces\',serif;font-size:1.6rem;font-weight:700;color:var(--purple);">' + convRate + '%</div>' +
         '<div style="font-size:0.68rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--muted);">Conversion Rate</div>' +
       '</div>' +
-      '<div style="padding:1rem;text-align:center;">' +
+      '<div style="padding:1rem;text-align:center;cursor:help;" title="Change in total team dials: this rolling 7 days vs the previous 7 days.">' +
         '<div style="font-family:\'Fraunces\',serif;font-size:1.6rem;font-weight:700;color:' + deltaColor + ';">' + deltaArrow + weekDelta + '%</div>' +
         '<div style="font-size:0.68rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--muted);">vs Last Week</div>' +
       '</div>';
@@ -6815,7 +6816,7 @@ function renderTeamPulse() {
         var name = empMap[eid] || ('Emp #' + eid);
         var pct = Math.round((count / maxDials) * 100);
         var barColor = count === 0 ? 'var(--red)' : (count >= maxDials * 0.75 ? 'var(--green)' : 'var(--blue)');
-        return '<div style="margin-bottom:0.5rem;">' +
+        return '<div style="margin-bottom:0.5rem;cursor:help;" title="' + escapeHtml(name + ' — ' + count + ' dial' + (count === 1 ? '' : 's') + ' logged today (matched by employee ID on each call).') + '">' +
           '<div style="display:flex;justify-content:space-between;margin-bottom:2px;">' +
             '<span style="font-weight:500;">' + escapeHtml(name) + '</span>' +
             '<span style="color:' + (count === 0 ? 'var(--red);font-weight:600' : 'var(--muted)') + ';">' + count + ' dials</span>' +
@@ -6835,8 +6836,23 @@ function renderTeamPulse() {
       outcomeCounts[o] = (outcomeCounts[o] || 0) + 1;
     });
     var outcomeKeys = Object.keys(outcomeCounts).sort(function(a,b) { return outcomeCounts[b] - outcomeCounts[a]; });
-    var outLabels = { new:'New', no_answer:'No Answer', callback:'Callback', booked:'Booked', not_interested:'Not Interested', called:'Called', voicemail:'Voicemail', gatekeeper:'Gatekeeper', wrong_number:'Wrong Number' };
-    var outColors = { new:'var(--blue)', no_answer:'var(--purple)', callback:'var(--amber)', booked:'var(--green)', not_interested:'var(--red)', called:'var(--muted)', voicemail:'#6b7280', gatekeeper:'#f59e0b', wrong_number:'#ef4444' };
+    var outLabels = { new:'New', no_answer:'No Answer', callback:'Callback', booked:'Booked', not_interested:'Not Interested', called:'Called', left_voicemail:'Voicemail', voicemail:'Voicemail', gatekeeper:'Gatekeeper', wrong_number:'Wrong Number' };
+    var outColors = { new:'var(--blue)', no_answer:'var(--purple)', callback:'var(--amber)', booked:'var(--green)', not_interested:'var(--red)', called:'var(--muted)', left_voicemail:'#6b7280', voicemail:'#6b7280', gatekeeper:'#f59e0b', wrong_number:'#ef4444' };
+    var outTip = function(k) {
+      var tips = {
+        new: 'Outcome recorded as new / unknown.',
+        no_answer: 'Ring but no live conversation.',
+        callback: 'Follow-up time agreed on the call.',
+        booked: 'Meeting set from this dial.',
+        not_interested: 'Prospect declined or disqualified.',
+        called: 'Spoke but neutral or generic disposition.',
+        left_voicemail: 'Message left; no live answer.',
+        voicemail: 'Voicemail outcome.',
+        gatekeeper: 'Blocked by gatekeeper or screener.',
+        wrong_number: 'Wrong number or bad contact.'
+      };
+      return tips[k] || ('Raw outcome key: ' + k);
+    };
     if (outcomeKeys.length === 0) {
       outEl.innerHTML = '<span style="color:var(--muted);">No calls this week.</span>';
     } else {
@@ -6845,7 +6861,7 @@ function renderTeamPulse() {
         var cnt = outcomeCounts[k];
         var pct = Math.round((cnt / totalDialsThisWeek) * 100);
         var barPct = Math.round((cnt / maxOut) * 100);
-        return '<div style="margin-bottom:0.5rem;">' +
+        return '<div style="margin-bottom:0.5rem;cursor:help;" title="' + escapeHtml((outLabels[k] || k) + ': ' + cnt + ' of ' + totalDialsThisWeek + ' weekly dials (' + pct + '%). ' + outTip(k)) + '">' +
           '<div style="display:flex;justify-content:space-between;margin-bottom:2px;">' +
             '<span style="font-weight:500;">' + (outLabels[k] || k) + '</span>' +
             '<span style="color:var(--muted);">' + cnt + ' (' + pct + '%)</span>' +
@@ -6869,9 +6885,9 @@ function renderTeamPulse() {
         '<th style="text-align:right;padding:0.4rem 0.5rem;font-weight:600;">Last Week</th>' +
         '<th style="text-align:right;padding:0.4rem 0.5rem;font-weight:600;">Change</th>' +
       '</tr></thead><tbody>' +
-      _pulseWeekRow('Total Dials', totalDialsThisWeek, totalDialsLastWeek) +
-      _pulseWeekRow('Booked', bookedThisWeek, bookedLastWeek) +
-      _pulseWeekRow('Appointments', apptThisWeek, apptLastWeek) +
+      _pulseWeekRow('Total Dials', totalDialsThisWeek, totalDialsLastWeek, 'Call Log rows with timestamp in the rolling 7-day window vs the prior 7 days.') +
+      _pulseWeekRow('Booked', bookedThisWeek, bookedLastWeek, 'Call Log rows with outcome Booked in each rolling week.') +
+      _pulseWeekRow('Appointments', apptThisWeek, apptLastWeek, 'Appointment rows whose date/time falls in each window (uses dateTime or createdAt).') +
       '</tbody></table>';
   }
 
@@ -6895,11 +6911,12 @@ function renderTeamPulse() {
   }
 }
 
-function _pulseWeekRow(label, thisW, lastW) {
+function _pulseWeekRow(label, thisW, lastW, rowTip) {
   var delta = lastW > 0 ? Math.round(((thisW - lastW) / lastW) * 100) : (thisW > 0 ? 100 : 0);
   var color = delta > 0 ? 'var(--green)' : (delta < 0 ? 'var(--red)' : 'var(--muted)');
   var arrow = delta > 0 ? '+' : '';
-  return '<tr style="border-bottom:1px solid var(--border);">' +
+  var tip = rowTip != null && rowTip !== '' ? rowTip : (label + ': compare this week vs last week totals.');
+  return '<tr style="border-bottom:1px solid var(--border);cursor:help;" title="' + escapeHtml(tip) + '">' +
     '<td style="padding:0.4rem 0.5rem;">' + label + '</td>' +
     '<td style="text-align:right;padding:0.4rem 0.5rem;font-weight:600;">' + thisW + '</td>' +
     '<td style="text-align:right;padding:0.4rem 0.5rem;color:var(--muted);">' + lastW + '</td>' +
@@ -7074,7 +7091,7 @@ function renderAdminAnalytics() {
 
     var legend = '<div style="display:flex;flex-wrap:wrap;gap:0.75rem;margin-bottom:0.75rem;">' +
       Object.keys(legendKeys).map(function(k) {
-        return '<span style="display:inline-flex;align-items:center;gap:4px;font-size:0.68rem;color:var(--muted);">' +
+        return '<span style="display:inline-flex;align-items:center;gap:4px;font-size:0.68rem;color:var(--muted);cursor:help;" title="' + escapeHtml((outLabels[k] || k) + ' — appears in this chart when at least one call used this outcome in the last 14 days.') + '">' +
           '<span style="width:10px;height:10px;border-radius:2px;background:' + (outcomeColors[k] || 'var(--blue)') + ';display:inline-block;"></span>' +
           (outLabels[k] || k) + '</span>';
       }).join('') + '</div>';
@@ -7087,9 +7104,11 @@ function renderAdminAnalytics() {
         var orderedKeys = Object.keys(b.breakdown).sort(function(a, bb) { return b.breakdown[bb] - b.breakdown[a]; });
         orderedKeys.forEach(function(k) {
           var h = Math.max(Math.round((b.breakdown[k] / maxDay) * 140), 2);
-          segs += '<div class="aa-daily-seg" style="height:' + h + 'px;background:' + (outcomeColors[k] || 'var(--blue)') + ';" title="' + (outLabels[k] || k) + ': ' + b.breakdown[k] + '"></div>';
+          var segTip = (outLabels[k] || k) + ': ' + b.breakdown[k] + ' on this day (hover stack)';
+          segs += '<div class="aa-daily-seg" style="height:' + h + 'px;background:' + (outcomeColors[k] || 'var(--blue)') + ';cursor:help;" title="' + escapeHtml(segTip) + '"></div>';
         });
-        return '<div class="aa-daily-col">' +
+        var colTip = 'Total ' + b.total + ' call' + (b.total === 1 ? '' : 's') + ' on ' + label + '. Hover colored segments for outcome breakdown.';
+        return '<div class="aa-daily-col" style="cursor:help;" title="' + escapeHtml(colTip) + '">' +
           '<div class="aa-daily-total">' + b.total + '</div>' +
           '<div class="aa-daily-stack" style="width:100%;">' + segs + '</div>' +
           '<div class="aa-daily-lbl" style="' + (isToday ? 'font-weight:700;color:var(--green);' : '') + '">' + label + '</div>' +
@@ -7101,11 +7120,11 @@ function renderAdminAnalytics() {
   var ccEl = document.getElementById('aaConversionCards');
   if (ccEl) {
     var totalCalls = callLog.length;
-    var callbackCount = callLog.filter(function(c) { return c.outcome === 'callback'; }).length;
-    var bookedCount = callLog.filter(function(c) { return c.outcome === 'booked'; }).length;
+    var callbackCount = callLog.filter(function(c) { return aaCallOutcome(c) === 'callback'; }).length;
+    var bookedCount = callLog.filter(function(c) { return aaCallOutcome(c) === 'booked'; }).length;
     var totalAppts = appointments.length;
-    var showedCount = appointments.filter(function(a) { return a.status === 'showed' || a.status === 'closed'; }).length;
-    var wonCount = appointments.filter(function(a) { return a.status === 'closed'; }).length;
+    var showedCount = appointments.filter(function(a) { var s = aaApptStatus(a); return s === 'showed' || s === 'closed'; }).length;
+    var wonCount = appointments.filter(function(a) { return aaApptStatus(a) === 'closed'; }).length;
 
     var rateCallCb = totalCalls > 0 ? ((callbackCount / totalCalls) * 100).toFixed(1) : '0.0';
     var rateCallBook = totalCalls > 0 ? ((bookedCount / totalCalls) * 100).toFixed(1) : '0.0';
@@ -7114,14 +7133,14 @@ function renderAdminAnalytics() {
     var rateOverall = totalCalls > 0 ? ((wonCount / totalCalls) * 100).toFixed(1) : '0.0';
 
     var cards = [
-      { label: 'Call \u2192 Callback', val: rateCallCb + '%', sub: callbackCount + ' of ' + totalCalls, color: 'var(--amber)' },
-      { label: 'Call \u2192 Booked', val: rateCallBook + '%', sub: bookedCount + ' of ' + totalCalls, color: 'var(--green)' },
-      { label: 'Booked \u2192 Show', val: rateBookShow + '%', sub: showedCount + ' of ' + totalAppts, color: 'var(--blue)' },
-      { label: 'Show \u2192 Won', val: rateShowWon + '%', sub: wonCount + ' of ' + showedCount, color: 'var(--purple)' },
-      { label: 'Overall Close', val: rateOverall + '%', sub: wonCount + ' won / ' + totalCalls + ' calls', color: 'var(--green-light)' }
+      { label: 'Call \u2192 Callback', val: rateCallCb + '%', sub: callbackCount + ' of ' + totalCalls, color: 'var(--amber)', tip: 'Share of all call-log rows where outcome is Callback. Measures follow-ups scheduled from dials.' },
+      { label: 'Call \u2192 Booked', val: rateCallBook + '%', sub: bookedCount + ' of ' + totalCalls, color: 'var(--green)', tip: 'Share of all call-log rows where outcome is Booked (meeting set from that dial).' },
+      { label: 'Booked \u2192 Show', val: rateBookShow + '%', sub: showedCount + ' of ' + totalAppts, color: 'var(--blue)', tip: 'Of appointments on the calendar, how many are Showed or Won (attended). Denominator is total appointment rows.' },
+      { label: 'Show \u2192 Won', val: rateShowWon + '%', sub: wonCount + ' of ' + showedCount, color: 'var(--purple)', tip: 'Of attended appointments (Showed + Won), what share became Won (closed/paid). If no shows yet, shows 0%.' },
+      { label: 'Overall Close', val: rateOverall + '%', sub: wonCount + ' won / ' + totalCalls + ' calls', color: 'var(--green-light)', tip: 'Won deals divided by total call-log rows — a rough “close rate per dial” across the whole history.' }
     ];
     ccEl.innerHTML = cards.map(function(c) {
-      return '<div class="aa-conv-card">' +
+      return '<div class="aa-conv-card" title="' + escapeHtml(c.tip) + '">' +
         '<div class="aa-cc-val" style="color:' + c.color + ';">' + c.val + '</div>' +
         '<div class="aa-cc-label">' + c.label + '</div>' +
         '<div class="aa-cc-sub">' + c.sub + '</div></div>';

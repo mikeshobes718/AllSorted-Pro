@@ -15,6 +15,12 @@ function isBlockedCallLogId(id) {
   return id != null && BLOCKED_CALL_LOG_IDS.has(String(id));
 }
 
+const BLOCKED_APPOINTMENT_IDS = new Set(['1775509758542']);
+
+function isBlockedAppointmentId(id) {
+  return id != null && BLOCKED_APPOINTMENT_IDS.has(String(id));
+}
+
 async function loadQueueLeadsFromTable(supabase) {
   let all = [];
   let from = 0;
@@ -107,6 +113,7 @@ function buildAppointmentRows(arr) {
   const now = new Date().toISOString();
   return arr
     .filter((o) => o && o.id)
+    .filter((o) => !isBlockedAppointmentId(o.id))
     .filter((o) => String(o.employee_id || o.employeeId || '') !== '399')
     .map((o) => ({
     id: String(o.id),
@@ -200,7 +207,11 @@ module.exports = async (req, res) => {
       ? callLog.filter((o) => o && !isBlockedCallLogId(o.id))
       : callLog;
 
-    const payload = { leads, callLog: callLogFiltered, appointments, leadRemovalRequests };
+    const appointmentsFiltered = Array.isArray(appointments)
+      ? appointments.filter((o) => o && !isBlockedAppointmentId(o.id))
+      : appointments;
+
+    const payload = { leads, callLog: callLogFiltered, appointments: appointmentsFiltered, leadRemovalRequests };
     if (action !== 'get_light') {
       payload.leadDb = leadDb;
     }
@@ -231,6 +242,7 @@ module.exports = async (req, res) => {
     await supabase.from('call_logs').delete().eq('employee_id', '399');
     await supabase.from('appointments').delete().eq('employee_id', '399');
     await supabase.from('call_logs').delete().in('id', Array.from(BLOCKED_CALL_LOG_IDS));
+    await supabase.from('appointments').delete().in('id', Array.from(BLOCKED_APPOINTMENT_IDS));
 
     return res.status(200).json({ ok: true, configured: true });
   }

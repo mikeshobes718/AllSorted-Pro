@@ -7483,8 +7483,9 @@ async function mailSend() {
         content: htmlBody,
       };
     }
-    payload.employeeId = currentUser ? currentUser.id : '';
-    payload.employeeName = currentUser ? currentUser.display : '';
+    var _cu = typeof getCurrentUser === 'function' ? getCurrentUser() : null;
+    payload.employeeId = _cu ? _cu.id : '';
+    payload.employeeName = _cu ? _cu.display : '';
     var res = await mailApi(payload);
     if (res.ok) {
       statusEl.innerHTML = '<span style="color:var(--green);font-weight:600;">Sent successfully!</span>';

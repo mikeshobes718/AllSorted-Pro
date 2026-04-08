@@ -300,14 +300,21 @@ module.exports = async (req, res) => {
 
   // --- Search ---
   if (act === 'search') {
-    const searchStr = body.searchKey || '';
+    let searchStr = (body.searchKey || '').trim();
     if (!searchStr) return res.status(400).json({ ok: false, error: 'searchKey required' });
+    if (!/^(subject|from|to|cc|bcc|entire|content|has|in|tag):/.test(searchStr)) {
+      searchStr = 'entire:' + searchStr;
+    }
     const start = parseInt(body.start, 10) || 0;
     const limit = Math.min(parseInt(body.limit, 10) || 25, 50);
     const path = '/api/accounts/' + acctId + '/messages/search?searchKey=' +
       encodeURIComponent(searchStr) + '&start=' + start + '&limit=' + limit;
     const data = await zohoFetch(tokens, 'GET', path);
-    return res.status(200).json({ ok: true, messages: (data && data.data) || [] });
+    if (data && data.errorCode) {
+      return res.status(200).json({ ok: false, error: data.errorCode + ': ' + (data.moreInfo || '') });
+    }
+    const messages = (data && Array.isArray(data.data)) ? data.data : [];
+    return res.status(200).json({ ok: true, messages });
   }
 
   // --- Disconnect ---

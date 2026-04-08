@@ -1039,17 +1039,17 @@ details.scrape-panel summary .scrape-hint{font-family:'DM Sans',sans-serif;font-
             <button class="filter-btn" onclick="setFilter('booked',this)">Booked</button>
           </div>
           <div class="table-wrap">
-            <table class="queue-table" id="queueLeadsTable" style="min-width: 1100px;">
+            <table class="queue-table" id="queueLeadsTable" style="min-width: 1100px; table-layout: fixed;">
               <thead>
                 <tr>
-                  <th>Company</th>
-                  <th>Phone</th>
-                  <th>Location</th>
-                  <th>Category</th>
-                  <th>Notes</th>
-                  <th>Status</th>
-                  <th>Last</th>
-                  <th>Action</th>
+                  <th style="width:22%;">Company</th>
+                  <th style="width:12%;">Phone</th>
+                  <th style="width:12%;">Location</th>
+                  <th style="width:10%;">Category</th>
+                  <th style="width:16%;">Notes</th>
+                  <th style="width:10%;">Status</th>
+                  <th style="width:8%;">Last</th>
+                  <th style="width:10%;">Action</th>
                 </tr>
               </thead>
             </table>
@@ -6213,7 +6213,7 @@ function renderLeads() {
     tb.addEventListener('click', queueGroupClick);
     tb.innerHTML = `
     <tr class="queue-lead-main">
-      <td style="width:22%;">
+      <td>
         <div style="display:flex;align-items:flex-start;gap:0.5rem;justify-content:space-between;">
           <div style="line-height:1.4;min-width:0;overflow:hidden;">
             <strong style="color:var(--text);font-size:0.95rem;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" title="${escapeHtml(l.company || '')}">${escapeHtml(l.company || '')}</strong>
@@ -6222,10 +6222,10 @@ function renderLeads() {
           <span class="queue-chevron" aria-hidden="true" style="color:var(--muted2);font-size:0.75rem;margin-top:0.2rem;">▼</span>
         </div>
       </td>
-      <td class="td-muted phone-cell" style="white-space:nowrap;font-size:0.85rem;width:12%;">${formatPhoneDisplay(l.phone)}</td>
-      <td class="td-muted" style="font-size:0.85rem;width:12%;">${loc ? escapeHtml(loc) : '—'}</td>
-      <td style="width:10%;">${l.category ? `<span class="badge badge-new" style="font-size:0.7rem;padding:0.15rem 0.5rem;">${escapeHtml(l.category)}</span>` : '—'}</td>
-      <td class="queue-notes-wrap" style="width:16%;">
+      <td class="td-muted phone-cell" style="white-space:nowrap;font-size:0.85rem;">${formatPhoneDisplay(l.phone)}</td>
+      <td class="td-muted" style="font-size:0.85rem;">${loc ? escapeHtml(loc) : '—'}</td>
+      <td>${l.category ? `<span class="badge badge-new" style="font-size:0.7rem;padding:0.15rem 0.5rem;">${escapeHtml(l.category)}</span>` : '—'}</td>
+      <td class="queue-notes-wrap">
         <div class="queue-notes-stack">
           ${queueNotesHistoryCellHtml(l)}
           <textarea class="form-input queue-notes-new" rows="2" data-queue-new-note="${escapeHtml(l.id)}" placeholder="Add a note…"></textarea>
@@ -6235,9 +6235,9 @@ function renderLeads() {
           </div>
         </div>
       </td>
-      <td style="width:10%;">${statusBadge(l.status)}</td>
-      <td class="td-muted" style="font-size:0.8rem;white-space:nowrap;width:8%;">${l.lastContact ? new Date(l.lastContact).toLocaleDateString() : 'Never'}</td>
-      <td class="queue-actions" style="width:10%;">
+      <td>${statusBadge(l.status)}</td>
+      <td class="td-muted" style="font-size:0.8rem;white-space:nowrap;">${l.lastContact ? new Date(l.lastContact).toLocaleDateString() : 'Never'}</td>
+      <td class="queue-actions">
         <div style="display:flex;gap:0.5rem;flex-wrap:wrap;align-items:center;">
           <button type="button" class="btn btn-green btn-sm queue-btn-log" style="padding:0.4rem 0.85rem;">Log Call</button>
           ${pendingRm

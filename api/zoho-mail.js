@@ -136,9 +136,12 @@ module.exports = async (req, res) => {
     const start = parseInt(body.start, 10) || 0;
     const limit = Math.min(parseInt(body.limit, 10) || 25, 50);
     const path = '/api/accounts/' + acctId + '/messages/view?folderId=' + inboxFolder +
-      '&start=' + start + '&limit=' + limit + '&sortBy=date&sortOrder=false';
+      '&start=' + start + '&limit=' + limit;
     const data = await zohoFetch(tokens, 'GET', path);
-    const messages = (data && data.data) || [];
+    if (data && data.errorCode) {
+      return res.status(200).json({ ok: false, error: data.errorCode + ': ' + (data.moreInfo || '') });
+    }
+    const messages = (data && Array.isArray(data.data)) ? data.data : [];
     return res.status(200).json({ ok: true, messages, fromAddress: tokens.fromAddress });
   }
 

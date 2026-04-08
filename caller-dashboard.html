@@ -1066,6 +1066,26 @@ details.scrape-panel summary .scrape-hint{font-family:'DM Sans',sans-serif;font-
           <span style="font-size:0.75rem;color:var(--muted);">All logged call attempts</span>
         </div>
         <div class="panel-body">
+          <div class="filter-bar" style="margin-bottom:0.75rem;">
+            <input class="search-input" placeholder="Search company or phone..." oninput="renderCallLog()" id="clSearch" style="max-width:260px;">
+            <select id="clFilterEmp" class="form-select" style="width:auto;padding:0.3rem 0.5rem;font-size:0.8rem;border-color:transparent;background:var(--surface2);" onchange="renderCallLog()"><option value="">All Employees</option></select>
+            <select id="clFilterOutcome" class="form-select" style="width:auto;padding:0.3rem 0.5rem;font-size:0.8rem;border-color:transparent;background:var(--surface2);" onchange="renderCallLog()">
+              <option value="">All Outcomes</option>
+              <option value="booked">Booked</option>
+              <option value="callback">Callback</option>
+              <option value="called">Called</option>
+              <option value="no_answer">No Answer</option>
+              <option value="not_interested">Not Interested</option>
+              <option value="voicemail">Voicemail</option>
+            </select>
+            <select id="clFilterDate" class="form-select" style="width:auto;padding:0.3rem 0.5rem;font-size:0.8rem;border-color:transparent;background:var(--surface2);" onchange="renderCallLog()">
+              <option value="">All Dates</option>
+              <option value="today">Today</option>
+              <option value="week">This Week</option>
+              <option value="month">This Month</option>
+            </select>
+            <span id="clResultCount" style="font-size:0.78rem;color:var(--muted);margin-left:auto;"></span>
+          </div>
           <div class="table-wrap call-log-table-scroll" role="region" aria-label="Call log table, scroll vertically for more rows">
             <table class="queue-table">
               <thead>
@@ -6273,24 +6293,77 @@ function renderLeads() {
   initQueueNotesDelegation();
 }
 
+function updateCallLogFilters() {
+  var sel = document.getElementById('clFilterEmp');
+  if (!sel) return;
+  var cur = sel.value;
+  var emps = {};
+  callLog.forEach(function(c) {
+    var e = c.employeeId != null ? String(c.employeeId).trim() : '';
+    if (e) emps[e] = true;
+  });
+  var sorted = Object.keys(emps).sort(function(a,b){ return parseInt(a,10) - parseInt(b,10); });
+  sel.innerHTML = '<option value="">All Employees</option>' +
+    sorted.map(function(e){ return '<option value="' + escapeHtml(e) + '">Emp ' + escapeHtml(e) + '</option>'; }).join('');
+  if (cur && emps[cur]) sel.value = cur;
+}
+
 function renderCallLog() {
-  const tbody = document.getElementById('callLogTable');
+  var tbody = document.getElementById('callLogTable');
   if (!tbody) return;
   if (callLog.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="7"><div class="empty"><div class="empty-icon">📞</div><p>No calls logged yet</p></div></td></tr>`;
+    tbody.innerHTML = '<tr><td colspan="7"><div class="empty"><div class="empty-icon">📞</div><p>No calls logged yet</p></div></td></tr>';
+    var cnt = document.getElementById('clResultCount');
+    if (cnt) cnt.textContent = '';
     return;
   }
-  tbody.innerHTML = callLog.map(c => `
-    <tr>
-      <td class="td-muted mono" style="white-space:nowrap;">${c.employeeId != null && String(c.employeeId).trim() !== '' ? escapeHtml(String(c.employeeId).trim()) : '—'}</td>
-      <td class="td-muted mono" style="white-space:nowrap;">${new Date(c.timestamp).toLocaleString('en-US',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'})}</td>
-      <td><strong>${c.company}</strong></td>
-      <td class="td-muted phone-cell">${formatPhoneDisplay(c.phone)}</td>
-      <td>${statusBadge(c.outcome)}</td>
-      <td class="td-muted" style="font-size:0.8rem;max-width:200px;">${c.notes || '—'}</td>
-      <td class="td-muted" style="font-size:0.75rem;">${c.callbackDate ? new Date(c.callbackDate).toLocaleDateString() : '—'}</td>
-    </tr>
-  `).join('');
+
+  var search = (document.getElementById('clSearch') || {}).value || '';
+  search = search.toLowerCase().trim();
+  var empFilter = (document.getElementById('clFilterEmp') || {}).value || '';
+  var outcomeFilter = (document.getElementById('clFilterOutcome') || {}).value || '';
+  var dateFilter = (document.getElementById('clFilterDate') || {}).value || '';
+
+  var now = new Date();
+  var todayStr = now.toDateString();
+  var weekAgo = new Date(now); weekAgo.setDate(weekAgo.getDate() - 7);
+  var monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+
+  var filtered = callLog.filter(function(c) {
+    if (search) {
+      var co = String(c.company || '').toLowerCase();
+      var ph = String(c.phone || '').toLowerCase();
+      if (co.indexOf(search) === -1 && ph.indexOf(search) === -1) return false;
+    }
+    if (empFilter && String(c.employeeId || '') !== empFilter) return false;
+    if (outcomeFilter && String(c.outcome || '').toLowerCase().replace(/\s+/g,'_') !== outcomeFilter) return false;
+    if (dateFilter) {
+      var d = new Date(c.timestamp);
+      if (dateFilter === 'today' && d.toDateString() !== todayStr) return false;
+      if (dateFilter === 'week' && d < weekAgo) return false;
+      if (dateFilter === 'month' && d < monthStart) return false;
+    }
+    return true;
+  });
+
+  var cnt = document.getElementById('clResultCount');
+  if (cnt) cnt.textContent = filtered.length + ' of ' + callLog.length;
+
+  if (filtered.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="7"><div class="empty"><div class="empty-icon">📞</div><p>No calls match filters</p></div></td></tr>';
+    return;
+  }
+  tbody.innerHTML = filtered.map(function(c) {
+    return '<tr>' +
+      '<td class="td-muted mono" style="white-space:nowrap;">' + (c.employeeId != null && String(c.employeeId).trim() !== '' ? escapeHtml(String(c.employeeId).trim()) : '—') + '</td>' +
+      '<td class="td-muted mono" style="white-space:nowrap;">' + new Date(c.timestamp).toLocaleString('en-US',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}) + '</td>' +
+      '<td><strong>' + escapeHtml(c.company || '') + '</strong></td>' +
+      '<td class="td-muted phone-cell">' + formatPhoneDisplay(c.phone) + '</td>' +
+      '<td>' + statusBadge(c.outcome) + '</td>' +
+      '<td class="td-muted" style="font-size:0.8rem;max-width:200px;">' + escapeHtml(c.notes || '—') + '</td>' +
+      '<td class="td-muted" style="font-size:0.75rem;">' + (c.callbackDate ? new Date(c.callbackDate).toLocaleDateString() : '—') + '</td>' +
+    '</tr>';
+  }).join('');
 }
 
 function appointmentContactGroupKey(a) {
@@ -7857,6 +7930,7 @@ function renderAll() {
   renderGoals();
   updateLeadFilters();
   renderLeads();
+  updateCallLogFilters();
   renderCallLog();
   renderAppointments();
   renderRemovalRequestsAdmin();

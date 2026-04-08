@@ -2468,6 +2468,17 @@ function scheduleLeadsTableFlush() {
   }, LEADS_TABLE_FLUSH_MS);
 }
 
+function upsertLeadToServer(lead) {
+  if (!lead || !lead.id) return;
+  var secret = getPipelineSecret();
+  if (!secret) return;
+  fetch('/api/portal-leads', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ secret: secret, action: 'upsert', lead: lead }),
+  }).catch(function () {});
+}
+
 async function flushLeadsToServer() {
   if (leadsSyncInFlight) return;
   const secret = getPipelineSecret();
@@ -5468,6 +5479,7 @@ function submitQueueLeadNote(leadId) {
   });
   syncLeadNotesStringFromLog(lead);
   save();
+  upsertLeadToServer(lead);
   if (ta) ta.value = '';
   renderAll();
   toast('Note added ✓');
@@ -5517,6 +5529,7 @@ function applyCallLogSave() {
   lead.lastContact = new Date().toISOString();
   if (callbackDate) lead.callbackDate = callbackDate;
   save();
+  upsertLeadToServer(lead);
 }
 
 function appointmentBookedFromCall(btn) {

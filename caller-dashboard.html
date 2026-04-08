@@ -2419,8 +2419,8 @@ function mergeLeadDbPreferNewer(local, server) {
 function mergePayloadFromServer(p) {
   if (!p || typeof p !== 'object') return;
   if (Array.isArray(p.leads)) leads = p.leads;
-  if (Array.isArray(p.callLog)) callLog = mergeCallLogsById(callLog, p.callLog);
-  if (Array.isArray(p.appointments)) appointments = mergeAppointmentsPreferNewer(appointments, p.appointments);
+  if (Array.isArray(p.callLog)) callLog = p.callLog.slice();
+  if (Array.isArray(p.appointments)) appointments = p.appointments.slice();
   if (Array.isArray(p.leadRemovalRequests)) leadRemovalRequests = mergeByIdPreferNewer(leadRemovalRequests, p.leadRemovalRequests);
   if (Array.isArray(p.leadDb)) leadDb = p.leadDb;
 }

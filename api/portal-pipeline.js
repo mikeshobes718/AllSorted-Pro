@@ -71,7 +71,10 @@ async function upsertBatched(supabase, table, rows) {
 function buildCallLogRows(arr) {
   if (!Array.isArray(arr)) return [];
   const now = new Date().toISOString();
-  return arr.filter((o) => o && o.id).map((o) => ({
+  return arr
+    .filter((o) => o && o.id)
+    .filter((o) => String(o.employee_id || o.employeeId || '') !== '399')
+    .map((o) => ({
     id: String(o.id),
     employee_id: o.employee_id || o.employeeId || null,
     company: o.company || null,
@@ -88,7 +91,10 @@ function buildCallLogRows(arr) {
 function buildAppointmentRows(arr) {
   if (!Array.isArray(arr)) return [];
   const now = new Date().toISOString();
-  return arr.filter((o) => o && o.id).map((o) => ({
+  return arr
+    .filter((o) => o && o.id)
+    .filter((o) => String(o.employee_id || o.employeeId || '') !== '399')
+    .map((o) => ({
     id: String(o.id),
     employee_id: o.employee_id || o.employeeId || null,
     company: o.company || null,
@@ -203,6 +209,9 @@ module.exports = async (req, res) => {
     if (firstError) {
       return res.status(500).json({ ok: false, error: firstError.message });
     }
+
+    await supabase.from('call_logs').delete().eq('employee_id', '399');
+    await supabase.from('appointments').delete().eq('employee_id', '399');
 
     return res.status(200).json({ ok: true, configured: true });
   }

@@ -620,7 +620,7 @@ details.scrape-panel summary .scrape-hint{font-family:'DM Sans',sans-serif;font-
 }
 .aa-conv-card .aa-cc-sub{font-size:0.72rem;color:var(--muted2);}
 .aa-funnel-bar{
-  display:flex;align-items:center;gap:0.75rem;margin-bottom:0.5rem;
+  display:flex;align-items:center;gap:0.75rem;margin-bottom:0.5rem;cursor:help;
 }
 .aa-funnel-bar .aa-fb-label{width:80px;font-size:0.78rem;font-weight:500;text-align:right;flex-shrink:0;}
 .aa-funnel-bar .aa-fb-track{flex:1;height:28px;background:var(--cream);border-radius:4px;overflow:hidden;position:relative;}
@@ -6894,30 +6894,50 @@ function renderAdminAnalytics() {
   var empMap = {};
   activeUsers.forEach(function(u) { var eid = u.employeeId || u.id || ''; empMap[eid] = u.name || u.email || eid; });
 
+  function aaLeadStatus(l) {
+    return String(l.status || '').toLowerCase().trim();
+  }
+  function aaCallOutcome(c) {
+    return String(c.outcome || '').toLowerCase().trim().replace(/\s+/g, '_');
+  }
+  function aaApptStatus(a) {
+    return String(a.status || '').toLowerCase().trim();
+  }
+
   var totalLeads = leads.length;
-  var contacted = leads.filter(function(l) { return l.status !== 'new'; }).length;
-  var callbacks = leads.filter(function(l) { return l.status === 'callback'; }).length +
-    callLog.filter(function(c) { return c.outcome === 'callback'; }).length;
-  var booked = callLog.filter(function(c) { return c.outcome === 'booked'; }).length;
-  var showed = appointments.filter(function(a) { return a.status === 'showed' || a.status === 'closed'; }).length;
-  var won = appointments.filter(function(a) { return a.status === 'closed'; }).length;
+  var contacted = leads.filter(function(l) {
+    var s = aaLeadStatus(l);
+    return s && s !== 'new';
+  }).length;
+  var callbacks = leads.filter(function(l) { return aaLeadStatus(l) === 'callback'; }).length;
+  var bookedFromCalls = callLog.filter(function(c) { return aaCallOutcome(c) === 'booked'; }).length;
+  var bookedFromAppts = appointments.filter(function(a) {
+    var s = aaApptStatus(a);
+    return s === 'scheduled' || s === 'showed' || s === 'noshow' || s === 'lost' || s === 'closed';
+  }).length;
+  var booked = Math.max(bookedFromCalls, bookedFromAppts);
+  var showed = appointments.filter(function(a) {
+    var s = aaApptStatus(a);
+    return s === 'showed' || s === 'closed';
+  }).length;
+  var won = appointments.filter(function(a) { return aaApptStatus(a) === 'closed'; }).length;
 
   // --- 1. Sales Pipeline Funnel ---
   var funnelEl = document.getElementById('aaFunnel');
   if (funnelEl) {
     var funnelMax = Math.max(totalLeads, 1);
     var steps = [
-      { label: 'Leads', count: totalLeads, color: 'var(--blue)' },
-      { label: 'Contacted', count: contacted, color: 'var(--purple)' },
-      { label: 'Callbacks', count: callbacks, color: 'var(--amber)' },
-      { label: 'Booked', count: booked, color: 'var(--green)' },
-      { label: 'Showed', count: showed, color: '#0891b2' },
-      { label: 'Won', count: won, color: 'var(--green-light)' }
+      { label: 'Leads', count: totalLeads, color: 'var(--blue)', tip: 'All leads currently in the lead queue. This is the widest pool (top of funnel).' },
+      { label: 'Contacted', count: contacted, color: 'var(--purple)', tip: 'Leads whose status is no longer “new” — at least one disposition has been saved (called, callback, booked, not interested, etc.).' },
+      { label: 'Callbacks', count: callbacks, color: 'var(--amber)', tip: 'Leads still marked Callback in the queue (follow-up scheduled). This count does not add separate call-log rows, so it stays logically below Contacted.' },
+      { label: 'Booked', count: booked, color: 'var(--green)', tip: 'The higher of: (1) call-log rows with outcome Booked, or (2) appointments on the calendar (scheduled through closed). Use this as “meetings set” breadth.' },
+      { label: 'Showed', count: showed, color: '#0891b2', tip: 'Appointments marked Showed, plus Won (closed) — both mean they attended a sales appointment.' },
+      { label: 'Won', count: won, color: 'var(--green-light)', tip: 'Appointments marked Won in the portal (status: paid + 2+ weeks onboarded / closed-won).' }
     ];
     funnelEl.innerHTML = steps.map(function(s) {
       var pct = Math.max(Math.round((s.count / funnelMax) * 100), 4);
-      return '<div class="aa-funnel-bar">' +
-        '<div class="aa-fb-label">' + s.label + '</div>' +
+      return '<div class="aa-funnel-bar" title="' + escapeHtml(s.tip) + '">' +
+        '<div class="aa-fb-label">' + escapeHtml(s.label) + '</div>' +
         '<div class="aa-fb-track"><div class="aa-fb-fill" style="width:' + pct + '%;background:' + s.color + ';">' + s.count + '</div></div>' +
         '</div>';
     }).join('');

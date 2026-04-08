@@ -1,14 +1,4 @@
-function getKv() {
-  if (!process.env.KV_REST_API_URL || !process.env.KV_REST_API_TOKEN) {
-    return null;
-  }
-  try {
-    return require('@vercel/kv').kv;
-  } catch {
-    return null;
-  }
-}
-
+const { getSupabaseAdmin } = require('../lib/supabase-server');
 const { mergeTrainingLinksWithDefaults, normalizeLinkSection } = require('./training-library-shared');
 
 module.exports = async (req, res) => {
@@ -38,27 +28,27 @@ module.exports = async (req, res) => {
 
   const scraperSecret = process.env.SCRAPER_SECRET || 'Free2026';
   const action = body.action;
-  const kv = getKv();
+  const supabase = getSupabaseAdmin();
 
   if (action === 'trainingGet') {
     let links = [];
-    if (kv) {
-      let raw;
+    if (supabase) {
       try {
-        raw = await kv.get('portal:training_links');
-      } catch {
-        raw = null;
-      }
-      if (raw != null) {
-        if (typeof raw === 'string') {
-          try {
-            links = JSON.parse(raw);
-          } catch {
-            links = [];
+        const { data } = await supabase
+          .from('portal_content')
+          .select('value')
+          .eq('key', 'training_links')
+          .maybeSingle();
+        if (data && data.value) {
+          const raw = data.value;
+          if (Array.isArray(raw)) {
+            links = raw;
+          } else if (typeof raw === 'string') {
+            try { links = JSON.parse(raw); } catch { links = []; }
           }
-        } else if (Array.isArray(raw)) {
-          links = raw;
         }
+      } catch {
+        links = [];
       }
     }
     if (!Array.isArray(links)) links = [];
@@ -66,7 +56,7 @@ module.exports = async (req, res) => {
     return res.status(200).json({
       ok: true,
       links,
-      configured: Boolean(kv),
+      configured: Boolean(supabase),
     });
   }
 
@@ -74,8 +64,8 @@ module.exports = async (req, res) => {
     if (body.secret !== scraperSecret) {
       return res.status(401).json({ error: 'Wrong password' });
     }
-    if (!kv) {
-      return res.status(503).json({ error: 'KV not configured' });
+    if (!supabase) {
+      return res.status(503).json({ error: 'Database not configured' });
     }
     const links = Array.isArray(body.links) ? body.links : [];
     const cleaned = links
@@ -97,7 +87,13 @@ module.exports = async (req, res) => {
         return t || u || n;
       });
     try {
-      await kv.set('portal:training_links', JSON.stringify(cleaned.slice(0, 80)));
+      const { error } = await supabase
+        .from('portal_content')
+        .upsert(
+          { key: 'training_links', value: cleaned.slice(0, 80), updated_at: new Date().toISOString() },
+          { onConflict: 'key' }
+        );
+      if (error) throw error;
     } catch (e) {
       return res.status(500).json({ error: e && e.message ? e.message : 'Save failed' });
     }
@@ -108,17 +104,24 @@ module.exports = async (req, res) => {
     if (body.secret !== scraperSecret) {
       return res.status(401).json({ error: 'Wrong password' });
     }
-    if (!kv) {
+    if (!supabase) {
       return res.status(200).json({ ok: true, content: '', configured: false });
     }
-    let raw;
+    let content = '';
     try {
-      raw = await kv.get('portal:assistant_kb');
+      const { data } = await supabase
+        .from('portal_content')
+        .select('value')
+        .eq('key', 'assistant_kb')
+        .maybeSingle();
+      if (data && data.value && typeof data.value === 'object') {
+        content = String(data.value.content || '');
+      } else if (data && typeof data.value === 'string') {
+        content = data.value;
+      }
     } catch {
-      raw = null;
+      content = '';
     }
-    const content =
-      raw == null ? '' : typeof raw === 'string' ? raw : String(raw);
     return res.status(200).json({
       ok: true,
       content: content.slice(0, 50000),
@@ -130,11 +133,17 @@ module.exports = async (req, res) => {
     if (body.secret !== scraperSecret) {
       return res.status(401).json({ error: 'Wrong password' });
     }
-    if (!kv) {
-      return res.status(503).json({ error: 'KV not configured' });
+    if (!supabase) {
+      return res.status(503).json({ error: 'Database not configured' });
     }
     try {
-      await kv.set('portal:assistant_kb', String(body.content || '').slice(0, 50000));
+      const { error } = await supabase
+        .from('portal_content')
+        .upsert(
+          { key: 'assistant_kb', value: { content: String(body.content || '').slice(0, 50000) }, updated_at: new Date().toISOString() },
+          { onConflict: 'key' }
+        );
+      if (error) throw error;
     } catch (e) {
       return res.status(500).json({ error: e && e.message ? e.message : 'Save failed' });
     }

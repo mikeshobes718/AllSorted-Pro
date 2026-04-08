@@ -1,44 +1,4 @@
-function getKv() {
-  if (!process.env.KV_REST_API_URL || !process.env.KV_REST_API_TOKEN) {
-    return null;
-  }
-  try {
-    return require('@vercel/kv').kv;
-  } catch {
-    return null;
-  }
-}
-
-async function readState(kv) {
-  let raw;
-  try {
-    raw = await kv.get('portal:team_chat_clear');
-  } catch {
-    raw = null;
-  }
-  if (raw == null) {
-    return { pending: {}, approved: {} };
-  }
-  let s = raw;
-  if (typeof raw === 'string') {
-    try {
-      s = JSON.parse(raw);
-    } catch {
-      return { pending: {}, approved: {} };
-    }
-  }
-  if (!s || typeof s !== 'object') {
-    return { pending: {}, approved: {} };
-  }
-  return {
-    pending: typeof s.pending === 'object' && s.pending ? s.pending : {},
-    approved: typeof s.approved === 'object' && s.approved ? s.approved : {},
-  };
-}
-
-async function writeState(kv, state) {
-  await kv.set('portal:team_chat_clear', state);
-}
+const { getSupabaseAdmin } = require('../lib/supabase-server');
 
 module.exports = async (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -67,14 +27,14 @@ module.exports = async (req, res) => {
 
   const scraperSecret = process.env.SCRAPER_SECRET || 'Free2026';
   const action = body.action;
-  const kv = getKv();
+  const supabase = getSupabaseAdmin();
 
   if (action === 'status') {
     const userId = body.userId;
     if (!userId || typeof userId !== 'string') {
       return res.status(400).json({ error: 'userId required' });
     }
-    if (!kv) {
+    if (!supabase) {
       return res.status(200).json({
         ok: true,
         configured: false,
@@ -82,12 +42,17 @@ module.exports = async (req, res) => {
         approved: false,
       });
     }
-    const state = await readState(kv);
+    const { data } = await supabase
+      .from('team_chat_clear_state')
+      .select('state')
+      .eq('user_id', userId)
+      .maybeSingle();
+
     return res.status(200).json({
       ok: true,
       configured: true,
-      pending: !!state.pending[userId],
-      approved: !!state.approved[userId],
+      pending: !!(data && data.state === 'pending'),
+      approved: !!(data && data.state === 'approved'),
     });
   }
 
@@ -96,17 +61,28 @@ module.exports = async (req, res) => {
     if (!userId || typeof userId !== 'string') {
       return res.status(400).json({ error: 'userId required' });
     }
-    if (!kv) {
+    if (!supabase) {
       return res.status(200).json({ ok: true, configured: false });
     }
-    const state = await readState(kv);
-    state.pending[userId] = {
-      email: String(body.email || '').slice(0, 200),
-      name: String(body.name || '').slice(0, 120),
-      requestedAt: new Date().toISOString(),
-    };
-    delete state.approved[userId];
-    await writeState(kv, state);
+    const now = new Date().toISOString();
+    const { error } = await supabase
+      .from('team_chat_clear_state')
+      .upsert(
+        {
+          user_id: userId,
+          state: 'pending',
+          requester_email: String(body.email || '').slice(0, 200),
+          requester_name: String(body.name || '').slice(0, 120),
+          requested_at: now,
+          approved_at: null,
+          updated_at: now,
+        },
+        { onConflict: 'user_id' }
+      );
+
+    if (error) {
+      return res.status(500).json({ error: error.message });
+    }
     return res.status(200).json({ ok: true, configured: true });
   }
 
@@ -115,12 +91,14 @@ module.exports = async (req, res) => {
     if (!userId || typeof userId !== 'string') {
       return res.status(400).json({ error: 'userId required' });
     }
-    if (!kv) {
+    if (!supabase) {
       return res.status(200).json({ ok: true, configured: false });
     }
-    const state = await readState(kv);
-    delete state.approved[userId];
-    await writeState(kv, state);
+    await supabase
+      .from('team_chat_clear_state')
+      .delete()
+      .eq('user_id', userId);
+
     return res.status(200).json({ ok: true });
   }
 
@@ -128,22 +106,36 @@ module.exports = async (req, res) => {
     if (body.secret !== scraperSecret) {
       return res.status(401).json({ error: 'Wrong password' });
     }
-    if (!kv) {
+    if (!supabase) {
       return res.status(200).json({ ok: true, configured: false, pending: [], approved: [] });
     }
-    const state = await readState(kv);
-    const pending = Object.keys(state.pending || {}).map(function (uid) {
-      const p = state.pending[uid];
-      return {
-        userId: uid,
-        email: (p && p.email) || '',
-        name: (p && p.name) || '',
-        requestedAt: (p && p.requestedAt) || '',
-      };
+    const { data, error } = await supabase
+      .from('team_chat_clear_state')
+      .select('*')
+      .or('state.eq.pending,state.eq.approved');
+
+    if (error) {
+      return res.status(500).json({ error: error.message });
+    }
+
+    const pending = [];
+    const approved = [];
+    (data || []).forEach(function (row) {
+      if (row.state === 'pending') {
+        pending.push({
+          userId: row.user_id,
+          email: row.requester_email || '',
+          name: row.requester_name || '',
+          requestedAt: row.requested_at || '',
+        });
+      } else if (row.state === 'approved') {
+        approved.push({
+          userId: row.user_id,
+          approvedAt: row.approved_at || '',
+        });
+      }
     });
-    const approved = Object.keys(state.approved || {}).map(function (uid) {
-      return { userId: uid, approvedAt: state.approved[uid] };
-    });
+
     return res.status(200).json({ ok: true, configured: true, pending, approved });
   }
 
@@ -155,16 +147,30 @@ module.exports = async (req, res) => {
     if (!userId || typeof userId !== 'string') {
       return res.status(400).json({ error: 'userId required' });
     }
-    if (!kv) {
-      return res.status(503).json({ error: 'KV not configured' });
+    if (!supabase) {
+      return res.status(503).json({ error: 'Supabase not configured' });
     }
-    const state = await readState(kv);
-    if (!state.pending[userId]) {
+
+    const { data: existing } = await supabase
+      .from('team_chat_clear_state')
+      .select('state')
+      .eq('user_id', userId)
+      .eq('state', 'pending')
+      .maybeSingle();
+
+    if (!existing) {
       return res.status(404).json({ error: 'No pending request for this user' });
     }
-    delete state.pending[userId];
-    state.approved[userId] = new Date().toISOString();
-    await writeState(kv, state);
+
+    const now = new Date().toISOString();
+    const { error } = await supabase
+      .from('team_chat_clear_state')
+      .update({ state: 'approved', approved_at: now, updated_at: now })
+      .eq('user_id', userId);
+
+    if (error) {
+      return res.status(500).json({ error: error.message });
+    }
     return res.status(200).json({ ok: true });
   }
 
@@ -176,12 +182,16 @@ module.exports = async (req, res) => {
     if (!userId || typeof userId !== 'string') {
       return res.status(400).json({ error: 'userId required' });
     }
-    if (!kv) {
-      return res.status(503).json({ error: 'KV not configured' });
+    if (!supabase) {
+      return res.status(503).json({ error: 'Supabase not configured' });
     }
-    const state = await readState(kv);
-    delete state.pending[userId];
-    await writeState(kv, state);
+
+    await supabase
+      .from('team_chat_clear_state')
+      .delete()
+      .eq('user_id', userId)
+      .eq('state', 'pending');
+
     return res.status(200).json({ ok: true });
   }
 

@@ -1,23 +1,4 @@
-const crypto = require('crypto');
-
-function getKv() {
-  if (!process.env.KV_REST_API_URL || !process.env.KV_REST_API_TOKEN) {
-    return null;
-  }
-  try {
-    return require('@vercel/kv').kv;
-  } catch {
-    return null;
-  }
-}
-
-function rosterKeyFromEmail(email) {
-  const e = String(email || '')
-    .trim()
-    .toLowerCase();
-  if (!e || e.indexOf('@') === -1) return null;
-  return 'portal:roster:byemail:v1:' + crypto.createHash('sha256').update(e).digest('hex');
-}
+const { getSupabaseAdmin } = require('../lib/supabase-server');
 
 function normalizeEmploymentStatus(v) {
   const allowed = ['active', 'inactive', 'training', 'interviewing', 'on_leave'];
@@ -60,9 +41,9 @@ module.exports = async (req, res) => {
     return res.status(401).json({ error: 'Wrong password' });
   }
 
-  const kv = getKv();
-  if (!kv) {
-    return res.status(200).json({ ok: false, error: 'kv_not_configured' });
+  const supabase = getSupabaseAdmin();
+  if (!supabase) {
+    return res.status(200).json({ ok: false, error: 'supabase_not_configured' });
   }
 
   const action = body.action;
@@ -75,34 +56,18 @@ module.exports = async (req, res) => {
       return res.status(400).json({ error: 'email required' });
     }
     const role = body.role === 'admin' ? 'admin' : 'caller';
-    const key = rosterKeyFromEmail(email);
-    if (!key) {
-      return res.status(400).json({ error: 'invalid email' });
+
+    const { data, error } = await supabase
+      .from('portal_users')
+      .update({ role, updated_at: new Date().toISOString() })
+      .eq('email', email)
+      .select('id');
+
+    if (error) {
+      return res.status(500).json({ error: error.message });
     }
-    let rec = null;
-    try {
-      rec = await kv.get(key);
-    } catch {
-      return res.status(500).json({ error: 'read failed' });
-    }
-    if (typeof rec === 'string') {
-      try {
-        rec = JSON.parse(rec);
-      } catch {
-        rec = null;
-      }
-    }
-    if (!rec || !rec.email) {
+    if (!data || data.length === 0) {
       return res.status(404).json({ ok: false, error: 'not_found' });
-    }
-    rec.role = role;
-    rec.updatedAt = new Date().toISOString();
-    try {
-      await kv.set(key, rec);
-    } catch (e) {
-      return res.status(500).json({
-        error: e && e.message ? e.message : 'Save failed',
-      });
     }
     return res.status(200).json({ ok: true });
   }
@@ -115,34 +80,18 @@ module.exports = async (req, res) => {
       return res.status(400).json({ error: 'email required' });
     }
     const status = normalizeEmploymentStatus(body.employmentStatus);
-    const key = rosterKeyFromEmail(email);
-    if (!key) {
-      return res.status(400).json({ error: 'invalid email' });
+
+    const { data, error } = await supabase
+      .from('portal_users')
+      .update({ employment_status: status, updated_at: new Date().toISOString() })
+      .eq('email', email)
+      .select('id');
+
+    if (error) {
+      return res.status(500).json({ error: error.message });
     }
-    let rec = null;
-    try {
-      rec = await kv.get(key);
-    } catch {
-      return res.status(500).json({ error: 'read failed' });
-    }
-    if (typeof rec === 'string') {
-      try {
-        rec = JSON.parse(rec);
-      } catch {
-        rec = null;
-      }
-    }
-    if (!rec || !rec.email) {
+    if (!data || data.length === 0) {
       return res.status(404).json({ ok: false, error: 'not_found' });
-    }
-    rec.employmentStatus = status;
-    rec.updatedAt = new Date().toISOString();
-    try {
-      await kv.set(key, rec);
-    } catch (e) {
-      return res.status(500).json({
-        error: e && e.message ? e.message : 'Save failed',
-      });
     }
     return res.status(200).json({ ok: true });
   }
@@ -154,17 +103,12 @@ module.exports = async (req, res) => {
     if (!email || email.indexOf('@') === -1) {
       return res.status(400).json({ error: 'email required' });
     }
-    const key = rosterKeyFromEmail(email);
-    if (!key) {
-      return res.status(400).json({ error: 'invalid email' });
-    }
-    try {
-      await kv.del(key);
-    } catch (e) {
-      return res.status(500).json({
-        error: e && e.message ? e.message : 'Delete failed',
-      });
-    }
+
+    await supabase
+      .from('portal_users')
+      .update({ employment_status: 'inactive', updated_at: new Date().toISOString() })
+      .eq('email', email);
+
     return res.status(200).json({ ok: true });
   }
 

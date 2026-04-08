@@ -42,9 +42,15 @@ const DEFAULT_TRAINING_LINKS = [
     kind: 'Presentation',
   },
   {
+    title: 'Dialpad — app downloads',
+    url: 'https://www.dialpad.com/download/',
+    note: 'Download Dialpad for calling and messaging (desktop and mobile).',
+    kind: 'Link',
+  },
+  {
     title: 'AllSorted Pro Contractor Agreement (v2)',
     url: '/allsortedpro_contractor_agreement.pdf',
-    note: 'Standard contractor agreement — view in the browser or download.',
+    note: 'Latest contractor agreement (v2 PDF) — view in the browser or download.',
     kind: 'PDF',
     section: 'legal',
   },

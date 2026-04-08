@@ -123,7 +123,7 @@
 <body>
   <div class="card">
     <div class="logo">AllSorted <span>Pro</span></div>
-    <p class="sub">Create an account. You will be a <strong>Caller</strong> by default. An admin can change your role in <strong>Admin → Team members</strong>.</p>
+    <p class="sub">Create an account. You will be a <strong>Caller</strong> by default. An admin can change your role later. Your login works on every device — phone, laptop, any browser.</p>
 
     <form id="regForm" onsubmit="submitRegister(event);">
       <label class="form-label" for="firstName">First name</label>
@@ -147,7 +147,7 @@
 
       <div class="err" id="regErr" aria-live="polite"></div>
 
-      <div class="hint-box">Account data is stored in <strong>this browser</strong>. New accounts are <strong>pending until an admin approves</strong> you in Admin → Signup approvals. You will get an email to admins if Resend is configured. Do not reuse an important password. <a href="reset-password.html" style="color:var(--green);">Forgot password?</a></div>
+      <div class="hint-box">New accounts are <strong>pending until an admin approves</strong> you in Admin → Signup approvals. Do not reuse an important password. <a href="reset-password.html" style="color:var(--green);">Forgot password?</a></div>
 
       <button type="submit" class="btn">Create account</button>
     </form>
@@ -188,19 +188,22 @@
 
     async function submitRegister(ev) {
       ev.preventDefault();
-      document.getElementById('regErr').textContent = '';
+      var errEl = document.getElementById('regErr');
+      errEl.textContent = '';
       var firstName = document.getElementById('firstName').value.trim();
       var lastName = document.getElementById('lastName').value.trim();
-      if (!firstName || !lastName) {
-        document.getElementById('regErr').textContent = 'First name and last name are required';
-        return;
-      }
+      if (!firstName || !lastName) { errEl.textContent = 'First name and last name are required'; return; }
       var name = firstName + ' ' + lastName;
       var email = document.getElementById('email').value.trim();
       var password = document.getElementById('password').value;
-      var r = registerUser(email, password, name);
+
+      errEl.textContent = 'Creating account…';
+      errEl.style.color = 'var(--muted)';
+
+      var r = await registerUser(email, password, name);
       if (!r.ok) {
-        document.getElementById('regErr').textContent = r.error || 'Registration failed';
+        errEl.textContent = r.error || 'Registration failed';
+        errEl.style.color = '';
         return;
       }
       if (r.user) {
@@ -208,25 +211,15 @@
           await fetch('/api/register-notify', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              registrantEmail: r.user.email,
-              registrantName: r.user.name || '',
-              employeeId: r.user.employeeId,
-              adminEmails: getAdminNotifyEmails(),
-            }),
+            body: JSON.stringify({ registrantEmail: r.user.email, registrantName: r.user.name || '', employeeId: r.user.employeeId, adminEmails: getAdminNotifyEmails() }),
           });
         } catch (e) {}
       }
-      var lr = loginUser(email, password);
-      if (!lr.ok) {
-        window.location.href = 'login.html?return=caller-dashboard.html';
-        return;
-      }
+      var lr = await loginUser(email, password);
+      if (!lr.ok) { window.location.href = 'login.html?return=caller-dashboard.html'; return; }
       var gate = await checkPortalAccessOrRedirect();
       if (!gate) return;
-      if (typeof syncPortalRosterToServer === 'function' && lr.user) {
-        await syncPortalRosterToServer(lr.user);
-      }
+      if (typeof syncPortalRosterToServer === 'function' && lr.user) await syncPortalRosterToServer(lr.user);
       window.location.href = 'caller-dashboard.html';
     }
   </script>

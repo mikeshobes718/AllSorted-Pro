@@ -169,6 +169,25 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .dashboard-legend-list{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:0.5rem;}
 .dashboard-legend-list li{margin:0;font-size:0.85rem;color:var(--muted);line-height:1.5;padding-left:0.75rem;border-left:2px solid rgba(22,101,52,0.2);}
 .dashboard-legend-list strong{color:var(--text);font-weight:600;}
+.career-path-panel{border-color:rgba(22,101,52,0.25);}
+.career-path-body{font-size:0.88rem;color:var(--text);line-height:1.55;}
+.career-path-body p{margin:0 0 0.85rem;}
+.career-path-body p:last-child{margin-bottom:0;}
+.career-path-body h4{font-size:0.72rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--green);font-weight:700;margin:1rem 0 0.5rem;}
+.career-path-body h4:first-child{margin-top:0;}
+.career-path-body ul{margin:0 0 0.85rem;padding-left:1.2rem;}
+.career-path-body li{margin:0.35rem 0;}
+.career-path-lead{color:var(--muted);}
+.career-path-example{font-size:0.82rem;color:var(--muted);margin:0.35rem 0 0;padding:0.65rem 0.75rem;background:var(--surface2);border-radius:6px;border:1px solid var(--border);}
+.shift-options-panel{border-color:rgba(47,104,164,0.22);}
+.shift-options-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;}
+@media (max-width:720px){.shift-options-grid{grid-template-columns:1fr;}}
+.shift-option-block{margin:0;}
+.shift-option-title{font-family:'Fraunces',serif;font-size:0.95rem;font-weight:700;color:var(--text);margin:0 0 0.65rem;letter-spacing:-0.01em;}
+.shift-options-table{width:100%;border-collapse:collapse;font-size:0.84rem;color:var(--text);}
+.shift-options-table th,.shift-options-table td{padding:0.5rem 0.65rem;border:1px solid var(--border);text-align:left;vertical-align:middle;}
+.shift-options-table thead th{background:var(--surface2);font-size:0.65rem;text-transform:uppercase;letter-spacing:0.07em;color:var(--muted);font-weight:600;}
+.shift-options-table tbody th{font-weight:600;color:var(--muted);width:38%;background:var(--cream);}
 #view-resources.resources-view{padding:0 0 2rem;}
 .resources-section{margin:0 0 2.5rem;}
 .resources-section:last-child{margin-bottom:0;}
@@ -254,6 +273,10 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .appt-lead-notes-placeholder{margin:0;font-size:0.74rem;color:var(--muted);line-height:1.45;}
 
 .table-wrap{overflow-x:auto;border-radius:var(--radius);border:1px solid var(--border);background:var(--surface);box-shadow:var(--shadow-sm);}
+.call-log-table-scroll{max-height:calc(100vh - 220px);overflow-y:auto;overflow-x:auto;-webkit-overflow-scrolling:touch;}
+#view-log .call-log-table-scroll thead th{position:sticky;top:0;z-index:2;box-shadow:0 1px 0 var(--border);}
+.appt-table-scroll{max-height:calc(100vh - 220px);overflow-y:auto;overflow-x:auto;-webkit-overflow-scrolling:touch;}
+#view-appointments .appt-table-scroll thead th{position:sticky;top:0;z-index:2;box-shadow:0 1px 0 var(--border);}
 table{width:100%;border-collapse:collapse;}
 thead th{text-align:left;font-size:0.75rem;text-transform:uppercase;letter-spacing:0.05em;color:var(--muted);padding:0.75rem 1rem;border-bottom:1px solid var(--border);font-weight:600;background:var(--bg);}
 tbody tr{border-bottom:1px solid var(--border);transition:background 0.15s;cursor:pointer;background:var(--surface);}
@@ -532,6 +555,57 @@ details.scrape-panel summary .scrape-hint{font-family:'DM Sans',sans-serif;font-
 .team-chat-input{flex:1;min-height:2.85rem;max-height:160px;margin:0;border-radius:10px;border:1px solid var(--border);padding:0.6rem 0.75rem;}
 .team-chat-input:focus{outline:none;border-color:rgba(26,61,43,0.35);box-shadow:0 0 0 2px rgba(26,61,43,0.08);}
 .team-chat-send{flex-shrink:0;align-self:flex-start;min-height:2.75rem;margin-top:0.15rem;padding-left:1.1rem;padding-right:1.1rem;border-radius:10px;}
+.team-chat-chips{display:flex;flex-wrap:wrap;gap:0.4rem;padding:0.25rem 0 0.5rem;justify-content:flex-start;}
+.team-chat-chip{background:var(--surface);border:1px solid var(--border);color:var(--text);font-size:0.78rem;padding:0.4rem 0.75rem;border-radius:999px;cursor:pointer;transition:all 0.15s ease;white-space:nowrap;font-weight:500;line-height:1.3;}
+.team-chat-chip:hover{background:rgba(26,61,43,0.08);border-color:rgba(26,61,43,0.25);color:var(--green);}
+.chat-msg-bot .chat-msg-inner a{color:var(--green);text-decoration:underline;}
+.chat-msg-bot .chat-msg-inner strong{font-weight:600;}
+.chat-msg-bot .chat-msg-inner code{background:rgba(0,0,0,0.06);padding:0.1em 0.35em;border-radius:3px;font-size:0.85em;}
+
+.tc-status-card{text-align:center;padding:2rem 1rem;}
+.tc-card-off{background:var(--surface);border:2px solid var(--border);border-radius:12px;}
+.tc-card-on{background:linear-gradient(135deg,rgba(26,61,43,0.06),rgba(26,61,43,0.02));border:2px solid var(--green);border-radius:12px;}
+.tc-card-break{background:linear-gradient(135deg,rgba(194,145,52,0.08),rgba(194,145,52,0.02));border:2px solid var(--amber);border-radius:12px;}
+.tc-status-label{font-size:1rem;font-weight:500;margin-bottom:0.5rem;}
+.tc-status-on{color:var(--green);}
+.tc-status-off{color:var(--muted);}
+.tc-status-break{color:var(--amber);}
+.tc-timer{font-size:2.5rem;font-weight:700;letter-spacing:0.04em;font-variant-numeric:tabular-nums;color:var(--text);margin-bottom:0.5rem;}
+.tc-break-label{font-size:0.88rem;color:var(--amber);font-weight:500;margin-bottom:0.5rem;}
+.tc-note-row{margin-bottom:1rem;}
+.tc-note-input{width:100%;max-width:400px;margin:0 auto;display:block;padding:0.45rem 0.75rem;border:1px solid var(--border);border-radius:6px;font-size:0.85rem;background:var(--bg);color:var(--text);}
+.tc-actions{display:flex;gap:0.75rem;justify-content:center;flex-wrap:wrap;}
+.tc-btn{padding:0.7rem 2rem;border:none;border-radius:8px;font-size:0.95rem;font-weight:600;cursor:pointer;transition:all 0.15s ease;letter-spacing:0.01em;}
+.tc-btn-in{background:var(--green);color:#fff;}
+.tc-btn-in:hover{background:#163d2b;transform:translateY(-1px);}
+.tc-btn-out{background:var(--red,#c0392b);color:#fff;}
+.tc-btn-out:hover{background:#922b21;transform:translateY(-1px);}
+.tc-btn-break{background:var(--amber);color:#fff;}
+.tc-btn-break:hover{background:#a67c24;transform:translateY(-1px);}
+.tc-btn-break-end{background:var(--blue,#2980b9);color:#fff;}
+.tc-btn-break-end:hover{background:#1f6b9f;transform:translateY(-1px);}
+.tc-summary-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;text-align:center;}
+.tc-summary-item{background:var(--cream);border:1px solid var(--border);border-radius:8px;padding:1rem 0.5rem;}
+.tc-summary-val{font-size:1.4rem;font-weight:700;color:var(--green);}
+.tc-summary-lbl{font-size:0.75rem;color:var(--muted);margin-top:0.2rem;text-transform:uppercase;letter-spacing:0.05em;}
+.tc-flag{display:inline-block;font-size:0.7rem;padding:0.15rem 0.5rem;border-radius:999px;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;}
+.tc-flag-ok{background:rgba(26,61,43,0.1);color:var(--green);}
+.tc-flag-warn{background:rgba(194,145,52,0.15);color:#8a6914;}
+.tc-flag-row{padding:0.35rem 0;font-size:0.85rem;border-bottom:1px solid var(--border);}
+.tc-flag-row:last-child{border-bottom:none;}
+.tc-weekly-card{background:var(--cream);border:1px solid var(--border);border-radius:8px;padding:1rem;}
+.tc-weekly-name{font-weight:600;font-size:0.92rem;margin-bottom:0.5rem;color:var(--green);}
+.tc-weekly-row{display:flex;justify-content:space-between;font-size:0.82rem;padding:0.2rem 0;color:var(--text);}
+.tc-feed-item{padding:0.3rem 0;font-size:0.82rem;border-bottom:1px solid var(--border);}
+.tc-feed-item:last-child{border-bottom:none;}
+.tc-feed-time{color:var(--muted);font-size:0.75rem;margin-right:0.4rem;font-variant-numeric:tabular-nums;}
+@media(max-width:600px){
+  .tc-summary-grid{grid-template-columns:1fr;}
+  .tc-timer{font-size:1.8rem;}
+  .tc-btn{padding:0.6rem 1.2rem;font-size:0.85rem;}
+  #pulseGridWrap{grid-template-columns:1fr !important;}
+  #pulseGridWrap > div:first-child{border-right:none !important;border-bottom:1px solid var(--border);}
+}
 </style>
 </head>
 <body>
@@ -544,7 +618,7 @@ details.scrape-panel summary .scrape-hint{font-family:'DM Sans',sans-serif;font-
 <div class="topbar">
   <a href="/" class="topbar-logo">AllSorted Pro <span id="portalTitleSuffix">/ Caller Portal</span></a>
   <div class="topbar-right">
-    <div class="topbar-commission" style="display:flex;align-items:center;gap:0.4rem;background:var(--surface2);border:1px solid var(--border);padding:0.35rem 0.75rem;border-radius:999px;margin-right:0.5rem;" title="Your Commission ($25/showed appt)">
+    <div class="topbar-commission" style="display:flex;align-items:center;gap:0.4rem;background:var(--surface2);border:1px solid var(--border);padding:0.35rem 0.75rem;border-radius:999px;margin-right:0.5rem;" title="Your Commission ($25 per Won appointment)">
       <span style="font-size:0.75rem;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:0.05em;">Commission</span>
       <strong id="topbarCommission" style="color:var(--green);font-size:0.95rem;font-weight:700;letter-spacing:-0.02em;">$0</strong>
     </div>
@@ -566,13 +640,16 @@ details.scrape-panel summary .scrape-hint{font-family:'DM Sans',sans-serif;font-
     <div class="sidebar-toggle-wrap">
       <button type="button" class="sidebar-toggle" id="sidebarToggle" onclick="toggleSidebar()" aria-expanded="true" aria-label="Collapse sidebar" title="Collapse sidebar">Hide</button>
     </div>
-    <div class="nav-section">
+    <div class="nav-section" id="navSectionDashboard">
       <div class="nav-label">Dashboard</div>
       <button type="button" class="nav-item active" data-view="dashboard" onclick="showView('dashboard')" title="Overview">
         <span class="nav-icon">📊</span><span class="nav-text">Overview</span>
       </button>
       <button type="button" class="nav-item" data-view="goals" onclick="showView('goals')" title="Goals &amp; Targets">
         <span class="nav-icon">🎯</span><span class="nav-text">Goals</span>
+      </button>
+      <button type="button" class="nav-item" data-view="timeclock" id="navTimeclockItem" onclick="showView('timeclock')" title="Time Clock">
+        <span class="nav-icon">⏱️</span><span class="nav-text">Time Clock</span>
       </button>
     </div>
     <div class="nav-section" id="navSectionLeads">
@@ -593,14 +670,17 @@ details.scrape-panel summary .scrape-hint{font-family:'DM Sans',sans-serif;font-
         <span class="nav-count" id="navApptCount">0</span>
       </button>
     </div>
-    <div class="nav-section">
+    <div class="nav-section" id="navSectionAdmin">
       <div class="nav-label">Admin</div>
       <button type="button" class="nav-item" data-view="admin" id="navAdminItem" onclick="showView('admin')" title="Admin">
         <span class="nav-icon">⚙️</span><span class="nav-text">Admin</span>
         <span class="nav-count" id="navDbCount">0</span>
       </button>
+      <button type="button" class="nav-item" data-view="quo" id="navQuoItem" onclick="showView('quo')" title="Quo line (OpenPhone) — admin only" style="display:none;">
+        <span class="nav-icon">📱</span><span class="nav-text">Quo line</span>
+      </button>
     </div>
-    <div class="nav-section">
+    <div class="nav-section" id="navSectionLibrary">
       <div class="nav-label">Library</div>
       <button type="button" class="nav-item" data-view="script" onclick="showView('script')" title="Script &amp; Objections">
         <span class="nav-icon">💬</span><span class="nav-text">Script &amp; Objections</span>
@@ -612,7 +692,7 @@ details.scrape-panel summary .scrape-hint{font-family:'DM Sans',sans-serif;font-
         <span class="nav-icon">📚</span><span class="nav-text">Resources</span>
       </button>
     </div>
-    <div class="nav-section">
+    <div class="nav-section" id="navSectionAccount">
       <div class="nav-label">Account</div>
       <button type="button" class="nav-item" data-view="settings" onclick="showView('settings')" title="Settings">
         <span class="nav-icon">👤</span><span class="nav-text">Settings</span>
@@ -647,7 +727,7 @@ details.scrape-panel summary .scrape-hint{font-family:'DM Sans',sans-serif;font-
         <div class="stat-card stat-purple">
           <div class="stat-label">Commission Earned</div>
           <div class="stat-val" id="statCommission">$0</div>
-          <div class="stat-sub">$25 per showed appt</div>
+          <div class="stat-sub">$25 per Won appt</div>
         </div>
       </div>
 
@@ -675,7 +755,7 @@ details.scrape-panel summary .scrape-hint{font-family:'DM Sans',sans-serif;font-
                 <li><strong>Resources</strong> — Files and references the team shares (PDFs, guides, links).</li>
                 <li><strong>Settings</strong> — Your profile and app options.</li>
                 <li><strong>Sign out</strong> — Ends your session; use it on shared machines or when you’re finished for the day.</li>
-                <li><strong>My commission</strong> (bottom of sidebar) — Showed or won appointments that were <strong>logged under your employee ID</strong>, at the rate on the card (needs Emp # on your account).</li>
+                <li><strong>My commission</strong> (bottom of sidebar) — <strong>Won</strong> appointments (paid + onboarded) that were <strong>logged under your employee ID</strong>, at the rate on the card (needs Emp # on your account). Showed alone does not pay the $25.</li>
               </ul>
             </div>
             <div class="dashboard-legend-col">
@@ -684,7 +764,7 @@ details.scrape-panel summary .scrape-hint{font-family:'DM Sans',sans-serif;font-
                 <li><strong>Calls Today</strong> — Dial attempts logged today. Log every try so activity stays accurate for you and the team.</li>
                 <li><strong>Booked This Week</strong> — Appointments set during the current calendar week.</li>
                 <li><strong>Show Rate</strong> — Of the meetings booked in scope, what share actually happened (showed). Higher means prospects are keeping commitments.</li>
-                <li><strong>Commission Earned</strong> — Your payout only: <em>showed</em> or <em>won</em> appointments that were logged with <strong>your employee ID</strong>, at the rate under the number.</li>
+                <li><strong>Commission Earned</strong> — Your payout only: <em>Won</em> appointments (not Showed alone) logged with <strong>your employee ID</strong>, at $25 each under the number.</li>
               </ul>
               <h3 class="dashboard-legend-sub">Panels below</h3>
               <ul class="dashboard-legend-list">
@@ -706,6 +786,101 @@ details.scrape-panel summary .scrape-hint{font-family:'DM Sans',sans-serif;font-
           </div>
         </div>
       </details>
+
+      <div class="panel career-path-panel" style="margin-bottom:1rem;">
+        <div class="panel-header">
+          <div class="panel-title">🚀 Career Path: Sales Manager Position</div>
+        </div>
+        <div class="panel-body career-path-body">
+          <p class="career-path-lead"><strong>This position is open and waiting — someone just needs to earn it.</strong></p>
+          <p>AllSorted Pro is growing and we need a Sales Manager to lead the calling team. This person will take on a reduced calling load, manage and train callers, and earn recurring income on every client the entire team brings in.</p>
+          <h4>What the Sales Manager does</h4>
+          <ul>
+            <li>40 dials/day (reduced from 80)</li>
+            <li>Train and onboard new callers</li>
+            <li>Listen to recorded calls and coach callers weekly</li>
+            <li>Handle escalated prospects and difficult objections</li>
+            <li>Report team performance to ownership</li>
+          </ul>
+          <h4>What the Sales Manager earns</h4>
+          <ul>
+            <li>$400/month base pay</li>
+            <li>$25 one-time bonus per personal Won (paid client — same rule as callers; still active)</li>
+            <li>$5/month recurring for every active client <strong>any</strong> caller on the team closes</li>
+            <li>$10/month recurring on your own personally closed clients</li>
+          </ul>
+          <p class="career-path-example">Example: at 50 total team clients = $650/month + your own close bonuses. At 100 clients = $900/month+.</p>
+          <h4>How you qualify</h4>
+          <ul>
+            <li>Minimum 3 months as a caller</li>
+            <li>30+ clients personally closed and onboarded</li>
+            <li>Zero ghost days in your last 60 days</li>
+            <li>Consistent 80+ daily dials maintained throughout</li>
+            <li>Demonstrated ability to handle objections and close independently</li>
+          </ul>
+          <p><strong>This is not a guarantee — it&apos;s earned.</strong> The first caller who hits these numbers gets the promotion. If nobody qualifies, the position stays open. No shortcuts, no favorites. Your dashboard tracks your progress automatically.</p>
+        </div>
+      </div>
+
+      <div class="panel shift-options-panel" style="margin-bottom:1rem;">
+        <div class="panel-header">
+          <div class="panel-title">Two shift options to offer</div>
+        </div>
+        <div class="panel-body">
+          <div class="shift-options-grid">
+            <div class="shift-option-block">
+              <h3 class="shift-option-title">Shift A — EST focus (best)</h3>
+              <table class="shift-options-table" aria-label="Shift A times">
+                <thead>
+                  <tr>
+                    <th scope="col"></th>
+                    <th scope="col">Time</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <th scope="row">US time</th>
+                    <td>8am–12pm EST</td>
+                  </tr>
+                  <tr>
+                    <th scope="row">Philippines time</th>
+                    <td>9pm–1am PHT</td>
+                  </tr>
+                  <tr>
+                    <th scope="row">Hours</th>
+                    <td>4 hrs/day × 5 days = 20 hrs/week</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="shift-option-block">
+              <h3 class="shift-option-title">Shift B — CST focus (alternative)</h3>
+              <table class="shift-options-table" aria-label="Shift B times">
+                <thead>
+                  <tr>
+                    <th scope="col"></th>
+                    <th scope="col">Time</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <th scope="row">US time</th>
+                    <td>8am–12pm CST</td>
+                  </tr>
+                  <tr>
+                    <th scope="row">Philippines time</th>
+                    <td>10pm–2am PHT</td>
+                  </tr>
+                  <tr>
+                    <th scope="row">Hours</th>
+                    <td>4 hrs/day × 5 days = 20 hrs/week</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
 
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
 
@@ -738,6 +913,43 @@ details.scrape-panel summary .scrape-hint{font-family:'DM Sans',sans-serif;font-
           </div>
         </div>
       </div>
+
+      <!-- TEAM PULSE — admin only -->
+      <div id="teamPulseSection" style="display:none;margin-top:1rem;">
+        <div class="panel">
+          <div class="panel-header" style="justify-content:space-between;align-items:center;">
+            <div class="panel-title">Team Pulse</div>
+            <span style="font-size:0.75rem;color:var(--muted);">Admin only — live team performance</span>
+          </div>
+          <div class="panel-body" style="padding:0;">
+
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:0;border-bottom:1px solid var(--border);" id="pulseStatCards"></div>
+
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:0;" id="pulseGridWrap">
+              <div style="border-right:1px solid var(--border);padding:1rem;">
+                <h4 style="font-size:0.82rem;font-weight:600;margin:0 0 0.75rem;color:var(--text);">Dials Today by Employee</h4>
+                <div id="pulseDialsToday" style="font-size:0.82rem;"></div>
+              </div>
+              <div style="padding:1rem;">
+                <h4 style="font-size:0.82rem;font-weight:600;margin:0 0 0.75rem;color:var(--text);">Outcome Breakdown (7 days)</h4>
+                <div id="pulseOutcomes" style="font-size:0.82rem;"></div>
+              </div>
+            </div>
+
+            <div style="border-top:1px solid var(--border);padding:1rem;">
+              <h4 style="font-size:0.82rem;font-weight:600;margin:0 0 0.75rem;color:var(--text);">Weekly Comparison</h4>
+              <div id="pulseWeekly" style="font-size:0.82rem;"></div>
+            </div>
+
+            <div id="pulseAlerts" style="border-top:1px solid var(--border);padding:1rem;display:none;">
+              <h4 style="font-size:0.82rem;font-weight:600;margin:0 0 0.75rem;color:var(--red);">Alerts</h4>
+              <div id="pulseAlertsList" style="font-size:0.82rem;"></div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
     </div>
 
     <!-- GOALS VIEW -->
@@ -752,6 +964,48 @@ details.scrape-panel summary .scrape-hint{font-family:'DM Sans',sans-serif;font-
         </div>
         <div class="panel-body" id="goalsContent">
           <!-- Goals injected here -->
+        </div>
+      </div>
+    </div>
+
+    <!-- TIME CLOCK VIEW -->
+    <div class="view" id="view-timeclock">
+      <div class="panel tc-status-panel">
+        <div class="panel-header"><div class="panel-title">Time Clock</div></div>
+        <div class="panel-body">
+          <div id="tcStatusCard" class="tc-status-card">
+            <div class="tc-status-label" id="tcStatusLabel">Loading...</div>
+            <div class="tc-timer" id="tcTimer">--:--:--</div>
+            <div class="tc-break-label" id="tcBreakLabel" style="display:none;"></div>
+            <div class="tc-note-row">
+              <input type="text" id="tcNote" class="tc-note-input" placeholder="Optional note (e.g. starting late — approved by Mike)" maxlength="300">
+            </div>
+            <div class="tc-actions" id="tcActions">
+              <button class="tc-btn tc-btn-in" id="tcBtnIn" onclick="tcClockIn()">Clock In</button>
+              <button class="tc-btn tc-btn-break" id="tcBtnBreakStart" onclick="tcBreakStart()" style="display:none;">Start Break</button>
+              <button class="tc-btn tc-btn-break-end" id="tcBtnBreakEnd" onclick="tcBreakEnd()" style="display:none;">End Break</button>
+              <button class="tc-btn tc-btn-out" id="tcBtnOut" onclick="tcClockOut()" style="display:none;">Clock Out</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-header"><div class="panel-title">Today's Summary</div></div>
+        <div class="panel-body" id="tcTodaySummary">
+          <p style="color:#888;">Clock in to see today's summary.</p>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-header"><div class="panel-title">My Timesheet — Last 14 Days</div></div>
+        <div class="panel-body" style="overflow-x:auto;">
+          <table class="admin-table" id="tcTimesheetTable">
+            <thead>
+              <tr><th>Date</th><th>Clock In</th><th>Clock Out</th><th>Breaks</th><th>Net Hours</th><th>Notes</th></tr>
+            </thead>
+            <tbody id="tcTimesheetBody">
+              <tr><td colspan="6" style="color:#888;">Loading...</td></tr>
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
@@ -804,8 +1058,8 @@ details.scrape-panel summary .scrape-hint{font-family:'DM Sans',sans-serif;font-
           <span style="font-size:0.75rem;color:var(--muted);">All logged call attempts</span>
         </div>
         <div class="panel-body">
-          <div class="table-wrap">
-            <table>
+          <div class="table-wrap call-log-table-scroll" role="region" aria-label="Call log table, scroll vertically for more rows">
+            <table class="queue-table">
               <thead>
                 <tr>
                   <th>Employee ID</th>
@@ -860,7 +1114,7 @@ details.scrape-panel summary .scrape-hint{font-family:'DM Sans',sans-serif;font-
         </div>
         <div class="admin-server-pass-row" style="display:flex;align-items:center;gap:0.75rem;background:var(--surface);padding:0.5rem 0.75rem;border-radius:6px;border:1px solid var(--border);box-shadow:var(--shadow-sm);">
           <label class="form-label" for="adminPortalSecret" style="margin:0;font-size:0.75rem;text-transform:uppercase;letter-spacing:0.05em;color:var(--muted);font-weight:600;">Portal password</label>
-          <input type="password" class="form-input admin-transcripts-pass" id="adminPortalSecret" placeholder="Password" value="Free2026" autocomplete="off" title="One password for scraper, team sync, AI/KV — must match SCRAPER_SECRET in Vercel" style="margin:0;padding:0.35rem 0.5rem;min-height:0;" oninput="persistPortalSecretFromInput()">
+          <input type="password" class="form-input admin-transcripts-pass" id="adminPortalSecret" placeholder="Password" value="Free2026" autocomplete="off" title="One password for scraper, team sync, AI — must match SCRAPER_SECRET in Vercel" style="margin:0;padding:0.35rem 0.5rem;min-height:0;" oninput="persistPortalSecretFromInput()">
         </div>
       </div>
 
@@ -869,6 +1123,7 @@ details.scrape-panel summary .scrape-hint{font-family:'DM Sans',sans-serif;font-
         <button class="admin-tab" onclick="switchAdminTab('database')">Lead Database</button>
         <button class="admin-tab" onclick="switchAdminTab('assistant')">AI &amp; Training</button>
         <button class="admin-tab" onclick="switchAdminTab('team')">Team &amp; Queues</button>
+        <button class="admin-tab" onclick="switchAdminTab('timesheets')">Timesheets</button>
       </div>
 
       <div id="admin-tab-scraper" class="admin-tab-content" style="display:block;">
@@ -1059,7 +1314,7 @@ details.scrape-panel summary .scrape-hint{font-family:'DM Sans',sans-serif;font-
         <details class="admin-transcripts-panel" open>
         <summary class="admin-transcripts-summary">Knowledge base (AI)</summary>
         <div class="admin-transcripts-inner">
-          <p class="admin-transcripts-hint">Merged into the AI system prompt (services, pricing, tone, FAQs). Uses the password above. Requires KV. The latest saved text loads automatically when you open <strong>Admin</strong>. To pull the server copy again after editing here, refresh the page.</p>
+          <p class="admin-transcripts-hint">Merged into the AI system prompt (services, pricing, tone, FAQs). Uses the password above. The latest saved text loads automatically when you open <strong>Admin</strong>. To pull the server copy again after editing here, refresh the page.</p>
           <textarea id="assistantKbTextarea" class="admin-kb-textarea" placeholder="Describe AllSorted Pro: services, ideal customer, pricing, objections, compliance notes, anything the team should align on…" maxlength="50000"></textarea>
           <div class="admin-transcripts-toolbar admin-transcripts-toolbar--full">
             <button type="button" class="btn btn-green btn-sm" onclick="saveAssistantKb()">Save</button>
@@ -1096,7 +1351,7 @@ details.scrape-panel summary .scrape-hint{font-family:'DM Sans',sans-serif;font-
       <details class="admin-transcripts-panel">
         <summary class="admin-transcripts-summary">Transcripts (audit) <span class="admin-transcripts-badge">per person</span></summary>
         <div class="admin-transcripts-inner">
-          <p class="admin-transcripts-hint">Saved on the server after each reply. Uses the password above. Requires Redis/KV on Vercel.</p>
+          <p class="admin-transcripts-hint">Saved on the server after each reply. Uses the password above.</p>
           <div class="admin-transcripts-toolbar admin-transcripts-toolbar--full">
             <button type="button" class="btn btn-ghost btn-sm" onclick="loadTeamChatTranscripts()">Refresh</button>
           </div>
@@ -1106,6 +1361,68 @@ details.scrape-panel summary .scrape-hint{font-family:'DM Sans',sans-serif;font-
       </div>
 
       <div id="admin-tab-team" class="admin-tab-content" style="display:none;">
+
+        <div class="panel" style="margin-bottom:1.25rem;">
+          <div class="panel-header"><div class="panel-title">Employment status — portal access</div></div>
+          <div class="panel-body" style="overflow-x:auto;padding-top:0.5rem;">
+            <p style="font-size:0.78rem;color:var(--muted);margin:0 0 0.75rem;line-height:1.45;">Quick reference for what each status can open in the portal. <strong>Admin</strong> column is for users with the Admin role.</p>
+            <table class="resources-admin-table" style="min-width:720px;">
+              <thead>
+                <tr>
+                  <th style="text-align:left;padding:0.45rem 0.5rem;border-bottom:1px solid var(--border);font-size:0.68rem;text-transform:uppercase;letter-spacing:0.05em;color:var(--muted);">Status</th>
+                  <th style="text-align:left;padding:0.45rem 0.5rem;border-bottom:1px solid var(--border);font-size:0.68rem;text-transform:uppercase;letter-spacing:0.05em;color:var(--muted);">Overview · Leads · Log · Appts</th>
+                  <th style="text-align:left;padding:0.45rem 0.5rem;border-bottom:1px solid var(--border);font-size:0.68rem;text-transform:uppercase;letter-spacing:0.05em;color:var(--muted);">Goals</th>
+                  <th style="text-align:left;padding:0.45rem 0.5rem;border-bottom:1px solid var(--border);font-size:0.68rem;text-transform:uppercase;letter-spacing:0.05em;color:var(--muted);">Admin</th>
+                  <th style="text-align:left;padding:0.45rem 0.5rem;border-bottom:1px solid var(--border);font-size:0.68rem;text-transform:uppercase;letter-spacing:0.05em;color:var(--muted);">Library · AI · Resources</th>
+                  <th style="text-align:left;padding:0.45rem 0.5rem;border-bottom:1px solid var(--border);font-size:0.68rem;text-transform:uppercase;letter-spacing:0.05em;color:var(--muted);">Settings</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="padding:0.4rem 0.5rem;border-bottom:1px solid var(--border);font-weight:600;">Active</td>
+                  <td style="padding:0.4rem 0.5rem;border-bottom:1px solid var(--border);color:var(--green);">Yes</td>
+                  <td style="padding:0.4rem 0.5rem;border-bottom:1px solid var(--border);color:var(--green);">Yes</td>
+                  <td style="padding:0.4rem 0.5rem;border-bottom:1px solid var(--border);">If role is Admin</td>
+                  <td style="padding:0.4rem 0.5rem;border-bottom:1px solid var(--border);color:var(--green);">Yes</td>
+                  <td style="padding:0.4rem 0.5rem;border-bottom:1px solid var(--border);color:var(--green);">Yes</td>
+                </tr>
+                <tr>
+                  <td style="padding:0.4rem 0.5rem;border-bottom:1px solid var(--border);font-weight:600;">Training</td>
+                  <td style="padding:0.4rem 0.5rem;border-bottom:1px solid var(--border);color:var(--green);">Yes</td>
+                  <td style="padding:0.4rem 0.5rem;border-bottom:1px solid var(--border);color:var(--green);">Yes</td>
+                  <td style="padding:0.4rem 0.5rem;border-bottom:1px solid var(--border);">If role is Admin</td>
+                  <td style="padding:0.4rem 0.5rem;border-bottom:1px solid var(--border);color:var(--green);">Yes</td>
+                  <td style="padding:0.4rem 0.5rem;border-bottom:1px solid var(--border);color:var(--green);">Yes</td>
+                </tr>
+                <tr>
+                  <td style="padding:0.4rem 0.5rem;border-bottom:1px solid var(--border);font-weight:600;">On leave</td>
+                  <td style="padding:0.4rem 0.5rem;border-bottom:1px solid var(--border);color:var(--green);">Yes</td>
+                  <td style="padding:0.4rem 0.5rem;border-bottom:1px solid var(--border);color:var(--green);">Yes</td>
+                  <td style="padding:0.4rem 0.5rem;border-bottom:1px solid var(--border);">If role is Admin</td>
+                  <td style="padding:0.4rem 0.5rem;border-bottom:1px solid var(--border);color:var(--green);">Yes</td>
+                  <td style="padding:0.4rem 0.5rem;border-bottom:1px solid var(--border);color:var(--green);">Yes</td>
+                </tr>
+                <tr>
+                  <td style="padding:0.4rem 0.5rem;border-bottom:1px solid var(--border);font-weight:600;">Interviewing</td>
+                  <td style="padding:0.4rem 0.5rem;border-bottom:1px solid var(--border);color:#b45309;">No</td>
+                  <td style="padding:0.4rem 0.5rem;border-bottom:1px solid var(--border);color:var(--green);">Yes</td>
+                  <td style="padding:0.4rem 0.5rem;border-bottom:1px solid var(--border);">If role is Admin</td>
+                  <td style="padding:0.4rem 0.5rem;border-bottom:1px solid var(--border);color:var(--green);">Yes</td>
+                  <td style="padding:0.4rem 0.5rem;border-bottom:1px solid var(--border);color:var(--green);">Yes</td>
+                </tr>
+                <tr>
+                  <td style="padding:0.4rem 0.5rem;font-weight:600;">Inactive</td>
+                  <td style="padding:0.4rem 0.5rem;color:#b45309;">No</td>
+                  <td style="padding:0.4rem 0.5rem;color:#b45309;">No</td>
+                  <td style="padding:0.4rem 0.5rem;color:#b45309;">No</td>
+                  <td style="padding:0.4rem 0.5rem;color:#b45309;">No</td>
+                  <td style="padding:0.4rem 0.5rem;color:var(--green);">Yes</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
         <details class="admin-transcripts-panel" id="signupApprovalsPanel" open>
         <summary class="admin-transcripts-summary">Signup approvals <span class="admin-transcripts-badge" id="signupApprovalsBadge" style="display:none;">0</span></summary>
         <div class="admin-transcripts-inner">
@@ -1146,6 +1463,117 @@ details.scrape-panel summary .scrape-hint{font-family:'DM Sans',sans-serif;font-
           <div class="transcripts-scroll" id="teamChatClearRequestsList" style="max-height:220px;"></div>
         </div>
       </details>
+      </div>
+
+      <div id="admin-tab-timesheets" class="admin-tab-content" style="display:none;">
+
+        <div class="panel" style="margin-bottom:1.25rem;">
+          <div class="panel-header" style="justify-content:space-between;flex-wrap:wrap;">
+            <div class="panel-title">Who's Working Now</div>
+            <button type="button" class="btn btn-ghost btn-sm" onclick="loadAdminTimesheets()">Refresh</button>
+          </div>
+          <div class="panel-body" style="overflow-x:auto;">
+            <table class="admin-table" id="adminActiveWorkersTable">
+              <thead>
+                <tr><th>Name</th><th>Email</th><th>Clocked In</th><th>Status</th><th>Hours So Far</th><th>Breaks</th></tr>
+              </thead>
+              <tbody id="adminActiveWorkersBody">
+                <tr><td colspan="6" style="color:#888;">Loading...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="panel" style="margin-bottom:1.25rem;">
+          <div class="panel-header" style="justify-content:space-between;flex-wrap:wrap;gap:0.5rem;">
+            <div class="panel-title">Team Timesheet Browser</div>
+            <div style="display:flex;gap:0.5rem;align-items:center;flex-wrap:wrap;">
+              <label style="font-size:0.78rem;color:var(--muted);">From</label>
+              <input type="date" id="adminTsFrom" class="form-input" style="width:auto;padding:0.25rem 0.5rem;font-size:0.82rem;">
+              <label style="font-size:0.78rem;color:var(--muted);">To</label>
+              <input type="date" id="adminTsTo" class="form-input" style="width:auto;padding:0.25rem 0.5rem;font-size:0.82rem;">
+              <select id="adminTsUser" class="form-input" style="width:auto;padding:0.25rem 0.5rem;font-size:0.82rem;">
+                <option value="">All team members</option>
+              </select>
+              <button type="button" class="btn btn-green btn-sm" onclick="loadAdminTimesheetBrowser()">Load</button>
+            </div>
+          </div>
+          <div class="panel-body" style="overflow-x:auto;">
+            <table class="admin-table" id="adminTimesheetBrowserTable">
+              <thead>
+                <tr><th>Date</th><th>Name</th><th>Clock In</th><th>Clock Out</th><th>Breaks</th><th>Net Hours</th><th>Notes</th><th>Flags</th></tr>
+              </thead>
+              <tbody id="adminTimesheetBrowserBody">
+                <tr><td colspan="8" style="color:#888;">Pick a date range and click Load.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="panel" style="margin-bottom:1.25rem;">
+          <div class="panel-header"><div class="panel-title">Manual Adjustment</div></div>
+          <div class="panel-body">
+            <p style="font-size:0.82rem;color:var(--muted);margin:0 0 0.75rem;">Add or correct a time entry for a team member (e.g. forgot to clock in).</p>
+            <div style="display:flex;gap:0.5rem;flex-wrap:wrap;align-items:flex-end;">
+              <div>
+                <label style="font-size:0.72rem;color:var(--muted);display:block;">User ID</label>
+                <select id="adminAdjustUser" class="form-input" style="width:auto;padding:0.25rem 0.5rem;font-size:0.82rem;">
+                  <option value="">Select...</option>
+                </select>
+              </div>
+              <div>
+                <label style="font-size:0.72rem;color:var(--muted);display:block;">Type</label>
+                <select id="adminAdjustType" class="form-input" style="width:auto;padding:0.25rem 0.5rem;font-size:0.82rem;">
+                  <option value="clock_in">Clock In</option>
+                  <option value="clock_out">Clock Out</option>
+                  <option value="break_start">Break Start</option>
+                  <option value="break_end">Break End</option>
+                </select>
+              </div>
+              <div>
+                <label style="font-size:0.72rem;color:var(--muted);display:block;">Date/Time</label>
+                <input type="datetime-local" id="adminAdjustTs" class="form-input" style="width:auto;padding:0.25rem 0.5rem;font-size:0.82rem;">
+              </div>
+              <div>
+                <label style="font-size:0.72rem;color:var(--muted);display:block;">Note</label>
+                <input type="text" id="adminAdjustNote" class="form-input" style="width:180px;padding:0.25rem 0.5rem;font-size:0.82rem;" placeholder="Reason for adjustment" maxlength="300">
+              </div>
+              <button type="button" class="btn btn-green btn-sm" onclick="submitAdminAdjustment()">Submit</button>
+            </div>
+            <div id="adminAdjustResult" style="margin-top:0.5rem;font-size:0.82rem;"></div>
+          </div>
+        </div>
+
+        <div class="panel" style="margin-bottom:1.25rem;">
+          <div class="panel-header"><div class="panel-title">Weekly Summary</div></div>
+          <div class="panel-body" style="overflow-x:auto;">
+            <div id="adminWeeklySummary" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:1rem;">
+              <p style="color:#888;">Load timesheet data first.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel" style="margin-bottom:1.25rem;">
+          <div class="panel-header"><div class="panel-title">Attendance Flags</div></div>
+          <div class="panel-body">
+            <div id="adminAttendanceFlags">
+              <p style="color:#888;">Loading...</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel" style="margin-bottom:1.25rem;">
+          <div class="panel-header" style="justify-content:space-between;flex-wrap:wrap;">
+            <div class="panel-title">Team Activity Feed — Last 24 Hours</div>
+            <button type="button" class="btn btn-ghost btn-sm" onclick="loadAdminTimesheets()">Refresh</button>
+          </div>
+          <div class="panel-body">
+            <div id="adminActivityFeed" style="max-height:300px;overflow-y:auto;">
+              <p style="color:#888;">Loading...</p>
+            </div>
+          </div>
+        </div>
+
       </div>
     </div>
 
@@ -1225,7 +1653,7 @@ details.scrape-panel summary .scrape-hint{font-family:'DM Sans',sans-serif;font-
           </div>
           <div style="background:var(--cream);border:1px solid var(--border);border-radius:4px;padding:1rem;">
             <div style="font-size:0.68rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--blue);margin-bottom:0.4rem;font-weight:500;">Booking Link</div>
-            <div style="font-size:0.85rem;color:var(--text);line-height:1.6;">Send prospects to: <a href="https://calendly.com/mikeshobes718-9-dx/free-bookkeeping-consultation-allsorted-pro" target="_blank" rel="noopener noreferrer" class="hint-code" style="color:var(--blue);">Calendly — free consultation</a><br>Or email <a href="mailto:hello@allsortedpro.com" class="hint-code" style="color:var(--blue);">hello@allsortedpro.com</a> · allsortedpro.com</div>
+            <div style="font-size:0.85rem;color:var(--text);line-height:1.6;">Send prospects to: <a href="https://calendly.com/hello-allsortedpro/30min" target="_blank" rel="noopener noreferrer" class="hint-code" style="color:var(--blue);">Calendly — free consultation</a><br>Office line <a href="tel:+19177733276" class="hint-code" style="color:var(--blue);">(917) 773-3276</a> · email <a href="mailto:hello@allsortedpro.com" class="hint-code" style="color:var(--blue);">hello@allsortedpro.com</a> · allsortedpro.com</div>
           </div>
         </div>
       </div>
@@ -1259,7 +1687,6 @@ details.scrape-panel summary .scrape-hint{font-family:'DM Sans',sans-serif;font-
     <!-- TEAM ASSISTANT (AI) -->
     <div class="view" id="view-assistant">
       <div class="team-assistant-page">
-        <p class="team-assistant-lead">Ask about scripts, pricing, objections, or how to word a reply. You can <strong>attach photos</strong>, <strong>paste</strong> screenshots, <strong>drop</strong> files on the chat, or add a .txt file. Do not paste sensitive customer information you would not put in email.</p>
         <div class="panel team-chat-panel">
           <div class="panel-header">
             <div class="panel-title">Team assistant</div>
@@ -1273,12 +1700,48 @@ details.scrape-panel summary .scrape-hint{font-family:'DM Sans',sans-serif;font-
               <button type="button" class="team-chat-attach" id="teamChatAttachBtn" title="Attach photos or .txt" aria-label="Attach file">📎</button>
               <input type="file" id="teamChatFileInput" accept="image/*,.txt,text/plain" multiple style="display:none" tabindex="-1" aria-hidden="true">
               <div class="team-chat-input-wrap">
-                <textarea id="teamChatInput" class="form-textarea team-chat-input" rows="2" placeholder="Message the assistant…" maxlength="8000"></textarea>
-                <span class="team-chat-hint">Enter to send · Shift+Enter for new line · Paste or drop images</span>
+                <textarea id="teamChatInput" class="form-textarea team-chat-input" rows="2" placeholder="Ask me anything — scripts, pricing, objections, wording, training…" maxlength="8000"></textarea>
+                <span class="team-chat-hint">Enter to send · Shift+Enter for new line · Paste or drop images · 📎 for files</span>
               </div>
               <button type="button" class="btn btn-green team-chat-send" id="teamChatSend" onclick="sendTeamChat()">Send</button>
             </div>
           </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- QUO / OPENPHONE (admin only) -->
+    <div class="view" id="view-quo">
+      <p class="admin-intro">OpenPhone (Quo) API data for your workspace. Only admins see this page. The Quo API key never leaves the server.</p>
+
+      <div class="panel" style="margin-bottom:1rem;">
+        <div class="panel-header">
+          <div class="panel-title">Workspace phone numbers</div>
+          <button type="button" class="btn btn-ghost btn-sm" onclick="loadQuoAdminPhoneNumbers()">Refresh</button>
+        </div>
+        <div class="panel-body" id="quoPhoneNumbersBody">
+          <div class="empty"><div class="empty-icon">📱</div><p>Open this page to load lines.</p></div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header" style="flex-wrap:wrap;gap:0.65rem;align-items:center;">
+          <div class="panel-title">Conversations</div>
+          <div style="display:flex;align-items:center;gap:0.45rem;flex-wrap:wrap;margin-left:auto;">
+            <label class="form-label" for="quoLineFilterInput" style="margin:0;font-size:0.78rem;">Line (E.164)</label>
+            <input type="text" class="form-input" id="quoLineFilterInput" placeholder="+19177733276" autocomplete="tel" style="max-width:12rem;padding:0.35rem 0.5rem;font-size:0.82rem;">
+            <label class="form-label" for="quoMaxResults" style="margin:0;font-size:0.78rem;">Max</label>
+            <select id="quoMaxResults" class="form-select" style="padding:0.35rem 0.5rem;font-size:0.82rem;max-width:5.5rem;">
+              <option value="25">25</option>
+              <option value="50">50</option>
+              <option value="100">100</option>
+            </select>
+            <button type="button" class="btn btn-ghost btn-sm" onclick="loadQuoAdminConversations()">Refresh</button>
+            <button type="button" class="btn btn-sm" id="quoSmsPreviewBtn" onclick="loadQuoAdminSmsPreviews()" title="One API request per row — fetches SMS and shows latest text, direction, status">Load SMS previews</button>
+          </div>
+        </div>
+        <div class="panel-body" id="quoConversationsAdminBody">
+          <div class="empty"><div class="empty-icon">💬</div><p>Use Refresh to load conversations.</p></div>
         </div>
       </div>
     </div>
@@ -1687,21 +2150,29 @@ details.scrape-panel summary .scrape-hint{font-family:'DM Sans',sans-serif;font-
 
 <script src="auth.js"></script>
 <script>
-// STATE
-let leads = JSON.parse(localStorage.getItem('cb_leads') || '[]');
+// STATE — leads & leadDb always loaded from server (too large for localStorage)
+let leads = [];
 let callLog = JSON.parse(localStorage.getItem('cb_calllog') || '[]');
 let appointments = JSON.parse(localStorage.getItem('cb_appts') || '[]');
 let leadRemovalRequests = JSON.parse(localStorage.getItem('cb_removal_requests') || '[]');
-let leadDb = JSON.parse(localStorage.getItem('cb_leaddb') || '[]');
+let leadDb = [];
 let dbPage = 0;
 const DB_PAGE_SIZE = 50;
-const COMMISSION_PER_SHOWED_APPT = 25;
+const COMMISSION_PER_WON_APPT = 25;
+function appointmentQualifiesForTwentyFiveBonus(a) {
+  if (!a) return false;
+  var s = a.status;
+  return s === 'closed' || s === 'won';
+}
 let selectedDbIds = new Set();
 
 let pipelineFlushTimer = null;
 const PIPELINE_FLUSH_MS = 650;
+let leadsFlushTimer = null;
+const LEADS_TABLE_FLUSH_MS = 400;
+let leadsSyncInFlight = false;
 let pipelineSyncInFlight = false;
-let pipelineKvConfigured = null;
+let pipelineConfigured = null;
 
 function pipelineTotalWeight(payload) {
   const p = payload || {};
@@ -1714,19 +2185,162 @@ function pipelineTotalWeight(payload) {
   );
 }
 
+function _tsMs(iso) {
+  if (!iso) return 0;
+  var t = new Date(iso).getTime();
+  return isNaN(t) ? 0 : t;
+}
+
+function leadActivityTs(lead) {
+  return _tsMs(lead && (lead.lastContact || lead.updatedAt || lead.createdAt));
+}
+
+function mergeLeadsPreferNewer(local, server) {
+  var m = new Map();
+  var i;
+  for (i = 0; i < server.length; i++) {
+    var s = server[i];
+    if (s && s.id) m.set(s.id, s);
+  }
+  for (i = 0; i < local.length; i++) {
+    var loc = local[i];
+    if (!loc || !loc.id) continue;
+    var srv = m.get(loc.id);
+    if (!srv) {
+      m.set(loc.id, loc);
+      continue;
+    }
+    var lt = leadActivityTs(loc);
+    var st = leadActivityTs(srv);
+    if (lt > st) m.set(loc.id, loc);
+    else if (lt < st) m.set(loc.id, srv);
+    else {
+      var ls = String(loc.status || 'new');
+      var ss = String(srv.status || 'new');
+      if (ls === 'new' && ss !== 'new') m.set(loc.id, srv);
+      else if (ss === 'new' && ls !== 'new') m.set(loc.id, loc);
+      else m.set(loc.id, loc);
+    }
+  }
+  return Array.from(m.values());
+}
+
+function mergeCallLogsById(local, server) {
+  var m = new Map();
+  var i;
+  for (i = 0; i < server.length; i++) {
+    var s = server[i];
+    if (s && s.id) m.set(s.id, s);
+  }
+  for (i = 0; i < local.length; i++) {
+    var c = local[i];
+    if (c && c.id) m.set(c.id, c);
+  }
+  return Array.from(m.values()).sort(function (a, b) {
+    return _tsMs(b.timestamp) - _tsMs(a.timestamp);
+  });
+}
+
+function apptActivityTs(a) {
+  return _tsMs(a && (a.updatedAt || a.createdAt));
+}
+
+function mergeAppointmentsPreferNewer(local, server) {
+  var m = new Map();
+  var i;
+  for (i = 0; i < server.length; i++) {
+    var s = server[i];
+    if (s && s.id) m.set(s.id, s);
+  }
+  for (i = 0; i < local.length; i++) {
+    var loc = local[i];
+    if (!loc || !loc.id) continue;
+    var srv = m.get(loc.id);
+    if (!srv) {
+      m.set(loc.id, loc);
+      continue;
+    }
+    var lt = apptActivityTs(loc);
+    var st = apptActivityTs(srv);
+    m.set(loc.id, lt >= st ? loc : srv);
+  }
+  return Array.from(m.values());
+}
+
+function recordRoughTs(row) {
+  return _tsMs(row && (row.updatedAt || row.createdAt || row.at));
+}
+
+function mergeByIdPreferNewer(local, server) {
+  var m = new Map();
+  var i;
+  for (i = 0; i < server.length; i++) {
+    var s = server[i];
+    if (s && s.id) m.set(s.id, s);
+  }
+  for (i = 0; i < local.length; i++) {
+    var loc = local[i];
+    if (!loc || !loc.id) continue;
+    var srv = m.get(loc.id);
+    if (!srv) {
+      m.set(loc.id, loc);
+      continue;
+    }
+    m.set(loc.id, recordRoughTs(loc) >= recordRoughTs(srv) ? loc : srv);
+  }
+  return Array.from(m.values());
+}
+
+function mergeLeadDbPreferNewer(local, server) {
+  var m = new Map();
+  var i;
+  for (i = 0; i < server.length; i++) {
+    var s = server[i];
+    if (s && s.id != null) m.set(String(s.id), s);
+  }
+  for (i = 0; i < local.length; i++) {
+    var loc = local[i];
+    if (!loc || loc.id == null) continue;
+    var k = String(loc.id);
+    var srv = m.get(k);
+    if (!srv) {
+      m.set(k, loc);
+      continue;
+    }
+    var lt = recordRoughTs(loc);
+    var st = recordRoughTs(srv);
+    m.set(k, lt >= st ? loc : srv);
+  }
+  return Array.from(m.values());
+}
+
+function mergePayloadFromServer(p) {
+  if (!p || typeof p !== 'object') return;
+  if (Array.isArray(p.leads)) leads = p.leads;
+  if (Array.isArray(p.callLog)) callLog = mergeCallLogsById(callLog, p.callLog);
+  if (Array.isArray(p.appointments)) appointments = mergeAppointmentsPreferNewer(appointments, p.appointments);
+  if (Array.isArray(p.leadRemovalRequests)) leadRemovalRequests = mergeByIdPreferNewer(leadRemovalRequests, p.leadRemovalRequests);
+  if (Array.isArray(p.leadDb)) leadDb = p.leadDb;
+}
+
+var _lastStorageQuotaToastMs = 0;
+var STORAGE_QUOTA_TOAST_COOLDOWN_MS = 180000;
+
 function saveLocalOnly() {
   try {
-    localStorage.setItem('cb_leads', JSON.stringify(leads));
     localStorage.setItem('cb_calllog', JSON.stringify(callLog));
     localStorage.setItem('cb_appts', JSON.stringify(appointments));
     localStorage.setItem('cb_removal_requests', JSON.stringify(leadRemovalRequests));
-    localStorage.setItem('cb_leaddb', JSON.stringify(leadDb));
+    _lastStorageQuotaToastMs = 0;
   } catch (e) {
     if (e && e.name === 'QuotaExceededError') {
-      toast('Browser storage full — export your leads as CSV from Lead Database before continuing. Some data may not have saved.');
-      console.error('localStorage quota exceeded. leadDb has', leadDb.length, 'rows. Approximate size:', Math.round(JSON.stringify(leadDb).length / 1024), 'KB');
+      var now = Date.now();
+      console.error('localStorage quota exceeded');
+      if (now - _lastStorageQuotaToastMs >= STORAGE_QUOTA_TOAST_COOLDOWN_MS) {
+        _lastStorageQuotaToastMs = now;
+        toast('Browser storage is full. Use Admin → Clear local cache.');
+      }
     } else {
-      toast('Error saving data: ' + (e && e.message ? e.message : 'unknown'));
       console.error('saveLocalOnly error:', e);
     }
   }
@@ -1744,6 +2358,45 @@ function schedulePipelineFlush() {
   }, PIPELINE_FLUSH_MS);
 }
 
+function scheduleLeadsTableFlush() {
+  if (leadsFlushTimer) clearTimeout(leadsFlushTimer);
+  leadsFlushTimer = setTimeout(function () {
+    leadsFlushTimer = null;
+    void flushLeadsToServer();
+  }, LEADS_TABLE_FLUSH_MS);
+}
+
+async function flushLeadsToServer() {
+  if (leadsSyncInFlight) return;
+  const secret = getPipelineSecret();
+  if (!secret) return;
+  leadsSyncInFlight = true;
+  try {
+    const r = await fetch('/api/portal-leads', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        secret: secret,
+        action: 'sync',
+        leads: leads.slice(),
+      }),
+    });
+    if (r.status === 401) {
+      try {
+        window.dispatchEvent(new CustomEvent('pipeline-sync-auth-fail'));
+      } catch (e2) {}
+      return;
+    }
+    await r.json().catch(function () {
+      return {};
+    });
+  } catch (e) {
+    /* offline or table not migrated yet */
+  } finally {
+    leadsSyncInFlight = false;
+  }
+}
+
 async function flushPipelineToServer() {
   if (pipelineSyncInFlight) return;
   const secret = getPipelineSecret();
@@ -1757,7 +2410,7 @@ async function flushPipelineToServer() {
         secret,
         action: 'set',
         payload: {
-          leads,
+          leads: [],
           callLog,
           appointments,
           leadRemovalRequests,
@@ -1780,6 +2433,41 @@ async function flushPipelineToServer() {
   }
 }
 
+var _pipelineInitialSyncDone = false;
+
+function applyServerPayload(p) {
+  mergePayloadFromServer(p);
+}
+
+async function initPipelineSyncFast() {
+  var secret = getPipelineSecret();
+  if (!secret) return;
+  try {
+    var r = await fetch('/api/portal-pipeline', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ secret: secret, action: 'get_light' }),
+    });
+    if (r.status === 401) {
+      pipelineConfigured = null;
+      try { window.dispatchEvent(new CustomEvent('pipeline-sync-auth-fail')); } catch (e1) {}
+      return;
+    }
+    var data = await r.json().catch(function () { return {}; });
+    if (!data || data.ok !== true) return;
+    pipelineConfigured = data.configured === true;
+    if (!data.configured) {
+      showPipelineSyncBanner('Shared team queue is not enabled. Check Supabase configuration on Vercel.');
+      return;
+    }
+    var p = data.payload || {};
+    mergePayloadFromServer(p);
+    _pipelineInitialSyncDone = true;
+    hidePipelineSyncBanner();
+    renderAll();
+  } catch (e) { /* keep local */ }
+}
+
 async function initPipelineSync() {
   const secret = getPipelineSecret();
   if (!secret) return;
@@ -1790,7 +2478,7 @@ async function initPipelineSync() {
       body: JSON.stringify({ secret, action: 'get' }),
     });
     if (r.status === 401) {
-      pipelineKvConfigured = null;
+      pipelineConfigured = null;
       try {
         window.dispatchEvent(new CustomEvent('pipeline-sync-auth-fail'));
       } catch (e1) {}
@@ -1800,11 +2488,9 @@ async function initPipelineSync() {
       return {};
     });
     if (!data || data.ok !== true) return;
-    pipelineKvConfigured = data.configured === true;
+    pipelineConfigured = data.configured === true;
     if (!data.configured) {
-      showPipelineSyncBanner(
-        'Shared team queue is not enabled (add SUPABASE_URL + SUPABASE_SERVICE_ROLE_KEY on Vercel and run the migration).'
-      );
+      showPipelineSyncBanner('Shared team queue is not enabled. Check Supabase configuration on Vercel.');
       return;
     }
 
@@ -1832,22 +2518,15 @@ async function initPipelineSync() {
         hidePipelineSyncBanner();
         return;
       }
-      leads = Array.isArray(p.leads) ? p.leads : [];
-      callLog = Array.isArray(p.callLog) ? p.callLog : [];
-      appointments = Array.isArray(p.appointments) ? p.appointments : [];
-      leadRemovalRequests = Array.isArray(p.leadRemovalRequests) ? p.leadRemovalRequests : [];
-      leadDb = Array.isArray(p.leadDb) ? p.leadDb : [];
+      applyServerPayload(p);
       saveLocalOnly();
     } else if (hasServer) {
-      leads = Array.isArray(p.leads) ? p.leads : [];
-      callLog = Array.isArray(p.callLog) ? p.callLog : [];
-      appointments = Array.isArray(p.appointments) ? p.appointments : [];
-      leadRemovalRequests = Array.isArray(p.leadRemovalRequests) ? p.leadRemovalRequests : [];
-      leadDb = Array.isArray(p.leadDb) ? p.leadDb : [];
+      applyServerPayload(p);
       saveLocalOnly();
     } else if (hasLocal) {
       await flushPipelineToServer();
     }
+    _pipelineInitialSyncDone = true;
     hidePipelineSyncBanner();
   } catch (e) {
     /* keep local */
@@ -1879,13 +2558,14 @@ window.addEventListener('pipeline-sync-auth-fail', function () {
 function clearLocalPipelineCache() {
   if (
     !confirm(
-      'Clear leads, call log, and appointments stored in this browser only?\n\nThe master lead database (Admin → Lead Database) is not deleted. The page will reload.'
+      'Clear call log and appointments stored in this browser only?\n\nLeads and the master database are always loaded from the server. The page will reload.'
     )
   ) {
     return;
   }
   try {
-    localStorage.setItem('cb_leads', '[]');
+    localStorage.removeItem('cb_leads');
+    localStorage.removeItem('cb_leaddb');
     localStorage.setItem('cb_calllog', '[]');
     localStorage.setItem('cb_appts', '[]');
   } catch (e) {
@@ -1895,10 +2575,11 @@ function clearLocalPipelineCache() {
   location.reload();
 }
 
-async function syncPipelineFromServer() {
+async function syncPipelineFromServer(opts) {
+  var silent = opts && opts.silent === true;
   const secret = getPipelineSecret();
   if (!secret) {
-    toast('Set scraper password in Admin to sync');
+    if (!silent) toast('Set scraper password in Admin to sync');
     return;
   }
   try {
@@ -1911,34 +2592,41 @@ async function syncPipelineFromServer() {
       try {
         window.dispatchEvent(new CustomEvent('pipeline-sync-auth-fail'));
       } catch (e0) {}
-      toast('Wrong scraper password — cannot sync');
+      if (!silent) toast('Wrong scraper password — cannot sync');
       return;
     }
     const data = await r.json().catch(function () {
       return {};
     });
     if (!data || data.ok !== true) {
-      toast('Sync failed');
+      if (!silent) toast('Sync failed');
       return;
     }
     if (!data.configured) {
-      showPipelineSyncBanner('Shared team queue is not enabled (set Supabase env vars on Vercel and apply the migration).');
-      toast('Team queue sync is not configured on the server');
+      if (!silent) {
+        showPipelineSyncBanner('Shared team queue is not enabled. Check Supabase configuration on Vercel.');
+        toast('Team queue sync is not configured on the server');
+      }
       return;
     }
     hidePipelineSyncBanner();
     const p = data.payload || {};
-    leads = Array.isArray(p.leads) ? p.leads : [];
-    callLog = Array.isArray(p.callLog) ? p.callLog : [];
-    appointments = Array.isArray(p.appointments) ? p.appointments : [];
-    leadRemovalRequests = Array.isArray(p.leadRemovalRequests) ? p.leadRemovalRequests : [];
-    leadDb = Array.isArray(p.leadDb) ? p.leadDb : [];
+    mergePayloadFromServer(p);
     saveLocalOnly();
-    toast('Team queue updated');
+    if (!silent) toast('Team queue updated');
     renderAll();
   } catch (e) {
-    toast('Sync failed');
+    if (!silent) toast('Sync failed');
   }
+}
+
+var _pipelineRealtimeTimer = null;
+function startPipelineRealtimeSync() {
+  if (_pipelineRealtimeTimer) return;
+  _pipelineRealtimeTimer = setInterval(function () {
+    if (document.hidden) return;
+    void syncPipelineFromServer({ silent: true });
+  }, 12000);
 }
 
 let currentLeadId = null;
@@ -2222,6 +2910,7 @@ function queueGroupClick(ev) {
 function save() {
   saveLocalOnly();
   schedulePipelineFlush();
+  scheduleLeadsTableFlush();
 }
 
 // CLOCK
@@ -2237,6 +2926,27 @@ function updateClock() {
 setInterval(updateClock, 1000);
 updateClock();
 
+function applyRoleGatedNavVisibility() {
+  var u = typeof getCurrentUser === 'function' ? getCurrentUser() : null;
+  var profile = u && u.role ? u.role : '';
+  var adminNav = document.getElementById('navAdminItem');
+  var quoNav = document.getElementById('navQuoItem');
+  if (adminNav) {
+    if (typeof isInactiveEmployment === 'function' && isInactiveEmployment()) {
+      adminNav.style.display = 'none';
+    } else {
+      adminNav.style.display = profile === 'admin' ? '' : 'none';
+    }
+  }
+  if (quoNav) {
+    if (typeof isInactiveEmployment === 'function' && isInactiveEmployment()) {
+      quoNav.style.display = 'none';
+    } else {
+      quoNav.style.display = profile === 'admin' ? '' : 'none';
+    }
+  }
+}
+
 function applyProfileToUI() {
   const u = getCurrentUser();
   if (!u) return;
@@ -2244,7 +2954,6 @@ function applyProfileToUI() {
   const badge = document.getElementById('profileBadge');
   const nameEl = document.getElementById('profileNameDisplay');
   const suffix = document.getElementById('portalTitleSuffix');
-  const adminNav = document.getElementById('navAdminItem');
   const displayName = (u.name || '').trim();
   if (badge) {
     badge.textContent = profile === 'admin' ? 'Admin' : 'Caller';
@@ -2260,10 +2969,18 @@ function applyProfileToUI() {
     }
   }
   if (suffix) suffix.textContent = profile === 'admin' ? '/ Team Portal' : '/ Caller Portal';
-  if (adminNav) adminNav.style.display = profile === 'admin' ? '' : 'none';
+  applyRoleGatedNavVisibility();
   if (profile !== 'admin') {
     const av = document.getElementById('view-admin');
     if (av && av.classList.contains('active')) showView('dashboard');
+    const qv = document.getElementById('view-quo');
+    if (qv && qv.classList.contains('active')) showView('dashboard');
+  }
+  if (typeof isInactiveEmployment === 'function' && isInactiveEmployment()) {
+    const activeView = document.querySelector('.view.active');
+    if (activeView && activeView.id !== 'view-settings') {
+      showView('settings', true);
+    }
   }
 }
 
@@ -2373,7 +3090,7 @@ function initSettingsPageListeners() {
 }
 
 var TEAM_CHAT_KEY = 'cb_team_chat_msgs';
-var TEAM_CHAT_SYSTEM = 'You are a helpful assistant for AllSorted Pro, a bookkeeping service for small business owners. Team members use you while calling leads and managing appointments. Help with: cold call scripts, objection handling, pricing (first 2 weeks free, no credit card; then $97/mo for 3 months; then $197/mo — a fraction of typical local bookkeeper fees), QuickBooks-style services we describe (reconciliation, categorization, monthly reports), and professional tone. Keep answers concise unless asked for more detail. If unsure about a policy, say to confirm with a manager. Team members may attach screenshots (CRM, lead lists, QuickBooks), photos of documents, or other images—you can see image attachments in the conversation. When they ask what is in an image or to describe it, you must answer: give a short neutral factual description (setting, people, clothing, objects, text, UI). Do not refuse "what is in this photo" or similar because the subject is not bookkeeping; a brief description is always appropriate. If the image clearly relates to sales or bookkeeping, add a short relevant tip. Do not refuse to help only because the message includes an image. Only decline requests that ask for explicit sexual content, illegal acts, or harassment—not neutral questions about attached images.';
+var TEAM_CHAT_SYSTEM = 'You are the AllSorted Pro Team Assistant — a knowledgeable, friendly, and concise AI built into the caller portal. You help the AllSorted Pro team with everything they need during their workday.\n\nYour personality: Direct, warm, practical. Like a senior team member who always has the answer. Use short paragraphs. Use **bold** for key info and bullet points when listing items. Keep answers focused — 2-4 short paragraphs max unless the caller asks for more detail.\n\nWhat you help with:\n- Cold call scripts and openers\n- Objection handling (give the exact wording to use)\n- Pricing questions (first 2 weeks free, no card; $97/mo for 3 months; $197/mo after — a fraction of local bookkeeper rates)\n- How to book appointments (Calendly: https://calendly.com/hello-allsortedpro/30min)\n- Wording emails and follow-up messages to prospects\n- Explaining bookkeeping concepts (P&L, reconciliation, categorization, balance sheet)\n- QuickBooks questions and client onboarding\n- Training and onboarding for new team members\n- Dashboard and portal usage (including **Time Clock**: sidebar Dashboard → Time Clock — clock in/out, breaks, 14-day timesheet; admins: Admin → Timesheets)\n- Commission and pay structure\n- Career path and Sales Manager promotion\n- Company policies (cancel anytime, 30-day notice, no contract)\n- Handling difficult prospects\n- When to mark leads as Won vs Showed\n\nRules:\n- If unsure about a policy, say "Let me flag that — confirm with your manager to be safe."\n- Time clock / attendance: the portal has **Time Clock** (sidebar → Dashboard). Explain clock in, breaks, clock out, and timesheet from that — do not say it is undocumented.\n- Never make up pricing or policies that are not in your knowledge base\n- When giving scripts, format them as quoted text so they are easy to read aloud\n- When a caller asks "what do I say when..." always give them exact words they can use\n- You can see image attachments. Describe photos when asked. If it relates to sales or bookkeeping, add a relevant tip.\n- Only refuse requests involving explicit sexual content, illegal acts, or harassment\n- Use markdown formatting: **bold**, *italic*, bullet lists, numbered lists, > quotes for scripts';
 var teamChatMessages = [];
 var teamChatPending = [];
 var TEAM_CHAT_MAX_FILES = 6;
@@ -2468,9 +3185,37 @@ function teamChatContentValid(m) {
   return false;
 }
 
+function renderMarkdownLite(raw) {
+  var s = String(raw || '');
+  s = s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  s = s.replace(/^(#{1,4})\s+(.+)$/gm, function (_, h, txt) {
+    var lvl = h.length;
+    var fs = lvl === 1 ? '1.05rem' : lvl === 2 ? '0.95rem' : '0.88rem';
+    return '<strong style="display:block;font-size:' + fs + ';margin:0.6em 0 0.25em;">' + txt + '</strong>';
+  });
+  s = s.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+  s = s.replace(/(?<!\*)\*([^*\n]+?)\*(?!\*)/g, '<em>$1</em>');
+  s = s.replace(/`([^`\n]+?)`/g, '<code style="background:rgba(0,0,0,0.06);padding:0.1em 0.35em;border-radius:3px;font-size:0.85em;">$1</code>');
+  s = s.replace(/^&gt;\s?(.*)$/gm, '<div style="border-left:3px solid var(--green);padding:0.3em 0.6em;margin:0.3em 0;background:rgba(26,61,43,0.05);border-radius:0 4px 4px 0;font-style:italic;">$1</div>');
+  s = s.replace(/^(\d+)\.\s+(.+)$/gm, '<div style="padding-left:1.2em;text-indent:-1.2em;margin:0.15em 0;">$1. $2</div>');
+  s = s.replace(/^[-*]\s+(.+)$/gm, '<div style="padding-left:1em;text-indent:-0.7em;margin:0.15em 0;">• $1</div>');
+  s = s.replace(/\[([^\]]+)\]\((https?:\/\/[^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener" style="color:var(--green);text-decoration:underline;">$1</a>');
+  s = s.replace(/(https?:\/\/[^\s<"']+)/g, function (url) {
+    if (url.indexOf('href="') >= 0 || url.indexOf("href='") >= 0) return url;
+    return '<a href="' + url + '" target="_blank" rel="noopener" style="color:var(--green);text-decoration:underline;">' + url + '</a>';
+  });
+  s = s.replace(/\n{2,}/g, '<br><br>');
+  s = s.replace(/\n/g, '<br>');
+  return s;
+}
+
 function formatTeamChatMessageHtml(m) {
-  if (m.role === 'assistant' || typeof m.content === 'string') {
-    return escapeHtml(typeof m.content === 'string' ? m.content : '');
+  if (m.role === 'assistant') {
+    var text = typeof m.content === 'string' ? m.content : '';
+    return renderMarkdownLite(text);
+  }
+  if (typeof m.content === 'string') {
+    return escapeHtml(m.content);
   }
   if (!Array.isArray(m.content)) return '';
   return m.content
@@ -2678,13 +3423,48 @@ function saveTeamChat() {
   }
 }
 
+var TEAM_CHAT_QUICK_ACTIONS = [
+  { label: 'Cold call opener', msg: 'Give me the cold call opening script' },
+  { label: 'Handle "not interested"', msg: 'A prospect just said "not interested" — what do I say?' },
+  { label: 'Handle "I have a bookkeeper"', msg: 'They said they already have a bookkeeper. What\'s the best response?' },
+  { label: 'Handle "how much?"', msg: 'The prospect asked how much it costs. Give me the pricing breakdown to say on the call.' },
+  { label: 'Explain our pricing', msg: 'Walk me through our full pricing structure so I can explain it clearly to a prospect.' },
+  { label: 'What is a P&L?', msg: 'A prospect asked what a P&L is. How do I explain it simply?' },
+  { label: 'Write a follow-up email', msg: 'Help me write a short follow-up email to a prospect who said to send more info.' },
+  { label: 'Booking the appointment', msg: 'The prospect sounds interested. What do I say to get them to book the 15-minute call?' },
+  { label: 'New hire onboarding', msg: 'I just started — give me a quick overview of what AllSorted Pro does, what I\'ll be doing as a caller, and how I get paid.' },
+  { label: 'Commission explained', msg: 'Explain the commission and pay structure in detail.' },
+  { label: 'Sales Manager path', msg: 'Tell me about the Sales Manager promotion — what do I need to qualify?' },
+  { label: 'Dashboard guide', msg: 'Walk me through all the pages in the caller dashboard and what each one does.' },
+];
+
 function renderTeamChatUI() {
   renderTeamChatClearBanner();
   updateClearChatButtonState();
   var el = document.getElementById('teamChatMessages');
   if (!el) return;
   if (teamChatMessages.length === 0) {
-    el.innerHTML = '<div class="chat-msg chat-msg-bot"><div class="chat-msg-inner">Hi — I can help with scripts, pricing, objections, or wording. What do you need?</div></div>';
+    var greeting =
+      '<div class="chat-msg chat-msg-bot"><div class="chat-msg-inner">' +
+      renderMarkdownLite("**Hey! I'm your team assistant.** I know AllSorted Pro inside and out — pricing, scripts, objections, bookkeeping basics, how the dashboard works, onboarding, commission, everything.\n\nAsk me anything, or tap a suggestion below to get started.") +
+      '</div></div>' +
+      '<div class="team-chat-chips">';
+    TEAM_CHAT_QUICK_ACTIONS.forEach(function (qa, i) {
+      greeting += '<button type="button" class="team-chat-chip" data-qa-idx="' + i + '">' + escapeHtml(qa.label) + '</button>';
+    });
+    greeting += '</div>';
+    el.innerHTML = greeting;
+    el.querySelectorAll('.team-chat-chip').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var idx = parseInt(btn.getAttribute('data-qa-idx'), 10);
+        if (isNaN(idx) || !TEAM_CHAT_QUICK_ACTIONS[idx]) return;
+        var inp = document.getElementById('teamChatInput');
+        if (inp) {
+          inp.value = TEAM_CHAT_QUICK_ACTIONS[idx].msg;
+          sendTeamChat();
+        }
+      });
+    });
   } else {
     el.innerHTML = teamChatMessages
       .map(function (m) {
@@ -2774,7 +3554,7 @@ async function sendTeamChat() {
     return;
   }
   var testMsgs = [{ role: 'system', content: TEAM_CHAT_SYSTEM }]
-    .concat(teamChatMessages.slice(-24))
+    .concat(teamChatMessages.slice(-40))
     .concat([{ role: 'user', content: userContent }]);
   var payloadSize = JSON.stringify({ messages: testMsgs }).length;
   if (payloadSize > TEAM_CHAT_MAX_PAYLOAD_BYTES) {
@@ -2796,7 +3576,7 @@ async function sendTeamChat() {
   var loadingIdx = teamChatMessages.length - 1;
   btn.disabled = true;
   input.disabled = true;
-  var payloadMessages = [{ role: 'system', content: TEAM_CHAT_SYSTEM }].concat(teamChatMessages.slice(0, -1).slice(-24));
+  var payloadMessages = [{ role: 'system', content: TEAM_CHAT_SYSTEM }].concat(teamChatMessages.slice(0, -1).slice(-40));
   try {
     var r = await fetch('/api/team-chat', {
       method: 'POST',
@@ -3104,7 +3884,7 @@ async function loadTeamChatClearRequests() {
       return;
     }
     if (!data.configured) {
-      if (el) el.innerHTML = '<div class="transcripts-empty">KV not configured.</div>';
+      if (el) el.innerHTML = '<div class="transcripts-empty">Server not configured.</div>';
       return;
     }
     var pend = data.pending || [];
@@ -3193,6 +3973,19 @@ async function denyTeamChatClearRequest(userId) {
   } catch (e) {
     toast('Network error');
   }
+}
+
+var _migrationDone = false;
+async function autoMigrateUsersToServer() {
+  if (_migrationDone) return;
+  _migrationDone = true;
+  var me = getCurrentUser();
+  if (!me) return;
+  if (typeof migrateLocalUsersToServer !== 'function') return;
+  try {
+    var r = await migrateLocalUsersToServer();
+    if (r && r.migrated > 0) console.log('[auth] migrated ' + r.migrated + ' local users to server');
+  } catch (e) { console.warn('[auth] migration error', e); }
 }
 
 async function loadSignupApprovals() {
@@ -3913,7 +4706,7 @@ async function loadTeamChatTranscripts() {
     if (!data.configured) {
       if (host) {
         host.innerHTML =
-          '<div class="transcripts-empty">Connect Redis/KV to this Vercel project (KV_REST_API_URL + KV_REST_API_TOKEN), then redeploy.</div>';
+          '<div class="transcripts-empty">Server storage not configured. Verify Supabase env vars on Vercel and redeploy.</div>';
       }
       return;
     }
@@ -3983,6 +4776,7 @@ function switchAdminTab(tabId) {
   if (activeBtn) activeBtn.classList.add('active');
   var activeContent = document.getElementById('admin-tab-' + tabId);
   if (activeContent) activeContent.style.display = 'block';
+  if (tabId === 'timesheets') loadAdminTimesheets();
 }
 
 var INTERVIEWING_BLOCKED_VIEWS = ['dashboard', 'leads', 'log', 'appointments'];
@@ -3992,6 +4786,24 @@ function isInterviewingEmployment() {
   if (!u) return false;
   if (typeof normalizeEmploymentStatus !== 'function') return false;
   return normalizeEmploymentStatus(u.employmentStatus != null ? u.employmentStatus : 'active') === 'interviewing';
+}
+
+function isInactiveEmployment() {
+  var u = getCurrentUser();
+  if (!u) return false;
+  if (typeof normalizeEmploymentStatus !== 'function') return false;
+  return normalizeEmploymentStatus(u.employmentStatus != null ? u.employmentStatus : 'active') === 'inactive';
+}
+
+function resetNavForEmploymentRules() {
+  ['navSectionDashboard', 'navSectionLeads', 'navSectionPipeline', 'navSectionAdmin', 'navSectionLibrary', 'navSectionAccount'].forEach(function (id) {
+    var el = document.getElementById(id);
+    if (el) el.style.display = '';
+  });
+  document.querySelectorAll('.nav-item[data-view]').forEach(function (btn) {
+    btn.style.display = '';
+    btn.disabled = false;
+  });
 }
 
 function applyInterviewingNavRestrictions() {
@@ -4009,12 +4821,50 @@ function applyInterviewingNavRestrictions() {
   if (secPipe) secPipe.style.display = hide ? 'none' : '';
 }
 
+function applyEmploymentNavRestrictions() {
+  resetNavForEmploymentRules();
+  if (isInactiveEmployment()) {
+    ['navSectionDashboard', 'navSectionLeads', 'navSectionPipeline', 'navSectionAdmin', 'navSectionLibrary'].forEach(function (id) {
+      var el = document.getElementById(id);
+      if (el) el.style.display = 'none';
+    });
+    document.querySelectorAll('.nav-item[data-view]').forEach(function (btn) {
+      var v = btn.getAttribute('data-view');
+      if (v !== 'settings') {
+        btn.style.display = 'none';
+        btn.disabled = true;
+      }
+    });
+    return;
+  }
+  applyInterviewingNavRestrictions();
+  applyRoleGatedNavVisibility();
+}
+
 function showView(name, skipHashUpdate) {
+  if (isInactiveEmployment() && name !== 'settings') {
+    toast('Your employment status is Inactive. Only Settings is available.');
+    name = 'settings';
+    try {
+      if (typeof history !== 'undefined' && history.replaceState) {
+        history.replaceState(null, '', window.location.pathname + window.location.search + '#settings');
+      } else {
+        window.location.hash = 'settings';
+      }
+    } catch (e) {
+      window.location.hash = 'settings';
+    }
+    skipHashUpdate = true;
+  }
   if (name === 'admin' && (!getCurrentUser() || getCurrentUser().role !== 'admin')) {
     toast('Admin access required — ask an admin to promote your account, or use the seeded admin account.');
     return;
   }
-  if (isInterviewingEmployment() && INTERVIEWING_BLOCKED_VIEWS.indexOf(name) !== -1) {
+  if (name === 'quo' && (!getCurrentUser() || getCurrentUser().role !== 'admin')) {
+    toast('Quo line is admin-only.');
+    return;
+  }
+  if (!isInactiveEmployment() && isInterviewingEmployment() && INTERVIEWING_BLOCKED_VIEWS.indexOf(name) !== -1) {
     toast(
       'Overview, Lead queue, Call log, and Appointments are not available while your employment status is Interviewing.'
     );
@@ -4064,11 +4914,27 @@ function showView(name, skipHashUpdate) {
     trainingEditorLoadFromServer();
     prefetchAssistantKbForAdmin();
   }
+  if (name === 'quo') {
+    loadQuoAdminPage();
+  }
+  if (name === 'log') {
+    setTimeout(function () {
+      void syncPipelineFromServer({ silent: true });
+    }, 0);
+  }
+  if (name === 'timeclock') {
+    tcLoadStatus();
+    tcLoadTimesheet();
+  }
 }
 
 window.addEventListener('hashchange', function () {
   var h = window.location.hash.replace('#', '');
-  var valid = ['dashboard','leads','log','appointments','admin','script','assistant','resources','settings','goals'];
+  if (typeof isInactiveEmployment === 'function' && isInactiveEmployment() && (!h || h !== 'settings')) {
+    showView('settings', true);
+    return;
+  }
+  var valid = ['dashboard','leads','log','appointments','admin','quo','script','assistant','resources','settings','goals','timeclock'];
   if (valid.indexOf(h) === -1) return;
   if (typeof isInterviewingEmployment === 'function' && isInterviewingEmployment() && INTERVIEWING_BLOCKED_VIEWS.indexOf(h) !== -1) {
     showView('goals', true);
@@ -4079,16 +4945,19 @@ window.addEventListener('hashchange', function () {
 
 (function restoreViewFromHash() {
   var h = window.location.hash.replace('#', '');
-  var valid = ['dashboard','leads','log','appointments','admin','script','assistant','resources','settings','goals'];
-  if (valid.indexOf(h) !== -1) {
-    setTimeout(function () {
-      if (typeof isInterviewingEmployment === 'function' && isInterviewingEmployment() && INTERVIEWING_BLOCKED_VIEWS.indexOf(h) !== -1) {
-        showView('goals', true);
-      } else {
-        showView(h, true);
-      }
-    }, 50);
-  }
+  var valid = ['dashboard','leads','log','appointments','admin','quo','script','assistant','resources','settings','goals','timeclock'];
+  if (valid.indexOf(h) === -1 && h !== '') return;
+  setTimeout(function () {
+    if (typeof isInactiveEmployment === 'function' && isInactiveEmployment() && (!h || h !== 'settings')) {
+      showView('settings', true);
+      return;
+    }
+    if (typeof isInterviewingEmployment === 'function' && isInterviewingEmployment() && INTERVIEWING_BLOCKED_VIEWS.indexOf(h) !== -1) {
+      showView('goals', true);
+    } else if (valid.indexOf(h) !== -1) {
+      showView(h, true);
+    }
+  }, 50);
 })();
 
 function setSidebarCollapsed(collapsed) {
@@ -5074,17 +5943,20 @@ async function renderTeamMembers() {
             const empNum = parseInt(String(u.employeeId), 10);
             const empDisp = empNum >= 100 && empNum <= 999 ? String(empNum) : '—';
             const whereLabel = sr
-              ? '<span style="font-size:0.75rem;color:var(--muted);" title="Seen from another device (KV roster)">Server roster</span>'
+              ? '<span style="font-size:0.75rem;color:var(--muted);" title="Seen from another device">Server roster</span>'
               : '<span style="font-size:0.75rem;color:var(--muted);">This browser</span>';
-            const showedMine = appointments.filter(
-              a => (a.status === 'showed' || a.status === 'closed') && a.employeeId != null && String(a.employeeId).trim() === empDisp
+            const wonMine = appointments.filter(
+              a => appointmentQualifiesForTwentyFiveBonus(a) && a.employeeId != null && String(a.employeeId).trim() === empDisp
             ).length;
-            const comm = empDisp !== '—' ? '$' + (showedMine * COMMISSION_PER_SHOWED_APPT) : '—';
+            const comm = empDisp !== '—' ? '$' + (wonMine * COMMISSION_PER_WON_APPT) : '—';
             const eml = u.email ? String(u.email).trim().toLowerCase() : '';
             const rrow = eml ? rosterByEmail[eml] : null;
-            const rawSt = (u.employmentStatus != null && String(u.employmentStatus).trim() !== '')
-              ? u.employmentStatus
-              : ((rrow && rrow.employmentStatus) || 'active');
+            const rawSt =
+              rrow && rrow.employmentStatus != null && String(rrow.employmentStatus).trim() !== ''
+                ? rrow.employmentStatus
+                : u.employmentStatus != null && String(u.employmentStatus).trim() !== ''
+                  ? u.employmentStatus
+                  : 'active';
             const uem = typeof normalizeEmploymentStatus === 'function' ? normalizeEmploymentStatus(rawSt) : 'active';
             return `
             <tr>
@@ -5412,7 +6284,7 @@ function renderAppointments() {
 
   el.innerHTML =
     '<p class="appt-table-hint" style="margin-bottom:1rem;">Sorted <strong>newest first</strong>. <strong>Visit #</strong> tracks multiple appointments for the same phone number.</p>' +
-    '<div class="table-wrap appt-table-wrap">' +
+    '<div class="table-wrap appt-table-wrap appt-table-scroll">' +
     '<table class="queue-table appt-table">' +
     '<thead><tr>' +
     '<th>Emp #</th>' +
@@ -5443,12 +6315,11 @@ function renderDashboard() {
   const showRate = totalBooked > 0 ? Math.round((showed/totalBooked)*100)+'%' : '—';
   document.getElementById('statShowRate').textContent = showRate;
 
-  // Commission: only appointments saved with this user's employee ID (showed or won)
-  const showedMine = appointments.filter(
-    a =>
-      (a.status === 'showed' || a.status === 'closed') && appointmentAttributedToCurrentUser(a)
+  // Commission: $25 per Won only (portal status Won / closed), attributed to this user's employee ID
+  const wonMine = appointments.filter(
+    a => appointmentQualifiesForTwentyFiveBonus(a) && appointmentAttributedToCurrentUser(a)
   ).length;
-  const commission = showedMine * COMMISSION_PER_SHOWED_APPT;
+  const commission = wonMine * COMMISSION_PER_WON_APPT;
   document.getElementById('statCommission').textContent = '$'+commission;
   document.getElementById('topbarCommission').textContent = '$'+commission;
 
@@ -5507,6 +6378,536 @@ function renderDashboard() {
       <div style="font-size:0.68rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--muted);">${s.label}</div>
     </div>
   `).join('');
+
+  renderTeamPulse();
+}
+
+function renderTeamPulse() {
+  var section = document.getElementById('teamPulseSection');
+  if (!section) return;
+  var cu = typeof getCurrentUser === 'function' ? getCurrentUser() : null;
+  if (!cu || String(cu.role||'').toLowerCase() !== 'admin') { section.style.display = 'none'; return; }
+  section.style.display = '';
+
+  var now = new Date();
+  var todayStr = now.toDateString();
+  var weekAgo = new Date(); weekAgo.setDate(weekAgo.getDate() - 7);
+  var twoWeeksAgo = new Date(); twoWeeksAgo.setDate(twoWeeksAgo.getDate() - 14);
+
+  var todayLogs = callLog.filter(function(c) { return new Date(c.timestamp).toDateString() === todayStr; });
+  var thisWeekLogs = callLog.filter(function(c) { var d = new Date(c.timestamp); return d >= weekAgo; });
+  var lastWeekLogs = callLog.filter(function(c) { var d = new Date(c.timestamp); return d >= twoWeeksAgo && d < weekAgo; });
+
+  var allUsers = typeof _allPortalUsers === 'object' && Array.isArray(_allPortalUsers) ? _allPortalUsers : [];
+  var activeUsers = allUsers.filter(function(u) {
+    var es = typeof normalizeEmploymentStatus === 'function' ? normalizeEmploymentStatus(u.employmentStatus) : 'active';
+    return es === 'active' && String(u.role||'').toLowerCase() !== 'admin';
+  });
+
+  var empMap = {};
+  activeUsers.forEach(function(u) {
+    var eid = u.employeeId || u.id || '';
+    empMap[eid] = u.name || u.email || eid;
+  });
+
+  var dialsByEmp = {};
+  todayLogs.forEach(function(c) {
+    var eid = String(c.employeeId || 'Unknown');
+    dialsByEmp[eid] = (dialsByEmp[eid] || 0) + 1;
+  });
+
+  var empIds = Object.keys(empMap);
+  empIds.forEach(function(eid) { if (!(eid in dialsByEmp)) dialsByEmp[eid] = 0; });
+
+  var sorted = Object.entries(dialsByEmp).sort(function(a,b) { return b[1] - a[1]; });
+
+  var totalDialsToday = todayLogs.length;
+  var totalDialsThisWeek = thisWeekLogs.length;
+  var totalDialsLastWeek = lastWeekLogs.length;
+  var bookedThisWeek = thisWeekLogs.filter(function(c) { return c.outcome === 'booked'; }).length;
+  var bookedLastWeek = lastWeekLogs.filter(function(c) { return c.outcome === 'booked'; }).length;
+  var convRate = totalDialsThisWeek > 0 ? ((bookedThisWeek / totalDialsThisWeek) * 100).toFixed(1) : '0';
+  var zeroDials = sorted.filter(function(e) { return e[1] === 0; });
+
+  var cardsEl = document.getElementById('pulseStatCards');
+  if (cardsEl) {
+    var weekDelta = totalDialsLastWeek > 0 ? Math.round(((totalDialsThisWeek - totalDialsLastWeek) / totalDialsLastWeek) * 100) : (totalDialsThisWeek > 0 ? 100 : 0);
+    var deltaColor = weekDelta >= 0 ? 'var(--green)' : 'var(--red)';
+    var deltaArrow = weekDelta >= 0 ? '+' : '';
+    cardsEl.innerHTML =
+      '<div style="padding:1rem;text-align:center;border-right:1px solid var(--border);">' +
+        '<div style="font-family:\'Fraunces\',serif;font-size:1.6rem;font-weight:700;color:var(--blue);">' + totalDialsToday + '</div>' +
+        '<div style="font-size:0.68rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--muted);">Dials Today</div>' +
+      '</div>' +
+      '<div style="padding:1rem;text-align:center;border-right:1px solid var(--border);">' +
+        '<div style="font-family:\'Fraunces\',serif;font-size:1.6rem;font-weight:700;color:var(--green);">' + bookedThisWeek + '</div>' +
+        '<div style="font-size:0.68rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--muted);">Booked This Week</div>' +
+      '</div>' +
+      '<div style="padding:1rem;text-align:center;border-right:1px solid var(--border);">' +
+        '<div style="font-family:\'Fraunces\',serif;font-size:1.6rem;font-weight:700;color:var(--purple);">' + convRate + '%</div>' +
+        '<div style="font-size:0.68rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--muted);">Conversion Rate</div>' +
+      '</div>' +
+      '<div style="padding:1rem;text-align:center;">' +
+        '<div style="font-family:\'Fraunces\',serif;font-size:1.6rem;font-weight:700;color:' + deltaColor + ';">' + deltaArrow + weekDelta + '%</div>' +
+        '<div style="font-size:0.68rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--muted);">vs Last Week</div>' +
+      '</div>';
+  }
+
+  var dialsEl = document.getElementById('pulseDialsToday');
+  if (dialsEl) {
+    if (sorted.length === 0) {
+      dialsEl.innerHTML = '<span style="color:var(--muted);">No call data yet.</span>';
+    } else {
+      var maxDials = sorted[0][1] || 1;
+      dialsEl.innerHTML = sorted.map(function(e) {
+        var eid = e[0];
+        var count = e[1];
+        var name = empMap[eid] || ('Emp #' + eid);
+        var pct = Math.round((count / maxDials) * 100);
+        var barColor = count === 0 ? 'var(--red)' : (count >= maxDials * 0.75 ? 'var(--green)' : 'var(--blue)');
+        return '<div style="margin-bottom:0.5rem;">' +
+          '<div style="display:flex;justify-content:space-between;margin-bottom:2px;">' +
+            '<span style="font-weight:500;">' + escapeHtml(name) + '</span>' +
+            '<span style="color:' + (count === 0 ? 'var(--red);font-weight:600' : 'var(--muted)') + ';">' + count + ' dials</span>' +
+          '</div>' +
+          '<div style="background:var(--cream);border-radius:3px;height:6px;overflow:hidden;">' +
+            '<div style="width:' + pct + '%;height:100%;background:' + barColor + ';border-radius:3px;transition:width 0.3s;"></div>' +
+          '</div></div>';
+      }).join('');
+    }
+  }
+
+  var outEl = document.getElementById('pulseOutcomes');
+  if (outEl) {
+    var outcomeCounts = {};
+    thisWeekLogs.forEach(function(c) {
+      var o = c.outcome || 'new';
+      outcomeCounts[o] = (outcomeCounts[o] || 0) + 1;
+    });
+    var outcomeKeys = Object.keys(outcomeCounts).sort(function(a,b) { return outcomeCounts[b] - outcomeCounts[a]; });
+    var outLabels = { new:'New', no_answer:'No Answer', callback:'Callback', booked:'Booked', not_interested:'Not Interested', called:'Called', voicemail:'Voicemail', gatekeeper:'Gatekeeper', wrong_number:'Wrong Number' };
+    var outColors = { new:'var(--blue)', no_answer:'var(--purple)', callback:'var(--amber)', booked:'var(--green)', not_interested:'var(--red)', called:'var(--muted)', voicemail:'#6b7280', gatekeeper:'#f59e0b', wrong_number:'#ef4444' };
+    if (outcomeKeys.length === 0) {
+      outEl.innerHTML = '<span style="color:var(--muted);">No calls this week.</span>';
+    } else {
+      var maxOut = outcomeCounts[outcomeKeys[0]] || 1;
+      outEl.innerHTML = outcomeKeys.map(function(k) {
+        var cnt = outcomeCounts[k];
+        var pct = Math.round((cnt / totalDialsThisWeek) * 100);
+        var barPct = Math.round((cnt / maxOut) * 100);
+        return '<div style="margin-bottom:0.5rem;">' +
+          '<div style="display:flex;justify-content:space-between;margin-bottom:2px;">' +
+            '<span style="font-weight:500;">' + (outLabels[k] || k) + '</span>' +
+            '<span style="color:var(--muted);">' + cnt + ' (' + pct + '%)</span>' +
+          '</div>' +
+          '<div style="background:var(--cream);border-radius:3px;height:6px;overflow:hidden;">' +
+            '<div style="width:' + barPct + '%;height:100%;background:' + (outColors[k] || 'var(--blue)') + ';border-radius:3px;"></div>' +
+          '</div></div>';
+      }).join('');
+    }
+  }
+
+  var weekEl = document.getElementById('pulseWeekly');
+  if (weekEl) {
+    var apptThisWeek = appointments.filter(function(a) { return new Date(a.dateTime || a.createdAt) >= weekAgo; }).length;
+    var apptLastWeek = appointments.filter(function(a) { var d = new Date(a.dateTime || a.createdAt); return d >= twoWeeksAgo && d < weekAgo; }).length;
+    weekEl.innerHTML =
+      '<table style="width:100%;border-collapse:collapse;font-size:0.82rem;">' +
+      '<thead><tr style="border-bottom:1px solid var(--border);">' +
+        '<th style="text-align:left;padding:0.4rem 0.5rem;font-weight:600;">Metric</th>' +
+        '<th style="text-align:right;padding:0.4rem 0.5rem;font-weight:600;">This Week</th>' +
+        '<th style="text-align:right;padding:0.4rem 0.5rem;font-weight:600;">Last Week</th>' +
+        '<th style="text-align:right;padding:0.4rem 0.5rem;font-weight:600;">Change</th>' +
+      '</tr></thead><tbody>' +
+      _pulseWeekRow('Total Dials', totalDialsThisWeek, totalDialsLastWeek) +
+      _pulseWeekRow('Booked', bookedThisWeek, bookedLastWeek) +
+      _pulseWeekRow('Appointments', apptThisWeek, apptLastWeek) +
+      '</tbody></table>';
+  }
+
+  var alertsWrap = document.getElementById('pulseAlerts');
+  var alertsList = document.getElementById('pulseAlertsList');
+  if (alertsWrap && alertsList) {
+    var alerts = [];
+    if (zeroDials.length > 0 && now.getDay() >= 1 && now.getDay() <= 5 && now.getHours() >= 10) {
+      var names = zeroDials.map(function(e) { return empMap[e[0]] || ('Emp #' + e[0]); });
+      alerts.push('<span style="color:var(--red);font-weight:600;">' + zeroDials.length + ' employee' + (zeroDials.length > 1 ? 's' : '') + ' with 0 dials today:</span> ' + names.map(function(n) { return escapeHtml(n); }).join(', '));
+    }
+    if (totalDialsThisWeek < totalDialsLastWeek * 0.7 && totalDialsLastWeek > 0) {
+      alerts.push('Team dials dropped <strong>' + Math.round(((totalDialsLastWeek - totalDialsThisWeek) / totalDialsLastWeek) * 100) + '%</strong> compared to last week.');
+    }
+    if (alerts.length > 0) {
+      alertsWrap.style.display = '';
+      alertsList.innerHTML = alerts.map(function(a) { return '<div style="margin-bottom:0.4rem;">' + a + '</div>'; }).join('');
+    } else {
+      alertsWrap.style.display = 'none';
+    }
+  }
+}
+
+function _pulseWeekRow(label, thisW, lastW) {
+  var delta = lastW > 0 ? Math.round(((thisW - lastW) / lastW) * 100) : (thisW > 0 ? 100 : 0);
+  var color = delta > 0 ? 'var(--green)' : (delta < 0 ? 'var(--red)' : 'var(--muted)');
+  var arrow = delta > 0 ? '+' : '';
+  return '<tr style="border-bottom:1px solid var(--border);">' +
+    '<td style="padding:0.4rem 0.5rem;">' + label + '</td>' +
+    '<td style="text-align:right;padding:0.4rem 0.5rem;font-weight:600;">' + thisW + '</td>' +
+    '<td style="text-align:right;padding:0.4rem 0.5rem;color:var(--muted);">' + lastW + '</td>' +
+    '<td style="text-align:right;padding:0.4rem 0.5rem;font-weight:600;color:' + color + ';">' + arrow + delta + '%</td>' +
+  '</tr>';
+}
+
+var _quoAdminFetchInFlight = false;
+var _quoSmsPreviewInFlight = false;
+
+function formatQuoDateTime(iso) {
+  if (iso == null || iso === '') return '—';
+  try {
+    return new Date(iso).toLocaleString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+      hour: 'numeric',
+      minute: '2-digit',
+    });
+  } catch (e1) {
+    return String(iso);
+  }
+}
+
+function quoPhoneLineLabel(phoneNumberId, map) {
+  if (!phoneNumberId || !map) return escapeHtml(String(phoneNumberId || '—'));
+  var row = map[phoneNumberId];
+  if (!row) return '<span style="font-family:ui-monospace,monospace;font-size:0.72rem;">' + escapeHtml(String(phoneNumberId)) + '</span>';
+  var bits = [];
+  if (row.name) bits.push(escapeHtml(row.name));
+  if (row.formattedNumber || row.number) bits.push(escapeHtml(row.formattedNumber || row.number));
+  return bits.join(' · ') + ' <span style="font-family:ui-monospace,monospace;font-size:0.68rem;color:var(--muted);">' + escapeHtml(String(phoneNumberId)) + '</span>';
+}
+
+function loadQuoAdminPage() {
+  var lineInp = document.getElementById('quoLineFilterInput');
+  if (lineInp && !lineInp.getAttribute('data-quo-inited')) {
+    lineInp.setAttribute('data-quo-inited', '1');
+    try {
+      var saved = localStorage.getItem('cb_quo_line_e164');
+      if (saved && String(saved).trim()) lineInp.value = String(saved).trim();
+    } catch (e0) {}
+    lineInp.addEventListener('change', function () {
+      try {
+        localStorage.setItem('cb_quo_line_e164', (lineInp.value || '').trim());
+      } catch (e2) {}
+    });
+  }
+  void loadQuoAdminPhoneNumbers();
+  void loadQuoAdminConversations();
+}
+
+async function loadQuoAdminPhoneNumbers() {
+  var bodyEl = document.getElementById('quoPhoneNumbersBody');
+  if (!bodyEl) return;
+  bodyEl.innerHTML = '<div class="empty"><div class="empty-icon">📱</div><p>Loading…</p></div>';
+  var secret = getPipelineSecret();
+  try {
+    var r = await fetch('/api/quo', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ secret: secret, action: 'phoneNumbers' }),
+    });
+    var j = await r.json().catch(function () {
+      return {};
+    });
+    if (r.status === 401) {
+      bodyEl.innerHTML =
+        '<div class="empty"><div class="empty-icon">🔒</div><p>Portal password does not match the server.</p></div>';
+      return;
+    }
+    if (!j || j.configured === false) {
+      bodyEl.innerHTML =
+        '<div class="empty"><div class="empty-icon">⚙️</div><p>Quo is not configured on the server (<code style="font-size:0.75rem;">QUO_API_KEY</code>).</p></div>';
+      return;
+    }
+    if (!j.ok) {
+      bodyEl.innerHTML =
+        '<div class="empty"><div class="empty-icon">⚠️</div><p>' + escapeHtml((j.error && String(j.error)) || 'Request failed') + '</p></div>';
+      return;
+    }
+    var list = (j.data && j.data.data && Array.isArray(j.data.data)) ? j.data.data : [];
+    window._quoPhoneNumberMap = {};
+    list.forEach(function (pn) {
+      if (pn && pn.id) window._quoPhoneNumberMap[pn.id] = pn;
+    });
+    if (list.length === 0) {
+      bodyEl.innerHTML = '<div class="empty"><div class="empty-icon">📱</div><p>No phone numbers returned.</p></div>';
+      return;
+    }
+    var head =
+      '<div style="overflow-x:auto;"><table class="resources-admin-table" style="min-width:720px;"><thead><tr>' +
+      '<th style="text-align:left;">Name</th>' +
+      '<th style="text-align:left;">Number</th>' +
+      '<th style="text-align:left;">Formatted</th>' +
+      '<th style="text-align:left;">Phone ID</th>' +
+      '<th style="text-align:left;">Forward</th>' +
+      '<th style="text-align:left;">Porting</th>' +
+      '</tr></thead><tbody>';
+    var rows = list
+      .map(function (pn) {
+        return (
+          '<tr>' +
+          '<td>' +
+          escapeHtml(pn.name != null ? String(pn.name) : '—') +
+          '</td>' +
+          '<td>' +
+          escapeHtml(pn.number != null ? String(pn.number) : '—') +
+          '</td>' +
+          '<td>' +
+          escapeHtml(pn.formattedNumber != null ? String(pn.formattedNumber) : '—') +
+          '</td>' +
+          '<td style="font-family:ui-monospace,monospace;font-size:0.72rem;">' +
+          escapeHtml(pn.id != null ? String(pn.id) : '—') +
+          '</td>' +
+          '<td>' +
+          escapeHtml(pn.forward != null ? String(pn.forward) : '—') +
+          '</td>' +
+          '<td>' +
+          escapeHtml(pn.portingStatus != null ? String(pn.portingStatus) : '—') +
+          '</td>' +
+          '</tr>'
+        );
+      })
+      .join('');
+    bodyEl.innerHTML = head + rows + '</tbody></table></div>';
+  } catch (e) {
+    bodyEl.innerHTML =
+      '<div class="empty"><div class="empty-icon">⚠️</div><p>' +
+      escapeHtml(e && e.message ? e.message : 'Network error') +
+      '</p></div>';
+  }
+}
+
+async function loadQuoAdminConversations() {
+  var bodyEl = document.getElementById('quoConversationsAdminBody');
+  if (!bodyEl) return;
+  if (_quoAdminFetchInFlight) return;
+  _quoAdminFetchInFlight = true;
+  bodyEl.innerHTML = '<div class="empty"><div class="empty-icon">💬</div><p>Loading…</p></div>';
+  var lineInp = document.getElementById('quoLineFilterInput');
+  var maxSel = document.getElementById('quoMaxResults');
+  var phoneE164 = (lineInp && lineInp.value ? lineInp.value.trim() : '') || '+19177733276';
+  var maxResults = maxSel ? parseInt(maxSel.value, 10) || 25 : 25;
+  var secret = getPipelineSecret();
+  try {
+    var r = await fetch('/api/quo', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        secret: secret,
+        action: 'conversations',
+        phoneE164: phoneE164,
+        maxResults: maxResults,
+      }),
+    });
+    var j = await r.json().catch(function () {
+      return {};
+    });
+    if (r.status === 401) {
+      bodyEl.innerHTML =
+        '<div class="empty"><div class="empty-icon">🔒</div><p>Portal password does not match the server.</p></div>';
+      return;
+    }
+    if (!j || j.configured === false) {
+      bodyEl.innerHTML =
+        '<div class="empty"><div class="empty-icon">⚙️</div><p>Quo is not configured on the server.</p></div>';
+      return;
+    }
+    if (!j.ok) {
+      bodyEl.innerHTML =
+        '<div class="empty"><div class="empty-icon">⚠️</div><p>' +
+        escapeHtml((j.error && String(j.error)) || 'Could not load conversations') +
+        '</p></div>';
+      return;
+    }
+    var rows = (j.data && j.data.data && Array.isArray(j.data.data)) ? j.data.data : [];
+    window._quoAdminConversations = rows;
+    window._quoAdminPreviewByIndex = {};
+    var map = window._quoPhoneNumberMap || {};
+    var sub =
+      '<p style="font-size:0.75rem;color:var(--muted);margin:0 0 0.75rem;">Line filter: ' +
+      escapeHtml(j.phoneFilter != null ? String(j.phoneFilter) : phoneE164);
+    if (j.data && j.data.nextPageToken) {
+      sub += ' · <span style="font-family:ui-monospace,monospace;font-size:0.7rem;">nextPageToken present (pagination not wired in UI)</span>';
+    }
+    sub += '</p>';
+    if (rows.length === 0) {
+      bodyEl.innerHTML = sub + '<div class="empty"><div class="empty-icon">💬</div><p>No conversations for this line.</p></div>';
+      return;
+    }
+    var thead =
+      '<thead><tr>' +
+      '<th style="text-align:left;padding:0.4rem 0.45rem;border-bottom:1px solid var(--border);font-size:0.65rem;text-transform:uppercase;letter-spacing:0.04em;color:var(--muted);">Thread / name</th>' +
+      '<th style="text-align:left;padding:0.4rem 0.45rem;border-bottom:1px solid var(--border);font-size:0.65rem;text-transform:uppercase;letter-spacing:0.04em;color:var(--muted);">Participants</th>' +
+      '<th style="text-align:left;padding:0.4rem 0.45rem;border-bottom:1px solid var(--border);font-size:0.65rem;text-transform:uppercase;letter-spacing:0.04em;color:var(--muted);">OpenPhone line</th>' +
+      '<th style="text-align:left;padding:0.4rem 0.45rem;border-bottom:1px solid var(--border);font-size:0.65rem;text-transform:uppercase;letter-spacing:0.04em;color:var(--muted);">Conversation ID</th>' +
+      '<th style="text-align:left;padding:0.4rem 0.45rem;border-bottom:1px solid var(--border);font-size:0.65rem;text-transform:uppercase;letter-spacing:0.04em;color:var(--muted);">Last activity</th>' +
+      '<th style="text-align:left;padding:0.4rem 0.45rem;border-bottom:1px solid var(--border);font-size:0.65rem;text-transform:uppercase;letter-spacing:0.04em;color:var(--muted);">Last activity ID</th>' +
+      '<th style="text-align:left;padding:0.4rem 0.45rem;border-bottom:1px solid var(--border);font-size:0.65rem;text-transform:uppercase;letter-spacing:0.04em;color:var(--muted);">Assigned to</th>' +
+      '<th style="text-align:left;padding:0.4rem 0.45rem;border-bottom:1px solid var(--border);font-size:0.65rem;text-transform:uppercase;letter-spacing:0.04em;color:var(--muted);">Created</th>' +
+      '<th style="text-align:left;padding:0.4rem 0.45rem;border-bottom:1px solid var(--border);font-size:0.65rem;text-transform:uppercase;letter-spacing:0.04em;color:var(--muted);">Updated</th>' +
+      '<th style="text-align:left;padding:0.4rem 0.45rem;border-bottom:1px solid var(--border);font-size:0.65rem;text-transform:uppercase;letter-spacing:0.04em;color:var(--muted);">Snoozed until</th>' +
+      '<th style="text-align:left;padding:0.4rem 0.45rem;border-bottom:1px solid var(--border);font-size:0.65rem;text-transform:uppercase;letter-spacing:0.04em;color:var(--muted);">Muted until</th>' +
+      '<th style="text-align:left;padding:0.4rem 0.45rem;border-bottom:1px solid var(--border);font-size:0.65rem;text-transform:uppercase;letter-spacing:0.04em;color:var(--muted);">Deleted</th>' +
+      '<th style="text-align:left;padding:0.4rem 0.45rem;border-bottom:1px solid var(--border);font-size:0.65rem;text-transform:uppercase;letter-spacing:0.04em;color:var(--muted);">SMS preview</th>' +
+      '</tr></thead>';
+    var tableRows = rows
+      .map(function (conv, idx) {
+        var nm = conv.name != null && String(conv.name).trim() !== '' ? String(conv.name).trim() : '';
+        var parts = Array.isArray(conv.participants) ? conv.participants.join(', ') : '';
+        var who = nm || parts || '—';
+        var previewCell =
+          '<td class="quo-sms-cell" data-quo-idx="' +
+          idx +
+          '" style="padding:0.4rem 0.45rem;border-bottom:1px solid var(--border);font-size:0.74rem;max-width:14rem;vertical-align:top;">—</td>';
+        return (
+          '<tr>' +
+          '<td style="padding:0.4rem 0.45rem;border-bottom:1px solid var(--border);font-size:0.8rem;vertical-align:top;">' +
+          escapeHtml(who) +
+          '</td>' +
+          '<td style="padding:0.4rem 0.45rem;border-bottom:1px solid var(--border);font-size:0.74rem;vertical-align:top;">' +
+          escapeHtml(parts || '—') +
+          '</td>' +
+          '<td style="padding:0.4rem 0.45rem;border-bottom:1px solid var(--border);font-size:0.72rem;vertical-align:top;">' +
+          quoPhoneLineLabel(conv.phoneNumberId, map) +
+          '</td>' +
+          '<td style="padding:0.4rem 0.45rem;border-bottom:1px solid var(--border);font-size:0.68rem;vertical-align:top;font-family:ui-monospace,monospace;">' +
+          escapeHtml(conv.id != null ? String(conv.id) : '—') +
+          '</td>' +
+          '<td style="padding:0.4rem 0.45rem;border-bottom:1px solid var(--border);font-size:0.72rem;color:var(--muted);vertical-align:top;">' +
+          escapeHtml(formatQuoDateTime(conv.lastActivityAt)) +
+          '</td>' +
+          '<td style="padding:0.4rem 0.45rem;border-bottom:1px solid var(--border);font-size:0.68rem;vertical-align:top;font-family:ui-monospace,monospace;">' +
+          escapeHtml(conv.lastActivityId != null ? String(conv.lastActivityId) : '—') +
+          '</td>' +
+          '<td style="padding:0.4rem 0.45rem;border-bottom:1px solid var(--border);font-size:0.72rem;vertical-align:top;font-family:ui-monospace,monospace;">' +
+          escapeHtml(conv.assignedTo != null ? String(conv.assignedTo) : '—') +
+          '</td>' +
+          '<td style="padding:0.4rem 0.45rem;border-bottom:1px solid var(--border);font-size:0.72rem;color:var(--muted);vertical-align:top;">' +
+          escapeHtml(formatQuoDateTime(conv.createdAt)) +
+          '</td>' +
+          '<td style="padding:0.4rem 0.45rem;border-bottom:1px solid var(--border);font-size:0.72rem;color:var(--muted);vertical-align:top;">' +
+          escapeHtml(formatQuoDateTime(conv.updatedAt)) +
+          '</td>' +
+          '<td style="padding:0.4rem 0.45rem;border-bottom:1px solid var(--border);font-size:0.72rem;color:var(--muted);vertical-align:top;">' +
+          escapeHtml(formatQuoDateTime(conv.snoozedUntil)) +
+          '</td>' +
+          '<td style="padding:0.4rem 0.45rem;border-bottom:1px solid var(--border);font-size:0.72rem;color:var(--muted);vertical-align:top;">' +
+          escapeHtml(formatQuoDateTime(conv.mutedUntil)) +
+          '</td>' +
+          '<td style="padding:0.4rem 0.45rem;border-bottom:1px solid var(--border);font-size:0.72rem;color:var(--muted);vertical-align:top;">' +
+          escapeHtml(formatQuoDateTime(conv.deletedAt)) +
+          '</td>' +
+          previewCell +
+          '</tr>'
+        );
+      })
+      .join('');
+    bodyEl.innerHTML =
+      sub +
+      '<div style="overflow-x:auto;"><table style="width:100%;border-collapse:collapse;min-width:1200px;">' +
+      thead +
+      '<tbody>' +
+      tableRows +
+      '</tbody></table></div>';
+  } catch (e) {
+    bodyEl.innerHTML =
+      '<div class="empty"><div class="empty-icon">⚠️</div><p>' +
+      escapeHtml(e && e.message ? e.message : 'Network error') +
+      '</p></div>';
+  } finally {
+    _quoAdminFetchInFlight = false;
+  }
+}
+
+function quoPickLatestMessage(msgPayload) {
+  var arr = msgPayload && msgPayload.data && Array.isArray(msgPayload.data) ? msgPayload.data : [];
+  if (!arr.length) return null;
+  var sorted = arr.slice().sort(function (a, b) {
+    return new Date(b.createdAt || 0) - new Date(a.createdAt || 0);
+  });
+  return sorted[0];
+}
+
+async function loadQuoAdminSmsPreviews() {
+  if (_quoSmsPreviewInFlight) return;
+  var rows = window._quoAdminConversations;
+  if (!rows || !rows.length) {
+    toast('Load conversations first.');
+    return;
+  }
+  _quoSmsPreviewInFlight = true;
+  var btn = document.getElementById('quoSmsPreviewBtn');
+  if (btn) btn.disabled = true;
+  var secret = getPipelineSecret();
+  var next = 0;
+
+  async function worker() {
+    while (true) {
+      var my = next++;
+      if (my >= rows.length) return;
+      var conv = rows[my];
+      var cell = document.querySelector('.quo-sms-cell[data-quo-idx="' + my + '"]');
+      if (cell) cell.textContent = '…';
+      var pnId = conv.phoneNumberId;
+      var participants = Array.isArray(conv.participants) ? conv.participants : [];
+      if (!pnId || !participants.length) {
+        if (cell) cell.textContent = '—';
+        continue;
+      }
+      try {
+        var r = await fetch('/api/quo', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            secret: secret,
+            action: 'messages',
+            phoneNumberId: pnId,
+            participants: participants,
+            maxResults: 40,
+          }),
+        });
+        var j = await r.json().catch(function () {
+          return {};
+        });
+        if (!j || !j.ok || !j.data) {
+          if (cell) cell.textContent = '—';
+          continue;
+        }
+        var latest = quoPickLatestMessage(j.data);
+        if (!latest || latest.text == null) {
+          if (cell) cell.textContent = '(no text)';
+          continue;
+        }
+        var dir = latest.direction ? String(latest.direction) : '';
+        var st = latest.status ? String(latest.status) : '';
+        var snippet = String(latest.text).length > 160 ? String(latest.text).slice(0, 157) + '…' : String(latest.text);
+        if (cell) {
+          cell.innerHTML =
+            '<span style="color:var(--muted);font-size:0.68rem;">' +
+            escapeHtml(dir) +
+            ' · ' +
+            escapeHtml(st) +
+            '</span><br>' +
+            escapeHtml(snippet);
+        }
+      } catch (e1) {
+        if (cell) cell.textContent = '—';
+      }
+    }
+  }
+
+  await Promise.all([worker(), worker(), worker(), worker()]);
+  _quoSmsPreviewInFlight = false;
+  if (btn) btn.disabled = false;
+  toast('SMS previews updated.');
 }
 
 function syncLeadDbPushedWithQueue() {
@@ -5639,7 +7040,122 @@ function renderVaGoals(container, userId, isAdmin) {
   `;
 }
 
+// ── GOALS API-BACKED SYSTEM ────────────────────────────────────────────────
+var _goalsStatsCache = {};       // empId -> { stats, ts }
+var _goalsInflight = {};         // empId -> true while fetching
+var GOALS_STATS_CACHE_MS = 45000;
+
+function fetchGoalsStats(empId, callback) {
+  if (!empId) { callback(new Error('no_empid'), null); return; }
+  var cached = _goalsStatsCache[empId];
+  if (cached && (Date.now() - cached.ts < GOALS_STATS_CACHE_MS)) {
+    callback(null, cached.stats);
+    return;
+  }
+  if (_goalsInflight[empId]) return;
+  _goalsInflight[empId] = true;
+  fetch('/api/goals', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ secret: getPipelineSecret(), employeeId: empId }),
+  })
+  .then(function(r) { return r.json(); })
+  .catch(function() { return {}; })
+  .then(function(data) {
+    delete _goalsInflight[empId];
+    if (!data || data.ok !== true) {
+      callback(new Error(data && data.error ? data.error : 'fetch_failed'), null);
+      return;
+    }
+    if (data.configured === false) {
+      callback(new Error('not_configured'), null);
+      return;
+    }
+    _goalsStatsCache[empId] = { stats: data.stats, ts: Date.now() };
+    callback(null, data.stats);
+  });
+}
+
+function renderGoalsFromStats(container, stats, empId) {
+  var s = stats;
+  var dialPct = Math.min(100, (s.dialsToday / 80) * 100);
+  var dialColor = dialPct >= 100 ? 'goal-green' : (dialPct >= 50 ? 'goal-yellow' : 'goal-red');
+  var convPct = Math.min(100, (s.convsToday / 14) * 100);
+  var convColor = convPct >= 100 ? 'goal-green' : (convPct >= 50 ? 'goal-yellow' : 'goal-red');
+  var monthDialPct = Math.min(100, (s.dialsMonth / 1600) * 100);
+  var monthDialColor = monthDialPct >= 100 ? 'goal-green' : (monthDialPct >= 50 ? 'goal-yellow' : 'goal-red');
+  var monthClosePct = Math.min(100, (s.closesMonth / 5) * 100);
+  var monthCloseColor = monthClosePct >= 100 ? 'goal-green' : (monthClosePct >= 50 ? 'goal-yellow' : 'goal-red');
+
+  container.innerHTML = '\
+    <div style="margin-bottom:1rem;padding:0.75rem 1rem;background:var(--bg);border:1px solid var(--border);border-radius:0.5rem;font-size:0.8rem;color:var(--muted);">\
+      <strong style="color:var(--text);">Data sources:</strong> ' + s.totalCalls + ' call log entries · ' + s.totalAppts + ' appointments — matched by Employee ID <code>#' + (empId || '—') + '</code>\
+    </div>\
+    <div class="goals-grid">\
+      <div class="goal-section">\
+        <h3>Today&apos;s Stats</h3>\
+        <div class="goal-row">\
+          <span class="goal-label">Dials today</span>\
+          <span class="goal-val">' + s.dialsToday + ' / 80</span>\
+        </div>\
+        <div class="goal-progress-wrap"><div class="goal-progress-fill ' + dialColor + '" style="width:' + dialPct + '%"></div></div>\
+        <div class="goal-row" style="margin-top:1.25rem;">\
+          <span class="goal-label">Conversations today</span>\
+          <span class="goal-val">' + s.convsToday + ' / 14</span>\
+        </div>\
+        <div class="goal-progress-wrap"><div class="goal-progress-fill ' + convColor + '" style="width:' + convPct + '%"></div></div>\
+        <div class="goal-row" style="margin-top:1.25rem;">\
+          <span class="goal-label">Interested leads today</span>\
+          <span class="goal-val">' + s.interestedToday + '</span>\
+        </div>\
+        <div class="goal-row">\
+          <span class="goal-label">Closes today</span>\
+          <span class="goal-val">' + s.closesToday + '</span>\
+        </div>\
+        <div class="goal-row">\
+          <span class="goal-label">Call log submitted</span>\
+          <span class="goal-val" style="color:' + (s.dialsToday > 0 ? 'var(--green)' : '#ef4444') + '">' + (s.dialsToday > 0 ? 'Yes' : 'No') + '</span>\
+        </div>\
+      </div>\
+      <div class="goal-section">\
+        <h3>This Month&apos;s Stats</h3>\
+        <div class="goal-row">\
+          <span class="goal-label">Total dials</span>\
+          <span class="goal-val">' + s.dialsMonth + ' / 1,600</span>\
+        </div>\
+        <div class="goal-progress-wrap"><div class="goal-progress-fill ' + monthDialColor + '" style="width:' + monthDialPct + '%"></div></div>\
+        <div class="goal-row" style="margin-top:1.25rem;">\
+          <span class="goal-label">Total closes (won/closed appts)</span>\
+          <span class="goal-val">' + s.closesMonth + ' / 5</span>\
+        </div>\
+        <div class="goal-progress-wrap"><div class="goal-progress-fill ' + monthCloseColor + '" style="width:' + monthClosePct + '%"></div></div>\
+        <div class="goal-row" style="margin-top:1.25rem;">\
+          <span class="goal-label">Appointments showed</span>\
+          <span class="goal-val">' + s.showedMonth + '</span>\
+        </div>\
+        <div class="goal-row">\
+          <span class="goal-label">Appointments booked</span>\
+          <span class="goal-val">' + s.bookedMonth + '</span>\
+        </div>\
+        <div class="goal-row" style="margin-top:1.25rem;">\
+          <span class="goal-label">Active clients (all time)</span>\
+          <span class="goal-val">' + s.activeClients + '</span>\
+        </div>\
+        <div class="goal-row">\
+          <span class="goal-label">Commission earned</span>\
+          <span class="goal-val" style="color:var(--green)">$' + s.commission + ' <span style="font-size:0.75rem;color:var(--muted);font-weight:normal;">($' + s.basePay + ' base + $' + (s.closesMonth * 25) + ' closes + $' + (s.activeClients * 10) + ' recurring)</span></span>\
+        </div>\
+        <div class="goal-row">\
+          <span class="goal-label">Ghost days</span>\
+          <span class="goal-val" style="color:' + (s.ghostDays === 0 ? 'var(--green)' : '#ef4444') + '">' + s.ghostDays + ' / 0</span>\
+        </div>\
+      </div>\
+    </div>';
+}
+
+// Placeholder — replaced below; kept so old call sites compile harmlessly
 function renderCallerGoals(container, empId) {
+
   let dialsToday = 0;
   let convsToday = 0;
   let interestedToday = 0;
@@ -5815,78 +7331,96 @@ function renderGoals() {
   var container = document.getElementById('goalsContent');
   var adminSelector = document.getElementById('goalsAdminSelector');
   var employeeSelect = document.getElementById('goalsEmployeeSelect');
-  if (!container) return;
+  if (!container || !adminSelector || !employeeSelect) return;
 
   var currentUser = getCurrentUser();
   if (!currentUser) return;
 
-  var targetUser = currentUser;
-  var targetUserRole = currentUser.role || 'caller';
   var admin = isPortalAdmin(currentUser);
 
-  if (!adminSelector || !employeeSelect) return;
+  function empStatus(u) {
+    return typeof normalizeEmploymentStatus === 'function'
+      ? normalizeEmploymentStatus(u && u.employmentStatus != null ? u.employmentStatus : 'active')
+      : 'active';
+  }
 
-  if (admin) {
-    adminSelector.style.display = 'flex';
-    employeeSelect.disabled = false;
-    employeeSelect.title =
-      'Goals for active employees only. Inactive, training, interviewing, and on-leave people are hidden — you always stay listed so you can view your own goals.';
-
-    function goalsEmploymentStatus(u) {
-      return typeof normalizeEmploymentStatus === 'function'
-        ? normalizeEmploymentStatus(u && u.employmentStatus != null ? u.employmentStatus : 'active')
-        : 'active';
+  function showFor(targetUser) {
+    var role = String(targetUser.role || '').toLowerCase();
+    if (role === 'va') { renderVaGoals(container, targetUser.id, admin); return; }
+    var empId = resolveEmployeeId(targetUser);
+    if (!empId) {
+      container.innerHTML = '<div style="padding:2.5rem;text-align:center;color:var(--muted);">No Employee ID assigned to this account. Ask an admin to set one in Team Members.</div>';
+      return;
     }
-
-    var allUsers = getUsers()
-      .slice()
-      .filter(function(member) {
-        if (!member || !member.id) return false;
-        if (member.id === currentUser.id) return true;
-        return goalsEmploymentStatus(member) === 'active';
-      });
-    allUsers.sort(function(a, b) {
-      var na = String((a && (a.name || a.email)) || '').toLowerCase();
-      var nb = String((b && (b.name || b.email)) || '').toLowerCase();
-      return na.localeCompare(nb);
+    var cached = _goalsStatsCache[empId];
+    if (cached) {
+      renderGoalsFromStats(container, cached.stats, empId);
+    } else if (!_goalsInflight[empId]) {
+      container.innerHTML =
+        '<div style="text-align:center;padding:3rem 1rem;color:var(--muted);">' +
+        '<div style="font-size:2.2rem;margin-bottom:0.75rem;">⏳</div>' +
+        '<div style="font-size:0.95rem;font-weight:600;color:var(--text);">Loading goals for Emp #' + empId + '&hellip;</div>' +
+        '<div style="font-size:0.78rem;margin-top:0.35rem;">Usually takes about a second.</div>' +
+        '</div>';
+    }
+    fetchGoalsStats(empId, function(err, stats) {
+      if (err) {
+        if (!_goalsStatsCache[empId]) {
+          container.innerHTML = err.message === 'not_configured'
+            ? '<div style="padding:2.5rem;text-align:center;color:var(--muted);">Pipeline not configured on the server.</div>'
+            : '<div style="padding:2.5rem;text-align:center;color:var(--red);">Could not load stats. Try refreshing.</div>';
+        }
+        return;
+      }
+      var selId = admin ? employeeSelect.value : currentUser.id;
+      var selUser = getUsers().find(function(u) { return u && u.id === selId; }) || currentUser;
+      if (resolveEmployeeId(selUser) === empId || !admin) {
+        renderGoalsFromStats(container, stats, empId);
+      }
     });
+  }
 
-    var prevId = employeeSelect.value;
+  if (!admin) {
+    adminSelector.style.display = 'none';
+    employeeSelect.disabled = true;
     employeeSelect.innerHTML = '';
+    showFor(currentUser);
+    return;
+  }
 
-    allUsers.forEach(function(member) {
-      if (!member || !member.id) return;
+  adminSelector.style.display = 'flex';
+  employeeSelect.disabled = false;
+
+  var localUsers = getUsers().slice().filter(function(u) { return u && u.id; });
+  var activeUsers = localUsers.filter(function(u) { return empStatus(u) === 'active'; });
+  if (!activeUsers.some(function(u) { return u.id === currentUser.id; })) activeUsers.unshift(currentUser);
+  activeUsers.sort(function(a, b) {
+    return String((a.name || a.email) || '').toLowerCase()
+      .localeCompare(String((b.name || b.email) || '').toLowerCase());
+  });
+
+  var prevId = employeeSelect.value;
+  var prevCount = employeeSelect.options.length;
+  if (prevCount !== activeUsers.length || prevCount === 0) {
+    employeeSelect.innerHTML = '';
+    activeUsers.forEach(function(u) {
       var opt = document.createElement('option');
-      opt.value = member.id;
-      var emp = resolveEmployeeId(member);
-      var base = (member.name || member.email || 'Unknown') + (emp ? ' (Emp #' + emp + ')' : '') + ' — ' + (member.role || 'caller');
-      opt.textContent = member.id === currentUser.id ? ('You — ' + base) : base;
+      opt.value = u.id;
+      var emp = resolveEmployeeId(u);
+      var label = (u.name || u.email || 'Unknown') + (emp ? ' (Emp #' + emp + ')' : '') + ' — ' + (u.role || 'caller');
+      opt.textContent = u.id === currentUser.id ? ('You — ' + label) : label;
       employeeSelect.appendChild(opt);
     });
-
-    if (prevId && allUsers.some(function(u) { return u && u.id === prevId; })) {
+    if (prevId && activeUsers.some(function(u) { return u.id === prevId; })) {
       employeeSelect.value = prevId;
     } else {
       employeeSelect.value = currentUser.id;
     }
-
-    var selectedId = employeeSelect.value;
-    targetUser = allUsers.find(function(m) { return m && m.id === selectedId; }) || currentUser;
-    targetUserRole = targetUser.role || 'caller';
-  } else {
-    adminSelector.style.display = 'none';
-    employeeSelect.disabled = true;
-    employeeSelect.removeAttribute('title');
-    employeeSelect.innerHTML = '';
   }
 
-  var empId = resolveEmployeeId(targetUser);
-
-  if (String(targetUserRole || '').toLowerCase() === 'va') {
-    renderVaGoals(container, targetUser.id, admin);
-  } else {
-    renderCallerGoals(container, empId);
-  }
+  var selId = employeeSelect.value;
+  var selUser = activeUsers.find(function(u) { return u.id === selId; }) || currentUser;
+  showFor(selUser);
 }
 
 function renderAll() {
@@ -5900,7 +7434,7 @@ function renderAll() {
   void renderTeamMembers();
   renderDatabase();
   renderSettings();
-  applyInterviewingNavRestrictions();
+  applyEmploymentNavRestrictions();
 }
 
 // LEAD DATABASE
@@ -6659,18 +8193,10 @@ async function runScrapeFromSite() {
 })();
 
 void (async function bootstrapPortal() {
-  await initPipelineSync();
+  initPipelineSyncFast().catch(function() {});
+  initPipelineSync().then(function() { renderAll(); }).catch(function() {});
 
-  if (leads.length === 0) {
-    leads = [
-      {id:'1',company:'Hartley Express LLC',owner:'Dave Hartley',phone:'(512) 445-8821',city:'Austin',state:'TX',country:'US',address:'',category:'Trucking',website:'',email:'',notes:'',source:'Seed',fleet:'3 trucks',status:'new',lastContact:null,createdAt:new Date().toISOString()},
-      {id:'2',company:'Blue Ridge Freight',owner:'Marcus Webb',phone:'(828) 339-2210',city:'Asheville',state:'NC',country:'US',address:'',category:'Trucking',website:'',email:'',notes:'',source:'Seed',fleet:'1 truck',status:'new',lastContact:null,createdAt:new Date().toISOString()},
-      {id:'3',company:'Lone Star Hauling',owner:'',phone:'(214) 882-5543',city:'Dallas',state:'TX',country:'US',address:'',category:'Trucking',website:'',email:'',notes:'',source:'Seed',fleet:'2 trucks',status:'new',lastContact:null,createdAt:new Date().toISOString()},
-      {id:'4',company:'Midwest Carriers Inc',owner:'Tom Barker',phone:'(317) 554-9901',city:'Indianapolis',state:'IN',country:'US',address:'',category:'Trucking',website:'',email:'',notes:'',source:'Seed',fleet:'5 trucks',status:'new',lastContact:null,createdAt:new Date().toISOString()},
-      {id:'5',company:'Gulf Coast Transport',owner:'Ray Fontenot',phone:'(985) 774-3301',city:'New Orleans',state:'LA',country:'US',address:'',category:'Trucking',website:'',email:'',notes:'',source:'Seed',fleet:'2 trucks',status:'new',lastContact:null,createdAt:new Date().toISOString()},
-    ];
-    save();
-  }
+  try { localStorage.removeItem('cb_leads'); localStorage.removeItem('cb_leaddb'); } catch(_e){}
 
   migrateAllLeadsLegacyNotes();
 
@@ -6685,6 +8211,13 @@ void (async function bootstrapPortal() {
     if (!_allowed) return;
   }
   migrateCallLogEmptyEmployeeIds();
+  autoMigrateUsersToServer();
+  if (typeof refreshUsersFromServer === 'function') {
+    refreshUsersFromServer().catch(function () {});
+  }
+  if (typeof mergeCurrentUserEmploymentFromServerRoster === 'function') {
+    await mergeCurrentUserEmploymentFromServerRoster();
+  }
   initSidebar();
   document.addEventListener('click', function (e) {
     var filterChip = e.target.closest('button[data-training-filter]');
@@ -6718,7 +8251,12 @@ void (async function bootstrapPortal() {
   initTeamChat();
   applyProfileToUI();
   renderAll();
-  if (typeof isInterviewingEmployment === 'function' && isInterviewingEmployment()) {
+  if (typeof isInactiveEmployment === 'function' && isInactiveEmployment()) {
+    var ihIn = (window.location.hash || '').replace(/^#/, '');
+    if (!ihIn || ihIn !== 'settings') {
+      showView('settings', true);
+    }
+  } else if (typeof isInterviewingEmployment === 'function' && isInterviewingEmployment()) {
     var ih = (window.location.hash || '').replace(/^#/, '');
     if (!ih) {
       showView('goals', true);
@@ -6727,6 +8265,7 @@ void (async function bootstrapPortal() {
   var sessionUser = getCurrentUser();
   sendPresenceHeartbeat();
   setInterval(sendPresenceHeartbeat, 45000);
+  startPipelineRealtimeSync();
   if (sessionUser && sessionUser.role === 'admin') {
     setInterval(function () {
       void renderTeamMembers();
@@ -6735,6 +8274,637 @@ void (async function bootstrapPortal() {
     setInterval(function () {
       void loadSignupApprovals();
     }, 60000);
+  }
+})();
+
+// ── TIME CLOCK ──────────────────────────────────────────────────
+var _tcTimerInterval = null;
+
+function tcApi(payload) {
+  var u = getCurrentUser();
+  if (!u) return Promise.resolve({ ok: false, error: 'Not signed in' });
+  payload.userId = u.id;
+  payload.email = u.email || '';
+  payload.name = u.displayName || u.email || u.id;
+  return fetch('/api/timeclock', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  })
+    .then(function (r) { return r.json(); })
+    .catch(function () { return { ok: false, error: 'Network error' }; });
+}
+
+function tcAdminApi(payload) {
+  payload.secret = getAdminPortalSecret();
+  return fetch('/api/timeclock', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  })
+    .then(function (r) { return r.json(); })
+    .catch(function () { return { ok: false, error: 'Network error' }; });
+}
+
+function tcFmtMs(ms) {
+  var s = Math.floor(ms / 1000);
+  var h = Math.floor(s / 3600);
+  var m = Math.floor((s % 3600) / 60);
+  var sec = s % 60;
+  return String(h).padStart(2, '0') + ':' + String(m).padStart(2, '0') + ':' + String(sec).padStart(2, '0');
+}
+
+function tcFmtHrs(ms) {
+  return (ms / 3600000).toFixed(2) + 'h';
+}
+
+function tcFmtTime(iso) {
+  if (!iso) return '--';
+  var d = new Date(iso);
+  return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+}
+
+function tcFmtDate(iso) {
+  if (!iso) return '--';
+  var d = new Date(iso);
+  return d.toLocaleDateString([], { month: 'short', day: 'numeric', weekday: 'short' });
+}
+
+function tcCalcWorkedMs(shift) {
+  if (!shift || !shift.clockedInAt) return 0;
+  var start = new Date(shift.clockedInAt).getTime();
+  var end = Date.now();
+  var totalBreak = 0;
+  if (Array.isArray(shift.breaks)) {
+    shift.breaks.forEach(function (b) {
+      var bs = new Date(b.start).getTime();
+      var be = b.end ? new Date(b.end).getTime() : end;
+      totalBreak += be - bs;
+    });
+  }
+  return Math.max(0, end - start - totalBreak);
+}
+
+function tcCalcBreakMs(shift) {
+  if (!shift || !Array.isArray(shift.breaks)) return 0;
+  var total = 0;
+  var now = Date.now();
+  shift.breaks.forEach(function (b) {
+    var bs = new Date(b.start).getTime();
+    var be = b.end ? new Date(b.end).getTime() : now;
+    total += be - bs;
+  });
+  return total;
+}
+
+function tcStartTimer(shift) {
+  if (_tcTimerInterval) clearInterval(_tcTimerInterval);
+  function tick() {
+    var el = document.getElementById('tcTimer');
+    if (!el) return;
+    el.textContent = tcFmtMs(tcCalcWorkedMs(shift));
+    if (shift.status === 'on_break') {
+      var bl = document.getElementById('tcBreakLabel');
+      if (bl && Array.isArray(shift.breaks) && shift.breaks.length) {
+        var last = shift.breaks[shift.breaks.length - 1];
+        if (last && !last.end) {
+          var dur = Date.now() - new Date(last.start).getTime();
+          bl.textContent = 'On break for ' + tcFmtMs(dur);
+        }
+      }
+    }
+  }
+  tick();
+  _tcTimerInterval = setInterval(tick, 1000);
+}
+
+function tcStopTimer() {
+  if (_tcTimerInterval) { clearInterval(_tcTimerInterval); _tcTimerInterval = null; }
+}
+
+function tcRenderStatus(active) {
+  var label = document.getElementById('tcStatusLabel');
+  var timer = document.getElementById('tcTimer');
+  var breakLabel = document.getElementById('tcBreakLabel');
+  var btnIn = document.getElementById('tcBtnIn');
+  var btnBreakStart = document.getElementById('tcBtnBreakStart');
+  var btnBreakEnd = document.getElementById('tcBtnBreakEnd');
+  var btnOut = document.getElementById('tcBtnOut');
+  if (!label) return;
+  tcStopTimer();
+  if (!active || !active.clockedInAt) {
+    label.textContent = 'You are not clocked in';
+    label.className = 'tc-status-label tc-status-off';
+    timer.textContent = '--:--:--';
+    breakLabel.style.display = 'none';
+    btnIn.style.display = '';
+    btnBreakStart.style.display = 'none';
+    btnBreakEnd.style.display = 'none';
+    btnOut.style.display = 'none';
+    document.getElementById('tcStatusCard').className = 'tc-status-card tc-card-off';
+  } else if (active.status === 'on_break') {
+    label.textContent = 'Clocked in since ' + tcFmtTime(active.clockedInAt) + ' — on break';
+    label.className = 'tc-status-label tc-status-break';
+    breakLabel.style.display = '';
+    btnIn.style.display = 'none';
+    btnBreakStart.style.display = 'none';
+    btnBreakEnd.style.display = '';
+    btnOut.style.display = '';
+    document.getElementById('tcStatusCard').className = 'tc-status-card tc-card-break';
+    tcStartTimer(active);
+  } else {
+    label.textContent = 'Clocked in since ' + tcFmtTime(active.clockedInAt);
+    label.className = 'tc-status-label tc-status-on';
+    breakLabel.style.display = 'none';
+    btnIn.style.display = 'none';
+    btnBreakStart.style.display = '';
+    btnBreakEnd.style.display = 'none';
+    btnOut.style.display = '';
+    document.getElementById('tcStatusCard').className = 'tc-status-card tc-card-on';
+    tcStartTimer(active);
+  }
+}
+
+function tcRenderTodaySummary(active, log) {
+  var el = document.getElementById('tcTodaySummary');
+  if (!el) return;
+  var todayStr = new Date().toISOString().slice(0, 10);
+  var todayEntries = (log || []).filter(function (e) {
+    return e.ts && e.ts.slice(0, 10) === todayStr;
+  });
+  var clockOuts = todayEntries.filter(function (e) { return e.type === 'clock_out'; });
+  var totalWorked = 0;
+  var totalBreaks = 0;
+  var breakCount = 0;
+  clockOuts.forEach(function (e) {
+    totalWorked += (e.workedMs || 0);
+    if (Array.isArray(e.breaks)) {
+      breakCount += e.breaks.length;
+      e.breaks.forEach(function (b) {
+        if (b.start && b.end) totalBreaks += new Date(b.end).getTime() - new Date(b.start).getTime();
+      });
+    }
+  });
+  if (active && active.clockedInAt) {
+    totalWorked += tcCalcWorkedMs(active);
+    if (Array.isArray(active.breaks)) {
+      breakCount += active.breaks.length;
+      totalBreaks += tcCalcBreakMs(active);
+    }
+  }
+  if (totalWorked === 0 && clockOuts.length === 0 && !active) {
+    el.innerHTML = '<p style="color:#888;">Clock in to see today\'s summary.</p>';
+    return;
+  }
+  el.innerHTML =
+    '<div class="tc-summary-grid">' +
+    '<div class="tc-summary-item"><div class="tc-summary-val">' + tcFmtHrs(totalWorked) + '</div><div class="tc-summary-lbl">Hours worked</div></div>' +
+    '<div class="tc-summary-item"><div class="tc-summary-val">' + breakCount + '</div><div class="tc-summary-lbl">Breaks taken</div></div>' +
+    '<div class="tc-summary-item"><div class="tc-summary-val">' + tcFmtHrs(totalBreaks) + '</div><div class="tc-summary-lbl">Total break time</div></div>' +
+    '</div>';
+}
+
+function tcBuildShifts(log) {
+  var shifts = [];
+  var pending = null;
+  var sorted = (log || []).slice().sort(function (a, b) { return new Date(a.ts) - new Date(b.ts); });
+  sorted.forEach(function (e) {
+    if (e.type === 'clock_in') {
+      pending = { clockIn: e.ts, clockOut: null, breaks: [], workedMs: 0, notes: [] };
+      if (e.note) pending.notes.push(e.note);
+      if (e.adjustedBy) pending.notes.push('[adj]');
+    } else if (e.type === 'clock_out') {
+      if (!pending) {
+        pending = { clockIn: e.shiftStart || e.ts, clockOut: e.ts, breaks: e.breaks || [], workedMs: e.workedMs || 0, notes: [] };
+      } else {
+        pending.clockOut = e.ts;
+        pending.workedMs = e.workedMs || 0;
+        if (e.breaks && e.breaks.length) pending.breaks = e.breaks;
+      }
+      if (e.note) pending.notes.push(e.note);
+      if (e.adjustedBy) pending.notes.push('[adj]');
+      shifts.push(pending);
+      pending = null;
+    } else if (e.type === 'break_start' || e.type === 'break_end') {
+      if (e.note && pending) pending.notes.push(e.note);
+    }
+  });
+  if (pending) shifts.push(pending);
+  return shifts;
+}
+
+function tcRenderTimesheet(log) {
+  var body = document.getElementById('tcTimesheetBody');
+  if (!body) return;
+  var shifts = tcBuildShifts(log);
+  var cutoff = Date.now() - 14 * 24 * 60 * 60 * 1000;
+  shifts = shifts.filter(function (s) { return new Date(s.clockIn).getTime() > cutoff; });
+  shifts.sort(function (a, b) { return new Date(b.clockIn) - new Date(a.clockIn); });
+  if (!shifts.length) {
+    body.innerHTML = '<tr><td colspan="6" style="color:#888;">No shifts in the last 14 days.</td></tr>';
+    return;
+  }
+  body.innerHTML = shifts.map(function (s) {
+    var breakCount = Array.isArray(s.breaks) ? s.breaks.length : 0;
+    var notes = s.notes.filter(Boolean).join('; ');
+    return '<tr>' +
+      '<td>' + tcFmtDate(s.clockIn) + '</td>' +
+      '<td>' + tcFmtTime(s.clockIn) + '</td>' +
+      '<td>' + (s.clockOut ? tcFmtTime(s.clockOut) : '<span style="color:var(--amber);">active</span>') + '</td>' +
+      '<td>' + breakCount + '</td>' +
+      '<td>' + (s.workedMs ? tcFmtHrs(s.workedMs) : '--') + '</td>' +
+      '<td style="font-size:0.78rem;color:var(--muted);">' + (notes || '--') + '</td>' +
+      '</tr>';
+  }).join('');
+}
+
+function tcLoadStatus() {
+  tcApi({ action: 'status' }).then(function (data) {
+    if (!data) return;
+    tcRenderStatus(data.active);
+    tcRenderTodaySummary(data.active, data.log);
+  });
+}
+
+function tcLoadTimesheet() {
+  tcApi({ action: 'history' }).then(function (data) {
+    if (!data) return;
+    tcRenderTimesheet(data.log);
+  });
+}
+
+function tcClockIn() {
+  var note = (document.getElementById('tcNote') || {}).value || '';
+  tcApi({ action: 'clock_in', note: note }).then(function (data) {
+    if (!data.ok) { toast(data.error || 'Could not clock in'); return; }
+    toast('Clocked in!');
+    if (document.getElementById('tcNote')) document.getElementById('tcNote').value = '';
+    tcLoadStatus();
+    tcLoadTimesheet();
+  });
+}
+
+function tcClockOut() {
+  var note = (document.getElementById('tcNote') || {}).value || '';
+  tcApi({ action: 'clock_out', note: note }).then(function (data) {
+    if (!data.ok) { toast(data.error || 'Could not clock out'); return; }
+    toast('Clocked out — ' + tcFmtHrs(data.workedMs) + ' worked');
+    if (document.getElementById('tcNote')) document.getElementById('tcNote').value = '';
+    tcStopTimer();
+    tcLoadStatus();
+    tcLoadTimesheet();
+  });
+}
+
+function tcBreakStart() {
+  var note = (document.getElementById('tcNote') || {}).value || '';
+  tcApi({ action: 'break_start', note: note }).then(function (data) {
+    if (!data.ok) { toast(data.error || 'Could not start break'); return; }
+    toast('Break started');
+    if (document.getElementById('tcNote')) document.getElementById('tcNote').value = '';
+    tcLoadStatus();
+  });
+}
+
+function tcBreakEnd() {
+  var note = (document.getElementById('tcNote') || {}).value || '';
+  tcApi({ action: 'break_end', note: note }).then(function (data) {
+    if (!data.ok) { toast(data.error || 'Could not end break'); return; }
+    toast('Break ended — back to work');
+    if (document.getElementById('tcNote')) document.getElementById('tcNote').value = '';
+    tcLoadStatus();
+  });
+}
+
+// ── ADMIN TIMESHEETS ────────────────────────────────────────────
+var _adminTsData = null;
+var _tcNameMap = {};
+
+function tcBuildNameMap() {
+  var map = {};
+  try {
+    var users = getUsers();
+    if (Array.isArray(users)) {
+      users.forEach(function (u) {
+        if (!u || !u.id) return;
+        var label = u.displayName || u.email || u.id;
+        map[u.id] = { name: label, email: u.email || '' };
+      });
+    }
+  } catch (e) {}
+  if (_adminTsData) {
+    if (Array.isArray(_adminTsData.actives)) {
+      _adminTsData.actives.forEach(function (a) {
+        if (!a || !a.userId) return;
+        if (a.name && a.name !== a.userId) map[a.userId] = { name: a.name, email: a.email || (map[a.userId] || {}).email || '' };
+      });
+    }
+    if (_adminTsData.logs) {
+      Object.keys(_adminTsData.logs).forEach(function (uid) {
+        if (map[uid] && map[uid].name !== uid) return;
+        var entries = _adminTsData.logs[uid] || [];
+        for (var i = entries.length - 1; i >= 0; i--) {
+          var e = entries[i];
+          if (e && e.name && e.name !== uid) {
+            map[uid] = { name: e.name, email: e.email || (map[uid] || {}).email || '' };
+            break;
+          }
+        }
+        if (!map[uid]) map[uid] = { name: uid, email: '' };
+      });
+    }
+  }
+  _tcNameMap = map;
+  return map;
+}
+
+function tcResolveName(uid) {
+  var m = _tcNameMap[uid];
+  return m ? m.name : uid;
+}
+
+function tcResolveEmail(uid) {
+  var m = _tcNameMap[uid];
+  return m ? (m.email || '--') : '--';
+}
+
+function loadAdminTimesheets() {
+  tcAdminApi({ action: 'admin_list' }).then(function (data) {
+    if (!data || !data.ok) return;
+    _adminTsData = data;
+    tcBuildNameMap();
+    renderAdminActiveWorkers(data.actives);
+    renderAdminWeeklySummary(data.logs);
+    renderAdminAttendanceFlags(data.actives, data.logs);
+    renderAdminActivityFeed(data.logs);
+    populateAdminTsUserDropdowns(data.logs);
+  });
+}
+
+function populateAdminTsUserDropdowns(logs) {
+  var userSelect = document.getElementById('adminTsUser');
+  var adjustSelect = document.getElementById('adminAdjustUser');
+  if (!logs) return;
+  var ids = Object.keys(logs);
+  ids.sort(function (a, b) { return tcResolveName(a).localeCompare(tcResolveName(b)); });
+  if (userSelect) {
+    var prev = userSelect.value;
+    userSelect.innerHTML = '<option value="">All team members</option>';
+    ids.forEach(function (uid) {
+      var label = tcResolveName(uid);
+      var em = tcResolveEmail(uid);
+      var display = label !== uid ? label + ' (' + em + ')' : (em !== '--' ? em : uid);
+      userSelect.innerHTML += '<option value="' + uid + '">' + display + '</option>';
+    });
+    userSelect.value = prev;
+  }
+  if (adjustSelect) {
+    var prev2 = adjustSelect.value;
+    adjustSelect.innerHTML = '<option value="">Select...</option>';
+    ids.forEach(function (uid) {
+      var label = tcResolveName(uid);
+      var em = tcResolveEmail(uid);
+      var display = label !== uid ? label + ' (' + em + ')' : (em !== '--' ? em : uid);
+      adjustSelect.innerHTML += '<option value="' + uid + '">' + display + '</option>';
+    });
+    adjustSelect.value = prev2;
+  }
+}
+
+function renderAdminActiveWorkers(actives) {
+  var body = document.getElementById('adminActiveWorkersBody');
+  if (!body) return;
+  if (!actives || !actives.length) {
+    body.innerHTML = '<tr><td colspan="6" style="color:#888;">Nobody is clocked in right now.</td></tr>';
+    return;
+  }
+  body.innerHTML = actives.map(function (a) {
+    var breakCount = Array.isArray(a.breaks) ? a.breaks.length : 0;
+    var dispName = tcResolveName(a.userId) || a.name || a.userId;
+    var dispEmail = tcResolveEmail(a.userId);
+    if (dispEmail === '--') dispEmail = a.email || '--';
+    return '<tr>' +
+      '<td>' + dispName + '</td>' +
+      '<td>' + dispEmail + '</td>' +
+      '<td>' + tcFmtTime(a.clockedInAt) + '</td>' +
+      '<td><span class="tc-flag tc-flag-' + (a.status === 'on_break' ? 'warn' : 'ok') + '">' + (a.status === 'on_break' ? 'Break' : 'Working') + '</span></td>' +
+      '<td>' + tcFmtHrs(a._workedMs || 0) + '</td>' +
+      '<td>' + breakCount + '</td>' +
+      '</tr>';
+  }).join('');
+}
+
+function loadAdminTimesheetBrowser() {
+  if (!_adminTsData || !_adminTsData.logs) { toast('Load admin data first'); return; }
+  var fromEl = document.getElementById('adminTsFrom');
+  var toEl = document.getElementById('adminTsTo');
+  var userEl = document.getElementById('adminTsUser');
+  var from = fromEl ? fromEl.value : '';
+  var to = toEl ? toEl.value : '';
+  var uid = userEl ? userEl.value : '';
+  if (!from || !to) {
+    toast('Pick a date range');
+    return;
+  }
+  var body = document.getElementById('adminTimesheetBrowserBody');
+  if (!body) return;
+  var logs = _adminTsData.logs;
+  var ids = uid ? [uid] : Object.keys(logs);
+  var rows = [];
+  ids.forEach(function (id) {
+    var shifts = tcBuildShifts(logs[id] || []);
+    shifts.forEach(function (s) {
+      var d = s.clockIn ? s.clockIn.slice(0, 10) : '';
+      if (d < from || d > to) return;
+      var breakCount = Array.isArray(s.breaks) ? s.breaks.length : 0;
+      var notes = s.notes.filter(Boolean).join('; ');
+      var flags = [];
+      if (s.clockIn) {
+        var ci = new Date(s.clockIn);
+        var ciH = ci.getHours();
+        var ciM = ci.getMinutes();
+        if (ciH > 8 || (ciH === 8 && ciM > 15)) flags.push('late');
+      }
+      if (s.workedMs && s.workedMs < 3.5 * 3600000) flags.push('short');
+      if (!s.clockOut) flags.push('no clock-out');
+      rows.push({
+        date: d,
+        name: tcResolveName(id),
+        clockIn: tcFmtTime(s.clockIn),
+        clockOut: s.clockOut ? tcFmtTime(s.clockOut) : '--',
+        breaks: breakCount,
+        net: s.workedMs ? tcFmtHrs(s.workedMs) : '--',
+        notes: notes || '--',
+        flags: flags,
+      });
+    });
+  });
+  rows.sort(function (a, b) { return b.date.localeCompare(a.date) || a.name.localeCompare(b.name); });
+  if (!rows.length) {
+    body.innerHTML = '<tr><td colspan="8" style="color:#888;">No shifts found for this range.</td></tr>';
+    return;
+  }
+  body.innerHTML = rows.map(function (r) {
+    var flagHtml = r.flags.length
+      ? r.flags.map(function (f) { return '<span class="tc-flag tc-flag-warn">' + f + '</span>'; }).join(' ')
+      : '<span class="tc-flag tc-flag-ok">OK</span>';
+    return '<tr>' +
+      '<td>' + r.date + '</td>' +
+      '<td>' + r.name + '</td>' +
+      '<td>' + r.clockIn + '</td>' +
+      '<td>' + r.clockOut + '</td>' +
+      '<td>' + r.breaks + '</td>' +
+      '<td>' + r.net + '</td>' +
+      '<td style="font-size:0.78rem;color:var(--muted);">' + r.notes + '</td>' +
+      '<td>' + flagHtml + '</td>' +
+      '</tr>';
+  }).join('');
+}
+
+function renderAdminWeeklySummary(logs) {
+  var el = document.getElementById('adminWeeklySummary');
+  if (!el || !logs) return;
+  var now = new Date();
+  var weekStart = new Date(now);
+  weekStart.setDate(weekStart.getDate() - weekStart.getDay());
+  weekStart.setHours(0, 0, 0, 0);
+  var weekStartStr = weekStart.toISOString().slice(0, 10);
+  var cards = [];
+  Object.keys(logs).forEach(function (uid) {
+    var shifts = tcBuildShifts(logs[uid]);
+    var weekShifts = shifts.filter(function (s) { return s.clockIn && s.clockIn.slice(0, 10) >= weekStartStr; });
+    var totalMs = 0;
+    var daysWorked = {};
+    var breaksTaken = 0;
+    weekShifts.forEach(function (s) {
+      totalMs += (s.workedMs || 0);
+      if (s.clockIn) daysWorked[s.clockIn.slice(0, 10)] = true;
+      if (Array.isArray(s.breaks)) breaksTaken += s.breaks.length;
+    });
+    var dayCount = Object.keys(daysWorked).length;
+    var avg = dayCount > 0 ? (totalMs / dayCount) : 0;
+    cards.push({
+      name: tcResolveName(uid),
+      totalHrs: tcFmtHrs(totalMs),
+      avgHrs: tcFmtHrs(avg),
+      days: dayCount,
+      breaks: breaksTaken,
+    });
+  });
+  if (!cards.length) {
+    el.innerHTML = '<p style="color:#888;">No data for this week yet.</p>';
+    return;
+  }
+  el.innerHTML = cards.map(function (c) {
+    return '<div class="tc-weekly-card">' +
+      '<div class="tc-weekly-name">' + c.name + '</div>' +
+      '<div class="tc-weekly-row"><span>Total hours</span><strong>' + c.totalHrs + '</strong></div>' +
+      '<div class="tc-weekly-row"><span>Avg/day</span><strong>' + c.avgHrs + '</strong></div>' +
+      '<div class="tc-weekly-row"><span>Days worked</span><strong>' + c.days + '</strong></div>' +
+      '<div class="tc-weekly-row"><span>Breaks</span><strong>' + c.breaks + '</strong></div>' +
+      '</div>';
+  }).join('');
+}
+
+function renderAdminAttendanceFlags(actives, logs) {
+  var el = document.getElementById('adminAttendanceFlags');
+  if (!el) return;
+  var flags = [];
+  var todayStr = new Date().toISOString().slice(0, 10);
+  var yesterdayStr = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
+  var now = new Date();
+  var nowH = now.getHours();
+  var nowM = now.getMinutes();
+  if (!logs) { el.innerHTML = '<p style="color:#888;">No data.</p>'; return; }
+  Object.keys(logs).forEach(function (uid) {
+    var entries = logs[uid] || [];
+    var name = tcResolveName(uid);
+    var todayEntries = entries.filter(function (e) { return e.ts && e.ts.slice(0, 10) === todayStr; });
+    var yesterdayEntries = entries.filter(function (e) { return e.ts && e.ts.slice(0, 10) === yesterdayStr; });
+    var clockedInToday = todayEntries.some(function (e) { return e.type === 'clock_in'; });
+    var currentlyActive = actives && actives.some(function (a) { return a.userId === uid; });
+    if (!clockedInToday && !currentlyActive && (nowH > 8 || (nowH === 8 && nowM >= 30))) {
+      flags.push({ name: name, type: 'no-clock-in', msg: 'No clock-in today' });
+    }
+    if (!yesterdayEntries.length && new Date(yesterdayStr).getDay() !== 0 && new Date(yesterdayStr).getDay() !== 6) {
+      flags.push({ name: name, type: 'ghost-day', msg: 'Ghost day yesterday (no entries)' });
+    }
+    var shifts = tcBuildShifts(entries);
+    var todayShifts = shifts.filter(function (s) { return s.clockIn && s.clockIn.slice(0, 10) === todayStr && s.clockOut; });
+    todayShifts.forEach(function (s) {
+      if (s.workedMs && s.workedMs < 3 * 3600000) {
+        flags.push({ name: name, type: 'short-shift', msg: 'Short shift today (' + tcFmtHrs(s.workedMs) + ')' });
+      }
+    });
+  });
+  if (!flags.length) {
+    el.innerHTML = '<p style="color:var(--green);">No attendance flags today.</p>';
+    return;
+  }
+  el.innerHTML = flags.map(function (f) {
+    return '<div class="tc-flag-row"><span class="tc-flag tc-flag-warn">' + f.type + '</span> <strong>' + f.name + '</strong> — ' + f.msg + '</div>';
+  }).join('');
+}
+
+function renderAdminActivityFeed(logs) {
+  var el = document.getElementById('adminActivityFeed');
+  if (!el || !logs) return;
+  var cutoff = Date.now() - 24 * 60 * 60 * 1000;
+  var events = [];
+  Object.keys(logs).forEach(function (uid) {
+    (logs[uid] || []).forEach(function (e) {
+      if (e.ts && new Date(e.ts).getTime() > cutoff) {
+        events.push({ name: tcResolveName(uid), type: e.type, ts: e.ts, note: e.note || '' });
+      }
+    });
+  });
+  events.sort(function (a, b) { return new Date(b.ts) - new Date(a.ts); });
+  if (!events.length) {
+    el.innerHTML = '<p style="color:#888;">No activity in the last 24 hours.</p>';
+    return;
+  }
+  var labels = { clock_in: 'clocked in', clock_out: 'clocked out', break_start: 'started break', break_end: 'ended break' };
+  el.innerHTML = events.slice(0, 60).map(function (ev) {
+    var time = new Date(ev.ts).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    var noteStr = ev.note ? ' — ' + ev.note : '';
+    return '<div class="tc-feed-item"><span class="tc-feed-time">' + time + '</span> <strong>' + ev.name + '</strong> ' + (labels[ev.type] || ev.type) + noteStr + '</div>';
+  }).join('');
+}
+
+function submitAdminAdjustment() {
+  var uid = (document.getElementById('adminAdjustUser') || {}).value;
+  var type = (document.getElementById('adminAdjustType') || {}).value;
+  var ts = (document.getElementById('adminAdjustTs') || {}).value;
+  var note = (document.getElementById('adminAdjustNote') || {}).value;
+  var resultEl = document.getElementById('adminAdjustResult');
+  if (!uid || !type || !ts) {
+    if (resultEl) resultEl.innerHTML = '<span style="color:var(--red);">Fill in all fields.</span>';
+    return;
+  }
+  var isoTs = new Date(ts).toISOString();
+  tcAdminApi({
+    action: 'admin_adjust',
+    targetUserId: uid,
+    entry: { type: type, ts: isoTs, note: note || 'Manual adjustment' },
+  }).then(function (data) {
+    if (data.ok) {
+      if (resultEl) resultEl.innerHTML = '<span style="color:var(--green);">Adjustment saved.</span>';
+      loadAdminTimesheets();
+    } else {
+      if (resultEl) resultEl.innerHTML = '<span style="color:var(--red);">' + (data.error || 'Error') + '</span>';
+    }
+  });
+}
+
+(function initAdminTsDates() {
+  var from = document.getElementById('adminTsFrom');
+  var to = document.getElementById('adminTsTo');
+  if (from && to) {
+    var now = new Date();
+    var sun = new Date(now);
+    sun.setDate(sun.getDate() - sun.getDay());
+    from.value = sun.toISOString().slice(0, 10);
+    to.value = now.toISOString().slice(0, 10);
   }
 })();
 </script>

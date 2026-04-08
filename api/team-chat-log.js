@@ -1,26 +1,4 @@
-function getKv() {
-  if (!process.env.KV_REST_API_URL || !process.env.KV_REST_API_TOKEN) {
-    return null;
-  }
-  try {
-    return require('@vercel/kv').kv;
-  } catch {
-    return null;
-  }
-}
-
-async function collectChatUserKeys(kv) {
-  const keys = [];
-  let cursor = '0';
-  do {
-    const res = await kv.scan(cursor, { match: 'chat:user:*', count: 200 });
-    if (!res || !res.length) break;
-    cursor = String(res[0]);
-    const batch = res.slice(1);
-    if (batch.length) keys.push.apply(keys, batch);
-  } while (cursor !== '0');
-  return keys;
-}
+const { getSupabaseAdmin } = require('../lib/supabase-server');
 
 module.exports = async (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -48,48 +26,34 @@ module.exports = async (req, res) => {
   }
 
   const scraperSecret = process.env.SCRAPER_SECRET || 'Free2026';
-  const kv = getKv();
+  const supabase = getSupabaseAdmin();
 
   if (body.list === true) {
     if (body.secret !== scraperSecret) {
       return res.status(401).json({ error: 'Wrong password' });
     }
-    if (!kv) {
+    if (!supabase) {
       return res.status(200).json({ ok: true, configured: false, users: [] });
     }
-    let keys = [];
-    try {
-      keys = await collectChatUserKeys(kv);
-    } catch {
-      keys = [];
+    const { data, error } = await supabase
+      .from('team_chat_messages')
+      .select('*')
+      .order('updated_at', { ascending: false });
+
+    if (error) {
+      return res.status(500).json({ error: error.message });
     }
-    const users = [];
-    for (const key of keys) {
-      let raw;
-      try {
-        raw = await kv.get(key);
-      } catch {
-        continue;
-      }
-      if (raw == null) continue;
-      let parsed = raw;
-      if (typeof raw === 'string') {
-        try {
-          parsed = JSON.parse(raw);
-        } catch {
-          continue;
-        }
-      }
-      if (!parsed || typeof parsed !== 'object') continue;
-      if (!parsed.userId) {
-        const id = String(key).replace(/^chat:user:/, '');
-        if (id) parsed.userId = id;
-      }
-      users.push(parsed);
-    }
-    users.sort(function (a, b) {
-      return String(b.updatedAt || '').localeCompare(String(a.updatedAt || ''));
+
+    const users = (data || []).map(function (row) {
+      return {
+        userId: row.user_id,
+        email: row.email || '',
+        name: row.name || '',
+        updatedAt: row.updated_at,
+        messages: row.messages || [],
+      };
     });
+
     return res.status(200).json({ ok: true, configured: true, users });
   }
 
@@ -102,24 +66,26 @@ module.exports = async (req, res) => {
     return res.status(400).json({ error: 'messages array required' });
   }
 
-  if (!kv) {
+  if (!supabase) {
     return res.status(200).json({ ok: true, skipped: true });
   }
 
-  const payload = {
-    userId: userId.slice(0, 120),
-    email: String(body.email || '').slice(0, 200),
-    name: String(body.name || '').slice(0, 120),
-    updatedAt: new Date().toISOString(),
-    messages: messages.slice(-100),
-  };
+  const now = new Date().toISOString();
+  const { error } = await supabase
+    .from('team_chat_messages')
+    .upsert(
+      {
+        user_id: userId.slice(0, 120),
+        email: String(body.email || '').slice(0, 200),
+        name: String(body.name || '').slice(0, 120),
+        messages: messages.slice(-100),
+        updated_at: now,
+      },
+      { onConflict: 'user_id' }
+    );
 
-  try {
-    await kv.set('chat:user:' + userId, payload);
-  } catch (e) {
-    return res.status(500).json({
-      error: e && e.message ? e.message : 'Save failed',
-    });
+  if (error) {
+    return res.status(500).json({ error: error.message });
   }
 
   return res.status(200).json({ ok: true });

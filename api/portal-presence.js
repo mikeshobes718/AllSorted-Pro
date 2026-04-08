@@ -1,63 +1,4 @@
-const crypto = require('crypto');
-
-function getKv() {
-  if (!process.env.KV_REST_API_URL || !process.env.KV_REST_API_TOKEN) {
-    return null;
-  }
-  try {
-    return require('@vercel/kv').kv;
-  } catch {
-    return null;
-  }
-}
-
-function rosterKeyFromEmail(email) {
-  const e = String(email || '')
-    .trim()
-    .toLowerCase();
-  if (!e || e.indexOf('@') === -1) return null;
-  return 'portal:roster:byemail:v1:' + crypto.createHash('sha256').update(e).digest('hex');
-}
-
-async function collectPresenceKeys(kv) {
-  const keys = [];
-  let cursor = '0';
-  do {
-    let res;
-    try {
-      res = await kv.scan(cursor, { match: 'portal:presence:v1:*', count: 200 });
-    } catch {
-      break;
-    }
-    if (!res || !Array.isArray(res) || res.length < 2) break;
-    cursor = String(res[0]);
-    const batch = res[1];
-    if (Array.isArray(batch) && batch.length) {
-      keys.push.apply(keys, batch);
-    }
-  } while (cursor !== '0');
-  return keys;
-}
-
-async function collectRosterKeys(kv) {
-  const keys = [];
-  let cursor = '0';
-  do {
-    let res;
-    try {
-      res = await kv.scan(cursor, { match: 'portal:roster:byemail:v1:*', count: 200 });
-    } catch {
-      break;
-    }
-    if (!res || !Array.isArray(res) || res.length < 2) break;
-    cursor = String(res[0]);
-    const batch = res[1];
-    if (Array.isArray(batch) && batch.length) {
-      keys.push.apply(keys, batch);
-    }
-  } while (cursor !== '0');
-  return keys;
-}
+const { getSupabaseAdmin } = require('../lib/supabase-server');
 
 const ONLINE_MS = 3 * 60 * 1000;
 
@@ -102,74 +43,54 @@ module.exports = async (req, res) => {
     return res.status(401).json({ error: 'Wrong password' });
   }
 
-  const kv = getKv();
+  const supabase = getSupabaseAdmin();
 
   if (body.list === true) {
-    if (!kv) {
+    if (!supabase) {
       return res.status(200).json({ ok: true, configured: false, records: [], roster: [] });
     }
-    let keys = [];
-    try {
-      keys = await collectPresenceKeys(kv);
-    } catch {
-      keys = [];
-    }
-    const records = [];
+
     const now = Date.now();
-    for (const key of keys) {
-      let raw;
-      try {
-        raw = await kv.get(key);
-      } catch {
-        continue;
-      }
-      if (raw == null) continue;
-      let parsed = raw;
-      if (typeof raw === 'string') {
-        try {
-          parsed = JSON.parse(raw);
-        } catch {
-          continue;
-        }
-      }
-      if (!parsed || typeof parsed !== 'object') continue;
-      const uid = parsed.userId || String(key).replace(/^portal:presence:v1:/, '');
-      const lastSeen = parsed.lastSeenAt ? new Date(parsed.lastSeenAt).getTime() : 0;
+
+    const { data: presenceRows, error: presErr } = await supabase
+      .from('portal_presence')
+      .select('*');
+    if (presErr) {
+      return res.status(500).json({ error: presErr.message });
+    }
+
+    const records = (presenceRows || []).map((r) => {
+      const lastSeen = r.last_seen_at ? new Date(r.last_seen_at).getTime() : 0;
       const online = lastSeen > 0 && now - lastSeen < ONLINE_MS;
-      records.push(
-        Object.assign({}, parsed, {
-          userId: uid,
-          online: online,
-        })
-      );
+      return {
+        userId: r.user_id,
+        lastSeenAt: r.last_seen_at,
+        sessionStartedAt: r.session_started_at,
+        lastLoginAt: r.last_login_at,
+        lastIp: r.last_ip,
+        online,
+      };
+    });
+
+    const { data: userRows, error: usrErr } = await supabase
+      .from('portal_users')
+      .select('id, email, name, role, employee_id, employment_status, created_at, updated_at');
+    if (usrErr) {
+      return res.status(500).json({ error: usrErr.message });
     }
-    let roster = [];
-    try {
-      const rkeys = await collectRosterKeys(kv);
-      for (const rk of rkeys) {
-        let raw;
-        try {
-          raw = await kv.get(rk);
-        } catch {
-          continue;
-        }
-        if (raw == null) continue;
-        let parsed = raw;
-        if (typeof raw === 'string') {
-          try {
-            parsed = JSON.parse(raw);
-          } catch {
-            continue;
-          }
-        }
-        if (parsed && typeof parsed === 'object' && parsed.email) {
-          roster.push(parsed);
-        }
-      }
-    } catch {
-      roster = [];
-    }
-    return res.status(200).json({ ok: true, configured: true, records: records, roster: roster });
+
+    const roster = (userRows || []).map((r) => ({
+      userId: r.id,
+      email: r.email,
+      name: r.name,
+      role: r.role,
+      employeeId: r.employee_id,
+      employmentStatus: r.employment_status,
+      createdAt: r.created_at,
+      updatedAt: r.updated_at,
+    }));
+
+    return res.status(200).json({ ok: true, configured: true, records, roster });
   }
 
   const userId = body.userId;
@@ -177,54 +98,45 @@ module.exports = async (req, res) => {
     return res.status(400).json({ error: 'userId required' });
   }
 
+  if (!supabase) {
+    return res.status(200).json({ ok: true, skipped: true });
+  }
+
   const fwd = String(req.headers['x-forwarded-for'] || '')
     .split(',')[0]
     .trim();
   const ip = fwd || (req.socket && req.socket.remoteAddress) || '';
-
-  if (!kv) {
-    return res.status(200).json({ ok: true, skipped: true });
-  }
-
-  const key = 'portal:presence:v1:' + userId.slice(0, 120);
-  let prev = null;
-  try {
-    prev = await kv.get(key);
-    if (typeof prev === 'string') {
-      try {
-        prev = JSON.parse(prev);
-      } catch {
-        prev = null;
-      }
-    }
-  } catch {
-    prev = null;
-  }
-
   const now = new Date().toISOString();
-  var sessionStarted =
-    (prev && prev.sessionStartedAt) ||
+
+  const { data: prev } = await supabase
+    .from('portal_presence')
+    .select('session_started_at, last_login_at, last_ip')
+    .eq('user_id', userId.slice(0, 120))
+    .maybeSingle();
+
+  const sessionStarted =
+    (prev && prev.session_started_at) ||
     (body.sessionStartedAt && String(body.sessionStartedAt).slice(0, 40)) ||
     now;
-  var lastLogin =
+  const lastLogin =
     (body.lastLoginAt && String(body.lastLoginAt).slice(0, 40)) ||
-    (prev && prev.lastLoginAt) ||
+    (prev && prev.last_login_at) ||
     null;
 
-  const next = {
-    userId: userId.slice(0, 120),
-    lastSeenAt: now,
-    sessionStartedAt: sessionStarted,
-    lastLoginAt: lastLogin,
-    lastIp: ip || (prev && prev.lastIp) || '',
-  };
+  const { error: upsertErr } = await supabase.from('portal_presence').upsert(
+    {
+      user_id: userId.slice(0, 120),
+      last_seen_at: now,
+      session_started_at: sessionStarted,
+      last_login_at: lastLogin,
+      last_ip: ip || (prev && prev.last_ip) || '',
+      updated_at: now,
+    },
+    { onConflict: 'user_id' }
+  );
 
-  try {
-    await kv.set(key, next);
-  } catch (e) {
-    return res.status(500).json({
-      error: e && e.message ? e.message : 'Save failed',
-    });
+  if (upsertErr) {
+    return res.status(500).json({ error: upsertErr.message });
   }
 
   if (body.roster && typeof body.roster === 'object') {
@@ -232,44 +144,30 @@ module.exports = async (req, res) => {
       .trim()
       .toLowerCase();
     if (email && email.indexOf('@') > 0) {
-      const rk = rosterKeyFromEmail(email);
-      if (rk) {
-        let prevRec = null;
-        try {
-          prevRec = await kv.get(rk);
-          if (typeof prevRec === 'string') {
-            try {
-              prevRec = JSON.parse(prevRec);
-            } catch {
-              prevRec = null;
-            }
-          }
-        } catch {
-          prevRec = null;
-        }
+      const { data: existing } = await supabase
+        .from('portal_users')
+        .select('employment_status')
+        .eq('email', email)
+        .maybeSingle();
+
+      if (existing) {
         const fromBody = body.roster.employmentStatus;
-        const mergedStatus =
-          fromBody != null && String(fromBody).trim() !== ''
-            ? normalizeEmploymentStatus(fromBody)
-            : prevRec && prevRec.employmentStatus
-              ? normalizeEmploymentStatus(prevRec.employmentStatus)
-              : 'active';
-        const rosterRec = {
-          userId: userId.slice(0, 120),
-          email: email.slice(0, 200),
-          name: String(body.roster.name || '').trim().slice(0, 200),
-          role: body.roster.role === 'admin' ? 'admin' : 'caller',
-          employeeId:
-            body.roster.employeeId != null ? String(body.roster.employeeId).slice(0, 12) : '',
-          createdAt: String(body.roster.createdAt || '').slice(0, 40) || null,
-          employmentStatus: mergedStatus,
-          updatedAt: now,
-        };
-        try {
-          await kv.set(rk, rosterRec);
-        } catch (e) {
-          /* roster best-effort; presence already saved */
+        let mergedStatus;
+        if (
+          existing.employment_status != null &&
+          String(existing.employment_status).trim() !== ''
+        ) {
+          mergedStatus = normalizeEmploymentStatus(existing.employment_status);
+        } else if (fromBody != null && String(fromBody).trim() !== '') {
+          mergedStatus = normalizeEmploymentStatus(fromBody);
+        } else {
+          mergedStatus = 'active';
         }
+
+        await supabase
+          .from('portal_users')
+          .update({ employment_status: mergedStatus, updated_at: now })
+          .eq('email', email);
       }
     }
   }

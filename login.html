@@ -113,7 +113,7 @@
 <body>
   <div class="card">
     <div class="logo">AllSorted <span>Pro</span></div>
-    <p class="sub">Team portal — sign in with your account. New registrations stay <strong>pending</strong> until an admin approves them in Admin → Signup approvals.</p>
+    <p class="sub">Team portal — sign in with your account. New registrations stay <strong>pending</strong> until an admin approves them in Admin → Signup approvals. Your login works on every device — phone, laptop, any browser.</p>
 
     <form id="loginForm" onsubmit="submitLogin(event);">
       <label class="form-label" for="email">Email</label>
@@ -137,6 +137,7 @@
   <script src="auth.js"></script>
   <script>
     seedUsersIfNeeded();
+    if (typeof migrateLocalUsersToServer === 'function') migrateLocalUsersToServer().catch(function(){});
     void (async function redirectIfLoggedIn() {
       if (!getCurrentUser()) return;
       await checkPortalAccessOrRedirect();
@@ -160,18 +161,31 @@
 
     async function submitLogin(ev) {
       ev.preventDefault();
-      document.getElementById('loginErr').textContent = '';
-      var email = document.getElementById('email').value.trim();
+      var errEl = document.getElementById('loginErr');
+      errEl.textContent = '';
+      var emailRaw = document.getElementById('email').value;
       var password = document.getElementById('password').value;
-      var r = loginUser(email, password);
+      var email = typeof normalizePortalEmail === 'function' ? normalizePortalEmail(emailRaw) : String(emailRaw || '').trim().toLowerCase();
+
+      errEl.textContent = 'Signing in…';
+      errEl.style.color = 'var(--muted)';
+
+      var r = await loginUser(email, password);
+
       if (!r.ok) {
-        document.getElementById('loginErr').textContent = r.error || 'Login failed';
+        errEl.textContent = r.error || 'Login failed';
+        errEl.style.color = '';
         return;
       }
+      errEl.textContent = '';
+      errEl.style.color = '';
       var gate = await checkPortalAccessOrRedirect();
       if (!gate) return;
+      if (typeof mergeCurrentUserEmploymentFromServerRoster === 'function') {
+        await mergeCurrentUserEmploymentFromServerRoster();
+      }
       if (typeof syncPortalRosterToServer === 'function') {
-        await syncPortalRosterToServer(r.user);
+        await syncPortalRosterToServer(getCurrentUser() || r.user);
       }
       var params = new URLSearchParams(window.location.search);
       var ret = params.get('return');

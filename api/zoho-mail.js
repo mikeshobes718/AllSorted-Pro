@@ -3,7 +3,7 @@ const { getSupabaseAdmin } = require('../lib/supabase-server');
 const ZOHO_AUTH_URL = 'https://accounts.zoho.com/oauth/v2/auth';
 const ZOHO_TOKEN_URL = 'https://accounts.zoho.com/oauth/v2/token';
 const ZOHO_MAIL_BASE = 'https://mail.zoho.com';
-const SCOPES = 'ZohoMail.messages.READ,ZohoMail.messages.CREATE,ZohoMail.accounts.READ';
+const SCOPES = 'ZohoMail.messages.READ,ZohoMail.messages.CREATE,ZohoMail.accounts.READ,ZohoMail.folders.READ';
 const CONTENT_KEY = 'zoho_mail_tokens';
 
 function env(k) { return process.env[k] || ''; }
@@ -155,9 +155,85 @@ module.exports = async (req, res) => {
     return res.status(200).json({ ok: true, message: (data && data.data) || data });
   }
 
+  // --- Sent folder ---
+  if (act === 'sent') {
+    const start = parseInt(body.start, 10) || 0;
+    const limit = Math.min(parseInt(body.limit, 10) || 25, 50);
+
+    let messages = [];
+    let sentFolderId = tokens.sentFolderId || '';
+
+    if (sentFolderId) {
+      const path = '/api/accounts/' + acctId + '/messages/view?folderId=' + sentFolderId +
+        '&start=' + start + '&limit=' + limit;
+      const data = await zohoFetch(tokens, 'GET', path);
+      if (data && !data.errorCode) {
+        messages = (data && Array.isArray(data.data)) ? data.data : [];
+      }
+    }
+
+    if (!sentFolderId || messages.length === 0) {
+      try {
+        const foldersData = await zohoFetch(tokens, 'GET', '/api/accounts/' + acctId + '/folders');
+        const folders = (foldersData && Array.isArray(foldersData.data)) ? foldersData.data : [];
+        const sentNames = ['sent', 'sentmail', 'sent mail', 'sent items', 'sentmailbox'];
+        const sentFolder = folders.find(f => {
+          const name = (f.folderName || '').toLowerCase().trim();
+          const type = (f.folderType || '').toLowerCase().trim();
+          const mode = (f.mode || '').toLowerCase().trim();
+          if (sentNames.includes(name)) return true;
+          if (name.startsWith('sent')) return true;
+          if (type === 'sent' || type === 'sentmail') return true;
+          if (mode === 'sent' || mode === 'sentmail') return true;
+          return false;
+        });
+        if (sentFolder) {
+          sentFolderId = sentFolder.folderId;
+          tokens.sentFolderId = sentFolderId;
+          await saveTokens(supabase, tokens);
+          const path = '/api/accounts/' + acctId + '/messages/view?folderId=' + sentFolderId +
+            '&start=' + start + '&limit=' + limit;
+          const data = await zohoFetch(tokens, 'GET', path);
+          if (data && !data.errorCode) {
+            messages = (Array.isArray(data.data)) ? data.data : [];
+          }
+        }
+      } catch (e) {}
+    }
+
+    if (!sentFolderId && messages.length === 0) {
+      const searchPath = '/api/accounts/' + acctId + '/messages/search?searchKey=' +
+        encodeURIComponent('in:sentitems') + '&start=' + start + '&limit=' + limit;
+      try {
+        const data = await zohoFetch(tokens, 'GET', searchPath);
+        if (data && Array.isArray(data.data)) messages = data.data;
+      } catch (e) {}
+    }
+
+    if (!sentFolderId && messages.length === 0) {
+      const fromAddr = tokens.fromAddress || '';
+      if (fromAddr) {
+        const searchPath = '/api/accounts/' + acctId + '/messages/search?searchKey=' +
+          encodeURIComponent('from:' + fromAddr) + '&start=' + start + '&limit=' + limit;
+        try {
+          const data = await zohoFetch(tokens, 'GET', searchPath);
+          if (data && Array.isArray(data.data)) messages = data.data;
+        } catch (e) {}
+      }
+    }
+
+    const messageIds = messages.map(m => m.messageId).filter(Boolean);
+    let sentLog = {};
+    if (messageIds.length) {
+      const { data: logRows } = await supabase.from('mail_sent_log').select('zoho_message_id,employee_id,employee_name').in('zoho_message_id', messageIds);
+      if (logRows) logRows.forEach(r => { sentLog[r.zoho_message_id] = r; });
+    }
+    return res.status(200).json({ ok: true, messages, sentLog });
+  }
+
   // --- Send new email ---
   if (act === 'send') {
-    const { toAddress, ccAddress, subject, content } = body;
+    const { toAddress, ccAddress, subject, content, employeeId, employeeName } = body;
     if (!toAddress || !subject) {
       return res.status(400).json({ ok: false, error: 'toAddress and subject required' });
     }
@@ -172,12 +248,25 @@ module.exports = async (req, res) => {
     const path = '/api/accounts/' + acctId + '/messages';
     const data = await zohoFetch(tokens, 'POST', path, payload);
     const ok = data && data.status && data.status.code === 200;
+    if (ok && employeeId) {
+      const zohoMsgId = (data.data && data.data.messageId) || '';
+      await supabase.from('mail_sent_log').upsert({
+        id: zohoMsgId || (Date.now() + '-' + employeeId),
+        zoho_message_id: zohoMsgId,
+        employee_id: employeeId,
+        employee_name: employeeName || '',
+        to_address: toAddress,
+        cc_address: ccAddress || '',
+        subject: subject,
+        sent_at: new Date().toISOString(),
+      }, { onConflict: 'id' }).then(() => {});
+    }
     return res.status(200).json({ ok, data });
   }
 
   // --- Reply ---
   if (act === 'reply') {
-    const { messageId, content, toAddress, ccAddress, subject } = body;
+    const { messageId, content, toAddress, ccAddress, subject, employeeId, employeeName } = body;
     if (!messageId || !content) {
       return res.status(400).json({ ok: false, error: 'messageId and content required' });
     }
@@ -193,6 +282,19 @@ module.exports = async (req, res) => {
     const path = '/api/accounts/' + acctId + '/messages/' + messageId;
     const data = await zohoFetch(tokens, 'PUT', path, payload);
     const ok = data && data.status && data.status.code === 200;
+    if (ok && employeeId) {
+      const zohoMsgId = (data.data && data.data.messageId) || messageId;
+      await supabase.from('mail_sent_log').upsert({
+        id: zohoMsgId || (Date.now() + '-' + employeeId),
+        zoho_message_id: zohoMsgId,
+        employee_id: employeeId,
+        employee_name: employeeName || '',
+        to_address: toAddress || '',
+        cc_address: ccAddress || '',
+        subject: subject || '',
+        sent_at: new Date().toISOString(),
+      }, { onConflict: 'id' }).then(() => {});
+    }
     return res.status(200).json({ ok, data });
   }
 

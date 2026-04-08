@@ -308,7 +308,7 @@ tbody td{padding:0.85rem 1rem;font-size:0.88rem;color:var(--text);}
 .search-input:focus{border-color:var(--blue);box-shadow:0 0 0 3px var(--blue-bg);}
 .search-input::placeholder{color:var(--muted2);}
 
-.modal-overlay{position:fixed;inset:0;background:rgba(15,23,42,0.6);backdrop-filter:blur(2px);z-index:200;display:none;align-items:center;justify-content:center;}
+.modal-overlay{position:fixed;inset:0;background:rgba(15,23,42,0.65);backdrop-filter:blur(4px);z-index:200;display:none;align-items:center;justify-content:center;}
 .modal-overlay.open{display:flex;}
 .modal{background:var(--surface);border:1px solid var(--border);border-radius:12px;width:560px;max-width:95vw;max-height:90vh;overflow-y:auto;box-shadow:0 20px 25px -5px rgba(0,0,0,0.1),0 10px 10px -5px rgba(0,0,0,0.04);}
 .modal-header{padding:1.25rem 1.5rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:var(--surface);}
@@ -605,6 +605,56 @@ details.scrape-panel summary .scrape-hint{font-family:'DM Sans',sans-serif;font-
   .tc-btn{padding:0.6rem 1.2rem;font-size:0.85rem;}
   #pulseGridWrap{grid-template-columns:1fr !important;}
   #pulseGridWrap > div:first-child{border-right:none !important;border-bottom:1px solid var(--border);}
+}
+
+/* Admin Analytics */
+.aa-conv-card{
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
+  padding:1rem 1.1rem;display:flex;flex-direction:column;gap:0.25rem;
+}
+.aa-conv-card .aa-cc-val{
+  font-family:'Fraunces',serif;font-size:1.5rem;font-weight:700;line-height:1.1;
+}
+.aa-conv-card .aa-cc-label{
+  font-size:0.68rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--muted);
+}
+.aa-conv-card .aa-cc-sub{font-size:0.72rem;color:var(--muted2);}
+.aa-funnel-bar{
+  display:flex;align-items:center;gap:0.75rem;margin-bottom:0.5rem;
+}
+.aa-funnel-bar .aa-fb-label{width:80px;font-size:0.78rem;font-weight:500;text-align:right;flex-shrink:0;}
+.aa-funnel-bar .aa-fb-track{flex:1;height:28px;background:var(--cream);border-radius:4px;overflow:hidden;position:relative;}
+.aa-funnel-bar .aa-fb-fill{height:100%;border-radius:4px;display:flex;align-items:center;padding-left:8px;font-size:0.72rem;font-weight:600;color:#fff;min-width:28px;transition:width 0.4s ease;}
+.aa-funnel-bar .aa-fb-count{font-size:0.78rem;color:var(--muted);min-width:32px;text-align:right;font-variant-numeric:tabular-nums;}
+.aa-rev-goal{margin-top:0.75rem;}
+.aa-rev-goal .aa-rg-track{height:20px;background:var(--cream);border-radius:10px;overflow:hidden;margin-top:0.35rem;}
+.aa-rev-goal .aa-rg-fill{height:100%;border-radius:10px;transition:width 0.4s ease;}
+.aa-lb-table{width:100%;border-collapse:collapse;font-size:0.82rem;}
+.aa-lb-table th{text-align:left;padding:0.55rem 0.75rem;font-weight:600;border-bottom:2px solid var(--border);font-size:0.72rem;text-transform:uppercase;letter-spacing:0.06em;color:var(--muted);}
+.aa-lb-table th:not(:first-child){text-align:right;}
+.aa-lb-table td{padding:0.55rem 0.75rem;border-bottom:1px solid var(--border);}
+.aa-lb-table td:not(:first-child){text-align:right;font-variant-numeric:tabular-nums;}
+.aa-lb-table tr:last-child td{border-bottom:none;}
+.aa-lb-medal{font-size:1rem;margin-right:0.25rem;}
+.aa-daily-wrap{display:flex;align-items:flex-end;gap:3px;height:160px;padding-top:0.5rem;}
+.aa-daily-col{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;position:relative;}
+.aa-daily-stack{width:100%;display:flex;flex-direction:column;justify-content:flex-end;border-radius:3px 3px 0 0;overflow:hidden;}
+.aa-daily-seg{min-height:0;transition:height 0.3s ease;}
+.aa-daily-lbl{font-size:0.6rem;color:var(--muted);margin-top:4px;white-space:nowrap;writing-mode:vertical-lr;text-orientation:mixed;transform:rotate(180deg);max-height:48px;overflow:hidden;}
+.aa-daily-total{font-size:0.62rem;font-weight:600;color:var(--text);margin-bottom:2px;font-variant-numeric:tabular-nums;}
+.aa-hm-grid{display:grid;grid-template-columns:48px repeat(7,1fr);gap:2px;font-size:0.68rem;}
+.aa-hm-cell{aspect-ratio:1;border-radius:3px;display:flex;align-items:center;justify-content:center;font-variant-numeric:tabular-nums;font-weight:500;font-size:0.65rem;min-width:0;}
+.aa-hm-header{font-weight:600;color:var(--muted);display:flex;align-items:center;justify-content:center;font-size:0.65rem;}
+.aa-hm-row-label{font-weight:500;color:var(--muted);display:flex;align-items:center;justify-content:flex-end;padding-right:4px;font-size:0.65rem;}
+.aa-region-row{display:flex;align-items:center;gap:0.5rem;margin-bottom:0.5rem;}
+.aa-region-row .aa-rr-label{width:72px;font-size:0.78rem;font-weight:500;text-align:right;flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.aa-region-row .aa-rr-track{flex:1;height:14px;background:var(--cream);border-radius:3px;overflow:hidden;}
+.aa-region-row .aa-rr-fill{height:100%;border-radius:3px;transition:width 0.3s ease;}
+.aa-region-row .aa-rr-stat{font-size:0.72rem;color:var(--muted);min-width:60px;text-align:right;font-variant-numeric:tabular-nums;}
+@media(max-width:700px){
+  .aa-two-col{grid-template-columns:1fr !important;}
+  .aa-hm-grid{grid-template-columns:36px repeat(7,1fr);}
+  .aa-daily-lbl{font-size:0.5rem;}
 }
 </style>
 </head>
@@ -952,6 +1002,52 @@ details.scrape-panel summary .scrape-hint{font-family:'DM Sans',sans-serif;font-
 
           </div>
         </div>
+      </div>
+
+      <!-- ADMIN ANALYTICS — admin only -->
+      <div id="adminAnalyticsSection" style="display:none;margin-top:1rem;">
+
+        <div class="panel" style="margin-bottom:1rem;">
+          <div class="panel-header" style="justify-content:space-between;align-items:center;">
+            <div class="panel-title">Sales Analytics</div>
+            <span style="font-size:0.75rem;color:var(--muted);">Admin only — pipeline &amp; performance intelligence</span>
+          </div>
+        </div>
+
+        <div id="aaConversionCards" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:0.75rem;margin-bottom:1rem;"></div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem;" class="aa-two-col">
+          <div class="panel">
+            <div class="panel-header"><div class="panel-title" style="font-size:0.88rem;">Sales Pipeline Funnel</div></div>
+            <div class="panel-body" id="aaFunnel"></div>
+          </div>
+          <div class="panel">
+            <div class="panel-header"><div class="panel-title" style="font-size:0.88rem;">Revenue Tracker</div></div>
+            <div class="panel-body" id="aaRevenue"></div>
+          </div>
+        </div>
+
+        <div class="panel" style="margin-bottom:1rem;">
+          <div class="panel-header"><div class="panel-title" style="font-size:0.88rem;">Employee Leaderboard</div></div>
+          <div class="panel-body" style="padding:0;overflow-x:auto;" id="aaLeaderboard"></div>
+        </div>
+
+        <div class="panel" style="margin-bottom:1rem;">
+          <div class="panel-header"><div class="panel-title" style="font-size:0.88rem;">Daily Activity — Last 14 Days</div></div>
+          <div class="panel-body" id="aaDailyChart"></div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem;" class="aa-two-col">
+          <div class="panel">
+            <div class="panel-header"><div class="panel-title" style="font-size:0.88rem;">Lead Source / Region Performance</div></div>
+            <div class="panel-body" id="aaRegion"></div>
+          </div>
+          <div class="panel">
+            <div class="panel-header"><div class="panel-title" style="font-size:0.88rem;">Time-of-Day Heatmap</div></div>
+            <div class="panel-body" id="aaHeatmap"></div>
+          </div>
+        </div>
+
       </div>
 
     </div>
@@ -1789,9 +1885,9 @@ details.scrape-panel summary .scrape-hint{font-family:'DM Sans',sans-serif;font-
       </div>
 
       <div id="mailMainPanel" style="display:none;">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;flex-wrap:wrap;gap:0.5rem;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem;flex-wrap:wrap;gap:0.5rem;">
           <div>
-            <h2 style="font-size:1.35rem;font-weight:600;margin:0;letter-spacing:-0.02em;">Team Inbox</h2>
+            <h2 style="font-size:1.35rem;font-weight:600;margin:0;letter-spacing:-0.02em;">Team Mail</h2>
             <p id="mailFromLabel" style="font-size:0.78rem;color:var(--muted);margin:0.15rem 0 0;"></p>
           </div>
           <div style="display:flex;gap:0.5rem;align-items:center;flex-wrap:wrap;">
@@ -1800,8 +1896,13 @@ details.scrape-panel summary .scrape-hint{font-family:'DM Sans',sans-serif;font-
               <span style="position:absolute;left:0.5rem;top:50%;transform:translateY(-50%);font-size:0.85rem;pointer-events:none;">🔍</span>
             </div>
             <button type="button" class="btn btn-green btn-sm" onclick="mailOpenCompose()">New Email</button>
-            <button type="button" class="btn btn-ghost btn-sm" onclick="mailLoadInbox()">Refresh</button>
+            <button type="button" class="btn btn-ghost btn-sm" onclick="mailRefreshCurrentFolder()">Refresh</button>
           </div>
+        </div>
+
+        <div style="display:flex;gap:0;margin-bottom:1rem;border-bottom:2px solid var(--border);">
+          <button type="button" id="mailTabInbox" onclick="mailSwitchFolder('inbox')" style="padding:0.5rem 1.2rem;font-size:0.85rem;font-weight:600;background:none;border:none;border-bottom:2px solid var(--accent);margin-bottom:-2px;color:var(--text);cursor:pointer;">Inbox</button>
+          <button type="button" id="mailTabSent" onclick="mailSwitchFolder('sent')" style="padding:0.5rem 1.2rem;font-size:0.85rem;font-weight:500;background:none;border:none;border-bottom:2px solid transparent;margin-bottom:-2px;color:var(--muted);cursor:pointer;">Sent</button>
         </div>
 
         <!-- Inbox List -->
@@ -1833,9 +1934,21 @@ details.scrape-panel summary .scrape-hint{font-family:'DM Sans',sans-serif;font-
           <div class="panel-body" id="mailReaderContent" style="font-size:0.88rem;line-height:1.6;overflow-x:auto;"></div>
         </div>
 
+        <!-- Sent Panel -->
+        <div class="panel" id="mailSentPanel" style="display:none;">
+          <div class="panel-body" style="padding:0;" id="mailSentBody">
+            <div style="text-align:center;padding:2rem;color:var(--muted);">Loading sent emails...</div>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:0.5rem 1rem;border-top:1px solid var(--border);font-size:0.78rem;" id="mailSentPagination">
+            <button type="button" class="btn btn-ghost btn-sm" id="mailSentPrevBtn" onclick="mailSentPrevPage()" disabled>Previous</button>
+            <span id="mailSentPageLabel" style="color:var(--muted);">Page 1</span>
+            <button type="button" class="btn btn-ghost btn-sm" id="mailSentNextBtn" onclick="mailSentNextPage()">Next</button>
+          </div>
+        </div>
+
         <!-- Compose / Reply Modal -->
-        <div id="mailComposeOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:1000;display:none;justify-content:center;align-items:center;padding:1rem;">
-          <div style="background:var(--card);border-radius:8px;width:100%;max-width:640px;max-height:90vh;overflow-y:auto;box-shadow:0 8px 32px rgba(0,0,0,0.15);">
+        <div id="mailComposeOverlay" class="modal-overlay">
+          <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;width:100%;max-width:640px;max-height:90vh;overflow-y:auto;box-shadow:0 20px 25px -5px rgba(0,0,0,0.1),0 10px 10px -5px rgba(0,0,0,0.04);">
             <div style="display:flex;justify-content:space-between;align-items:center;padding:1rem 1.25rem;border-bottom:1px solid var(--border);">
               <h3 id="mailComposeTitle" style="font-size:1rem;font-weight:600;margin:0;">New Email</h3>
               <button type="button" onclick="mailCloseCompose()" style="background:none;border:none;font-size:1.2rem;cursor:pointer;color:var(--muted);padding:0.2rem;" title="Close">&#10005;</button>
@@ -6582,6 +6695,7 @@ function renderDashboard() {
   `).join('');
 
   renderTeamPulse();
+  renderAdminAnalytics();
 }
 
 function renderTeamPulse() {
@@ -6759,6 +6873,321 @@ function _pulseWeekRow(label, thisW, lastW) {
   '</tr>';
 }
 
+function renderAdminAnalytics() {
+  var section = document.getElementById('adminAnalyticsSection');
+  if (!section) return;
+  var cu = typeof getCurrentUser === 'function' ? getCurrentUser() : null;
+  if (!cu || String(cu.role || '').toLowerCase() !== 'admin') { section.style.display = 'none'; return; }
+  section.style.display = '';
+
+  var now = new Date();
+  var todayStr = now.toDateString();
+  var weekAgo = new Date(); weekAgo.setDate(weekAgo.getDate() - 7);
+  var monthAgo = new Date(); monthAgo.setDate(monthAgo.getDate() - 30);
+  var twoWeeksAgo = new Date(); twoWeeksAgo.setDate(twoWeeksAgo.getDate() - 14);
+
+  var allUsers = typeof _allPortalUsers === 'object' && Array.isArray(_allPortalUsers) ? _allPortalUsers : [];
+  var activeUsers = allUsers.filter(function(u) {
+    var es = typeof normalizeEmploymentStatus === 'function' ? normalizeEmploymentStatus(u.employmentStatus) : 'active';
+    return es === 'active' && String(u.role || '').toLowerCase() !== 'admin';
+  });
+  var empMap = {};
+  activeUsers.forEach(function(u) { var eid = u.employeeId || u.id || ''; empMap[eid] = u.name || u.email || eid; });
+
+  var totalLeads = leads.length;
+  var contacted = leads.filter(function(l) { return l.status !== 'new'; }).length;
+  var callbacks = leads.filter(function(l) { return l.status === 'callback'; }).length +
+    callLog.filter(function(c) { return c.outcome === 'callback'; }).length;
+  var booked = callLog.filter(function(c) { return c.outcome === 'booked'; }).length;
+  var showed = appointments.filter(function(a) { return a.status === 'showed' || a.status === 'closed'; }).length;
+  var won = appointments.filter(function(a) { return a.status === 'closed'; }).length;
+
+  // --- 1. Sales Pipeline Funnel ---
+  var funnelEl = document.getElementById('aaFunnel');
+  if (funnelEl) {
+    var funnelMax = Math.max(totalLeads, 1);
+    var steps = [
+      { label: 'Leads', count: totalLeads, color: 'var(--blue)' },
+      { label: 'Contacted', count: contacted, color: 'var(--purple)' },
+      { label: 'Callbacks', count: callbacks, color: 'var(--amber)' },
+      { label: 'Booked', count: booked, color: 'var(--green)' },
+      { label: 'Showed', count: showed, color: '#0891b2' },
+      { label: 'Won', count: won, color: 'var(--green-light)' }
+    ];
+    funnelEl.innerHTML = steps.map(function(s) {
+      var pct = Math.max(Math.round((s.count / funnelMax) * 100), 4);
+      return '<div class="aa-funnel-bar">' +
+        '<div class="aa-fb-label">' + s.label + '</div>' +
+        '<div class="aa-fb-track"><div class="aa-fb-fill" style="width:' + pct + '%;background:' + s.color + ';">' + s.count + '</div></div>' +
+        '</div>';
+    }).join('');
+  }
+
+  // --- 2. Revenue Tracker ---
+  var revEl = document.getElementById('aaRevenue');
+  if (revEl) {
+    var estDealValue = 500;
+    var monthlyGoal = 20;
+    var wonMonth = appointments.filter(function(a) { return a.status === 'closed' && new Date(a.dateTime || a.createdAt) >= monthAgo; }).length;
+    var estRev = wonMonth * estDealValue;
+    var goalRev = monthlyGoal * estDealValue;
+    var revPct = Math.min(Math.round((wonMonth / Math.max(monthlyGoal, 1)) * 100), 100);
+    var revColor = revPct >= 80 ? 'var(--green)' : (revPct >= 50 ? 'var(--amber)' : 'var(--red)');
+    var totalWon = appointments.filter(function(a) { return a.status === 'closed'; }).length;
+    var totalRev = totalWon * estDealValue;
+
+    revEl.innerHTML =
+      '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0.75rem;margin-bottom:1rem;">' +
+        '<div style="text-align:center;">' +
+          '<div style="font-family:\'Fraunces\',serif;font-size:1.3rem;font-weight:700;color:var(--green);">$' + estRev.toLocaleString() + '</div>' +
+          '<div style="font-size:0.68rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;">Est. This Month</div>' +
+        '</div>' +
+        '<div style="text-align:center;">' +
+          '<div style="font-family:\'Fraunces\',serif;font-size:1.3rem;font-weight:700;color:var(--blue);">$' + totalRev.toLocaleString() + '</div>' +
+          '<div style="font-size:0.68rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;">All-Time Revenue</div>' +
+        '</div>' +
+        '<div style="text-align:center;">' +
+          '<div style="font-family:\'Fraunces\',serif;font-size:1.3rem;font-weight:700;color:var(--text);">' + wonMonth + '/' + monthlyGoal + '</div>' +
+          '<div style="font-size:0.68rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;">Deals Won</div>' +
+        '</div>' +
+      '</div>' +
+      '<div style="font-size:0.78rem;font-weight:500;margin-bottom:0.25rem;">Monthly Goal: $' + goalRev.toLocaleString() + ' <span style="color:' + revColor + ';font-weight:600;">' + revPct + '%</span></div>' +
+      '<div class="aa-rev-goal">' +
+        '<div class="aa-rg-track"><div class="aa-rg-fill" style="width:' + revPct + '%;background:' + revColor + ';"></div></div>' +
+      '</div>' +
+      '<div style="font-size:0.68rem;color:var(--muted);margin-top:0.5rem;">Estimated at $' + estDealValue + ' per closed deal. Adjust as needed.</div>';
+  }
+
+  // --- 3. Employee Leaderboard ---
+  var lbEl = document.getElementById('aaLeaderboard');
+  if (lbEl) {
+    var empIds = Object.keys(empMap);
+    var empStats = empIds.map(function(eid) {
+      var name = empMap[eid] || ('Emp #' + eid);
+      var myCalls = callLog.filter(function(c) { return String(c.employeeId || '') === eid; });
+      var myBooked = myCalls.filter(function(c) { return c.outcome === 'booked'; }).length;
+      var myAppts = appointments.filter(function(a) { return a.employeeId != null && String(a.employeeId).trim() === eid; });
+      var myShowed = myAppts.filter(function(a) { return a.status === 'showed' || a.status === 'closed'; }).length;
+      var myWon = myAppts.filter(function(a) { return a.status === 'closed'; }).length;
+      var showRate = myAppts.length > 0 ? Math.round((myShowed / myAppts.length) * 100) : 0;
+      var convRate = myCalls.length > 0 ? Math.round((myBooked / myCalls.length) * 100) : 0;
+      var weekCalls = myCalls.filter(function(c) { return new Date(c.timestamp) >= weekAgo; }).length;
+      var prevWeekCalls = myCalls.filter(function(c) { var d = new Date(c.timestamp); return d >= twoWeeksAgo && d < weekAgo; }).length;
+      var trend = weekCalls - prevWeekCalls;
+      return { eid: eid, name: name, calls: myCalls.length, booked: myBooked, showed: myShowed, won: myWon, showRate: showRate, convRate: convRate, trend: trend };
+    });
+    empStats.sort(function(a, b) { return b.calls - a.calls || b.booked - a.booked; });
+
+    var medals = ['&#x1F947;', '&#x1F948;', '&#x1F949;'];
+    lbEl.innerHTML =
+      '<table class="aa-lb-table">' +
+      '<thead><tr>' +
+        '<th style="text-align:left;">Employee</th><th>Calls</th><th>Booked</th><th>Showed</th><th>Won</th><th>Show %</th><th>Conv %</th><th>Trend</th>' +
+      '</tr></thead><tbody>' +
+      empStats.map(function(e, i) {
+        var medal = i < 3 ? '<span class="aa-lb-medal">' + medals[i] + '</span>' : '';
+        var trendArrow = e.trend > 0 ? '<span style="color:var(--green);">&#9650; +' + e.trend + '</span>' : (e.trend < 0 ? '<span style="color:var(--red);">&#9660; ' + e.trend + '</span>' : '<span style="color:var(--muted);">&#8212;</span>');
+        var rowBg = i < 3 ? 'background:var(--green-bg);' : '';
+        return '<tr style="' + rowBg + '">' +
+          '<td style="text-align:left;font-weight:500;">' + medal + escapeHtml(e.name) + '</td>' +
+          '<td>' + e.calls + '</td><td>' + e.booked + '</td><td>' + e.showed + '</td><td>' + e.won + '</td>' +
+          '<td>' + e.showRate + '%</td><td>' + e.convRate + '%</td>' +
+          '<td>' + trendArrow + '</td></tr>';
+      }).join('') +
+      '</tbody></table>';
+    if (empStats.length === 0) {
+      lbEl.innerHTML = '<div style="padding:1.5rem;text-align:center;color:var(--muted);">No employee data available yet.</div>';
+    }
+  }
+
+  // --- 4. Daily Activity Chart (14 days) ---
+  var dailyEl = document.getElementById('aaDailyChart');
+  if (dailyEl) {
+    var dayBuckets = [];
+    var outcomeColors = {
+      booked: 'var(--green)', callback: 'var(--amber)', no_answer: 'var(--purple)',
+      not_interested: 'var(--red)', called: 'var(--muted2)', left_voicemail: '#6b7280',
+      new: 'var(--blue)', gatekeeper: '#f59e0b', wrong_number: '#ef4444'
+    };
+    for (var d = 13; d >= 0; d--) {
+      var dt = new Date(); dt.setDate(dt.getDate() - d); dt.setHours(0, 0, 0, 0);
+      var dtStr = dt.toDateString();
+      var dayCalls = callLog.filter(function(c) { return new Date(c.timestamp).toDateString() === dtStr; });
+      var byCat = {};
+      dayCalls.forEach(function(c) { var o = c.outcome || 'new'; byCat[o] = (byCat[o] || 0) + 1; });
+      dayBuckets.push({ date: dt, total: dayCalls.length, breakdown: byCat });
+    }
+    var maxDay = Math.max.apply(null, dayBuckets.map(function(b) { return b.total; })) || 1;
+
+    var legendKeys = {};
+    dayBuckets.forEach(function(b) { Object.keys(b.breakdown).forEach(function(k) { legendKeys[k] = true; }); });
+    var outLabels = { new: 'New', no_answer: 'No Answer', callback: 'Callback', booked: 'Booked', not_interested: 'Not Interested', called: 'Called', left_voicemail: 'Voicemail', gatekeeper: 'Gatekeeper', wrong_number: 'Wrong Number' };
+
+    var legend = '<div style="display:flex;flex-wrap:wrap;gap:0.75rem;margin-bottom:0.75rem;">' +
+      Object.keys(legendKeys).map(function(k) {
+        return '<span style="display:inline-flex;align-items:center;gap:4px;font-size:0.68rem;color:var(--muted);">' +
+          '<span style="width:10px;height:10px;border-radius:2px;background:' + (outcomeColors[k] || 'var(--blue)') + ';display:inline-block;"></span>' +
+          (outLabels[k] || k) + '</span>';
+      }).join('') + '</div>';
+
+    dailyEl.innerHTML = legend + '<div class="aa-daily-wrap">' +
+      dayBuckets.map(function(b) {
+        var label = (b.date.getMonth() + 1) + '/' + b.date.getDate();
+        var isToday = b.date.toDateString() === todayStr;
+        var segs = '';
+        var orderedKeys = Object.keys(b.breakdown).sort(function(a, bb) { return b.breakdown[bb] - b.breakdown[a]; });
+        orderedKeys.forEach(function(k) {
+          var h = Math.max(Math.round((b.breakdown[k] / maxDay) * 140), 2);
+          segs += '<div class="aa-daily-seg" style="height:' + h + 'px;background:' + (outcomeColors[k] || 'var(--blue)') + ';" title="' + (outLabels[k] || k) + ': ' + b.breakdown[k] + '"></div>';
+        });
+        return '<div class="aa-daily-col">' +
+          '<div class="aa-daily-total">' + b.total + '</div>' +
+          '<div class="aa-daily-stack" style="width:100%;">' + segs + '</div>' +
+          '<div class="aa-daily-lbl" style="' + (isToday ? 'font-weight:700;color:var(--green);' : '') + '">' + label + '</div>' +
+        '</div>';
+      }).join('') + '</div>';
+  }
+
+  // --- 5. Conversion Funnel Rates ---
+  var ccEl = document.getElementById('aaConversionCards');
+  if (ccEl) {
+    var totalCalls = callLog.length;
+    var callbackCount = callLog.filter(function(c) { return c.outcome === 'callback'; }).length;
+    var bookedCount = callLog.filter(function(c) { return c.outcome === 'booked'; }).length;
+    var totalAppts = appointments.length;
+    var showedCount = appointments.filter(function(a) { return a.status === 'showed' || a.status === 'closed'; }).length;
+    var wonCount = appointments.filter(function(a) { return a.status === 'closed'; }).length;
+
+    var rateCallCb = totalCalls > 0 ? ((callbackCount / totalCalls) * 100).toFixed(1) : '0.0';
+    var rateCallBook = totalCalls > 0 ? ((bookedCount / totalCalls) * 100).toFixed(1) : '0.0';
+    var rateBookShow = totalAppts > 0 ? ((showedCount / totalAppts) * 100).toFixed(1) : '0.0';
+    var rateShowWon = showedCount > 0 ? ((wonCount / showedCount) * 100).toFixed(1) : '0.0';
+    var rateOverall = totalCalls > 0 ? ((wonCount / totalCalls) * 100).toFixed(1) : '0.0';
+
+    var cards = [
+      { label: 'Call \u2192 Callback', val: rateCallCb + '%', sub: callbackCount + ' of ' + totalCalls, color: 'var(--amber)' },
+      { label: 'Call \u2192 Booked', val: rateCallBook + '%', sub: bookedCount + ' of ' + totalCalls, color: 'var(--green)' },
+      { label: 'Booked \u2192 Show', val: rateBookShow + '%', sub: showedCount + ' of ' + totalAppts, color: 'var(--blue)' },
+      { label: 'Show \u2192 Won', val: rateShowWon + '%', sub: wonCount + ' of ' + showedCount, color: 'var(--purple)' },
+      { label: 'Overall Close', val: rateOverall + '%', sub: wonCount + ' won / ' + totalCalls + ' calls', color: 'var(--green-light)' }
+    ];
+    ccEl.innerHTML = cards.map(function(c) {
+      return '<div class="aa-conv-card">' +
+        '<div class="aa-cc-val" style="color:' + c.color + ';">' + c.val + '</div>' +
+        '<div class="aa-cc-label">' + c.label + '</div>' +
+        '<div class="aa-cc-sub">' + c.sub + '</div></div>';
+    }).join('');
+  }
+
+  // --- 6. Lead Source / Region Performance ---
+  var regEl = document.getElementById('aaRegion');
+  if (regEl) {
+    var regionMap = {};
+    leads.forEach(function(l) {
+      var region = l.state || l.country || 'Unknown';
+      if (!region || region.trim() === '') region = 'Unknown';
+      if (!regionMap[region]) regionMap[region] = { total: 0, booked: 0, contacted: 0 };
+      regionMap[region].total++;
+      if (l.status !== 'new') regionMap[region].contacted++;
+      if (l.status === 'booked') regionMap[region].booked++;
+    });
+    callLog.forEach(function(c) {
+      var matchLead = leads.find(function(l) { return l.company === c.company; });
+      if (matchLead && c.outcome === 'booked') {
+        var region = matchLead.state || matchLead.country || 'Unknown';
+        if (regionMap[region]) regionMap[region].booked++;
+      }
+    });
+    var regionArr = Object.keys(regionMap).map(function(k) {
+      var r = regionMap[k];
+      return { region: k, total: r.total, booked: r.booked, rate: r.total > 0 ? Math.round((r.booked / r.total) * 100) : 0 };
+    });
+    regionArr.sort(function(a, b) { return b.total - a.total; });
+    var topRegions = regionArr.slice(0, 12);
+    var maxRegionTotal = topRegions.length > 0 ? topRegions[0].total : 1;
+
+    if (topRegions.length === 0 || (topRegions.length === 1 && topRegions[0].region === 'Unknown')) {
+      regEl.innerHTML = '<div style="text-align:center;color:var(--muted);padding:1rem;">No regional data available yet. Lead state/country fields will populate this chart.</div>';
+    } else {
+      regEl.innerHTML = topRegions.map(function(r) {
+        var barPct = Math.max(Math.round((r.total / maxRegionTotal) * 100), 4);
+        return '<div class="aa-region-row">' +
+          '<div class="aa-rr-label" title="' + escapeHtml(r.region) + '">' + escapeHtml(r.region) + '</div>' +
+          '<div class="aa-rr-track"><div class="aa-rr-fill" style="width:' + barPct + '%;background:var(--blue);"></div></div>' +
+          '<div class="aa-rr-stat">' + r.total + ' leads · ' + r.rate + '%</div></div>';
+      }).join('');
+    }
+  }
+
+  // --- 7. Time-of-Day Heatmap ---
+  var hmEl = document.getElementById('aaHeatmap');
+  if (hmEl) {
+    var dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    var hourLabels = [];
+    for (var h = 8; h <= 19; h++) {
+      hourLabels.push(h <= 12 ? (h === 12 ? '12p' : h + 'a') : (h - 12) + 'p');
+    }
+    var hmData = {};
+    var hmMax = 0;
+    callLog.forEach(function(c) {
+      var dt = new Date(c.timestamp);
+      var day = dt.getDay();
+      var hr = dt.getHours();
+      if (hr < 8 || hr > 19) return;
+      var key = day + '_' + hr;
+      hmData[key] = (hmData[key] || 0) + 1;
+      if (hmData[key] > hmMax) hmMax = hmData[key];
+    });
+
+    var hmHtml = '<div class="aa-hm-grid" style="grid-template-columns:48px repeat(' + hourLabels.length + ',1fr);">';
+    hmHtml += '<div class="aa-hm-header"></div>';
+    hourLabels.forEach(function(lbl) { hmHtml += '<div class="aa-hm-header">' + lbl + '</div>'; });
+
+    for (var di = 1; di <= 6; di++) {
+      var dayIdx = di % 7;
+      hmHtml += '<div class="aa-hm-row-label">' + dayNames[dayIdx] + '</div>';
+      for (var hi = 8; hi <= 19; hi++) {
+        var k = dayIdx + '_' + hi;
+        var val = hmData[k] || 0;
+        var intensity = hmMax > 0 ? val / hmMax : 0;
+        var bg, fg;
+        if (val === 0) { bg = 'var(--cream)'; fg = 'transparent'; }
+        else if (intensity < 0.25) { bg = '#dbeafe'; fg = 'var(--blue)'; }
+        else if (intensity < 0.5) { bg = '#93c5fd'; fg = '#1e3a5f'; }
+        else if (intensity < 0.75) { bg = '#3b82f6'; fg = '#fff'; }
+        else { bg = '#1d4ed8'; fg = '#fff'; }
+        hmHtml += '<div class="aa-hm-cell" style="background:' + bg + ';color:' + fg + ';" title="' + dayNames[dayIdx] + ' ' + hi + ':00 — ' + val + ' calls">' + (val > 0 ? val : '') + '</div>';
+      }
+    }
+    for (var di2 = 0; di2 < 1; di2++) {
+      hmHtml += '<div class="aa-hm-row-label">' + dayNames[0] + '</div>';
+      for (var hi2 = 8; hi2 <= 19; hi2++) {
+        var k2 = '0_' + hi2;
+        var val2 = hmData[k2] || 0;
+        var intensity2 = hmMax > 0 ? val2 / hmMax : 0;
+        var bg2, fg2;
+        if (val2 === 0) { bg2 = 'var(--cream)'; fg2 = 'transparent'; }
+        else if (intensity2 < 0.25) { bg2 = '#dbeafe'; fg2 = 'var(--blue)'; }
+        else if (intensity2 < 0.5) { bg2 = '#93c5fd'; fg2 = '#1e3a5f'; }
+        else if (intensity2 < 0.75) { bg2 = '#3b82f6'; fg2 = '#fff'; }
+        else { bg2 = '#1d4ed8'; fg2 = '#fff'; }
+        hmHtml += '<div class="aa-hm-cell" style="background:' + bg2 + ';color:' + fg2 + ';" title="' + dayNames[0] + ' ' + hi2 + ':00 — ' + val2 + ' calls">' + (val2 > 0 ? val2 : '') + '</div>';
+      }
+    }
+
+    hmHtml += '</div>';
+    hmHtml += '<div style="display:flex;align-items:center;gap:0.5rem;margin-top:0.75rem;font-size:0.68rem;color:var(--muted);">' +
+      '<span>Fewer</span>' +
+      '<span style="width:14px;height:14px;background:var(--cream);border-radius:2px;border:1px solid var(--border);display:inline-block;"></span>' +
+      '<span style="width:14px;height:14px;background:#dbeafe;border-radius:2px;display:inline-block;"></span>' +
+      '<span style="width:14px;height:14px;background:#93c5fd;border-radius:2px;display:inline-block;"></span>' +
+      '<span style="width:14px;height:14px;background:#3b82f6;border-radius:2px;display:inline-block;"></span>' +
+      '<span style="width:14px;height:14px;background:#1d4ed8;border-radius:2px;display:inline-block;"></span>' +
+      '<span>More</span></div>';
+    hmEl.innerHTML = hmHtml;
+  }
+}
+
 var _quoAdminFetchInFlight = false;
 var _quoSmsPreviewInFlight = false;
 
@@ -6813,6 +7242,8 @@ var _mailCurrentMsg = null;
 var _mailReplyMode = false;
 var _mailConnected = false;
 var _mailFromAddress = '';
+var _mailFolder = 'inbox';
+var _mailSentPage = 0;
 
 async function mailApi(payload) {
   var secret = getPipelineSecret();
@@ -6862,6 +7293,7 @@ async function mailLoadInbox() {
   body.innerHTML = '<div style="text-align:center;padding:1.5rem;color:var(--muted);">Loading...</div>';
   document.getElementById('mailInboxPanel').style.display = '';
   document.getElementById('mailReaderPanel').style.display = 'none';
+  document.getElementById('mailSentPanel').style.display = 'none';
   try {
     var res = await mailApi({ action: 'inbox', start: _mailPage * _mailPageSize, limit: _mailPageSize });
     if (!res.ok) { body.innerHTML = '<div style="padding:1rem;color:var(--red);">' + escapeHtml(res.error || 'Failed to load') + '</div>'; return; }
@@ -6916,11 +7348,17 @@ function mailRenderInbox() {
 function mailPrevPage() { if (_mailPage > 0) { _mailPage--; mailLoadInbox(); } }
 function mailNextPage() { _mailPage++; mailLoadInbox(); }
 
-async function mailReadMessage(idx) {
-  var m = _mailMessages[idx];
+async function mailReadMessage(idxOrMsgId, folderIdArg) {
+  var m;
+  if (typeof idxOrMsgId === 'number') {
+    m = _mailMessages[idxOrMsgId];
+  } else {
+    m = { messageId: idxOrMsgId, folderId: folderIdArg || '' };
+  }
   if (!m) return;
   _mailCurrentMsg = m;
   document.getElementById('mailInboxPanel').style.display = 'none';
+  document.getElementById('mailSentPanel').style.display = 'none';
   document.getElementById('mailReaderPanel').style.display = '';
   document.getElementById('mailReaderSubject').textContent = m.subject || '(no subject)';
 
@@ -6967,9 +7405,13 @@ async function mailReadMessage(idx) {
 }
 
 function mailBackToInbox() {
-  document.getElementById('mailInboxPanel').style.display = '';
   document.getElementById('mailReaderPanel').style.display = 'none';
   _mailCurrentMsg = null;
+  if (_mailFolder === 'sent') {
+    document.getElementById('mailSentPanel').style.display = '';
+  } else {
+    document.getElementById('mailInboxPanel').style.display = '';
+  }
 }
 
 function mailOpenCompose() {
@@ -6981,8 +7423,7 @@ function mailOpenCompose() {
   document.getElementById('mailComposeBody').value = '';
   document.getElementById('mailComposeStatus').innerHTML = '';
   document.getElementById('mailSendBtn').disabled = false;
-  var overlay = document.getElementById('mailComposeOverlay');
-  overlay.style.display = 'flex';
+  document.getElementById('mailComposeOverlay').classList.add('open');
 }
 
 function mailOpenReply() {
@@ -6997,14 +7438,13 @@ function mailOpenReply() {
   document.getElementById('mailComposeBody').value = '\n\n--- Original Message ---\nFrom: ' + from + '\nSubject: ' + subj + '\n';
   document.getElementById('mailComposeStatus').innerHTML = '';
   document.getElementById('mailSendBtn').disabled = false;
-  var overlay = document.getElementById('mailComposeOverlay');
-  overlay.style.display = 'flex';
+  document.getElementById('mailComposeOverlay').classList.add('open');
   document.getElementById('mailComposeBody').focus();
   document.getElementById('mailComposeBody').setSelectionRange(0, 0);
 }
 
 function mailCloseCompose() {
-  document.getElementById('mailComposeOverlay').style.display = 'none';
+  document.getElementById('mailComposeOverlay').classList.remove('open');
 }
 
 async function mailSend() {
@@ -7043,10 +7483,12 @@ async function mailSend() {
         content: htmlBody,
       };
     }
+    payload.employeeId = currentUser ? currentUser.id : '';
+    payload.employeeName = currentUser ? currentUser.display : '';
     var res = await mailApi(payload);
     if (res.ok) {
       statusEl.innerHTML = '<span style="color:var(--green);font-weight:600;">Sent successfully!</span>';
-      setTimeout(function() { mailCloseCompose(); mailLoadInbox(); }, 1200);
+      setTimeout(function() { mailCloseCompose(); if (_mailFolder === 'sent') mailLoadSent(); else mailLoadInbox(); }, 1200);
     } else {
       statusEl.innerHTML = '<span style="color:var(--red);">Failed: ' + escapeHtml((res.data && res.data.status && res.data.status.description) || res.error || 'Unknown error') + '</span>';
       sendBtn.disabled = false;
@@ -7056,6 +7498,99 @@ async function mailSend() {
     sendBtn.disabled = false;
   }
 }
+
+function mailSwitchFolder(folder) {
+  _mailFolder = folder;
+  var tabInbox = document.getElementById('mailTabInbox');
+  var tabSent = document.getElementById('mailTabSent');
+  if (folder === 'sent') {
+    tabSent.style.borderBottomColor = 'var(--accent)';
+    tabSent.style.color = 'var(--text)';
+    tabSent.style.fontWeight = '600';
+    tabInbox.style.borderBottomColor = 'transparent';
+    tabInbox.style.color = 'var(--muted)';
+    tabInbox.style.fontWeight = '500';
+    document.getElementById('mailInboxPanel').style.display = 'none';
+    document.getElementById('mailSentPanel').style.display = '';
+    document.getElementById('mailReaderPanel').style.display = 'none';
+    mailLoadSent();
+  } else {
+    tabInbox.style.borderBottomColor = 'var(--accent)';
+    tabInbox.style.color = 'var(--text)';
+    tabInbox.style.fontWeight = '600';
+    tabSent.style.borderBottomColor = 'transparent';
+    tabSent.style.color = 'var(--muted)';
+    tabSent.style.fontWeight = '500';
+    document.getElementById('mailSentPanel').style.display = 'none';
+    document.getElementById('mailInboxPanel').style.display = '';
+    document.getElementById('mailReaderPanel').style.display = 'none';
+    mailLoadInbox();
+  }
+}
+
+function mailRefreshCurrentFolder() {
+  if (_mailFolder === 'sent') mailLoadSent();
+  else mailLoadInbox();
+}
+
+async function mailLoadSent() {
+  var sentBody = document.getElementById('mailSentBody');
+  sentBody.innerHTML = '<div style="text-align:center;padding:1.5rem;color:var(--muted);">Loading sent mail...</div>';
+  try {
+    var start = _mailSentPage * _mailPageSize;
+    var res = await mailApi({ action: 'sent', start: start, limit: _mailPageSize });
+    if (!res.ok) {
+      var errHtml = '<div style="text-align:center;padding:2rem;color:var(--red);">' + escapeHtml(res.error || 'Error loading sent');
+      if (res.availableFolders && res.availableFolders.length) {
+        errHtml += '<div style="font-size:0.75rem;color:var(--muted);margin-top:0.75rem;">Available folders: ' + res.availableFolders.map(function(f){ return escapeHtml(f.folderName || '?'); }).join(', ') + '</div>';
+      }
+      errHtml += '</div>';
+      sentBody.innerHTML = errHtml;
+      return;
+    }
+    var msgs = res.messages || [];
+    var sentLog = res.sentLog || {};
+    if (!msgs.length) {
+      sentBody.innerHTML = '<div style="text-align:center;padding:2rem;color:var(--muted);">No sent emails found.</div>';
+    } else {
+      var html = '<table style="width:100%;border-collapse:collapse;font-size:0.82rem;"><thead><tr style="text-align:left;border-bottom:1px solid var(--border);">' +
+        '<th style="padding:0.55rem 0.75rem;color:var(--muted);font-weight:500;width:14%;">Sent By</th>' +
+        '<th style="padding:0.55rem 0.75rem;color:var(--muted);font-weight:500;width:22%;">To</th>' +
+        '<th style="padding:0.55rem 0.75rem;color:var(--muted);font-weight:500;">Subject</th>' +
+        '<th style="padding:0.55rem 0.75rem;color:var(--muted);font-weight:500;width:15%;text-align:right;">Date</th>' +
+        '</tr></thead><tbody>';
+      msgs.forEach(function(m) {
+        var to = m.toAddress || m.recipient || '';
+        var subj = m.subject || '(no subject)';
+        var dt = '';
+        if (m.receivedTime || m.sentDateInGMT) {
+          var d = new Date(parseInt(m.receivedTime || m.sentDateInGMT, 10));
+          if (!isNaN(d)) dt = d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) + ' ' + d.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' });
+        }
+        var msgId = m.messageId || '';
+        var logEntry = sentLog[msgId] || {};
+        var empName = logEntry.employee_name || '';
+        var empId = logEntry.employee_id || '';
+        var sentByLabel = empName ? escapeHtml(empName) : (empId ? '<span style="color:var(--muted);">Emp ' + escapeHtml(empId) + '</span>' : '<span style="color:var(--muted);">--</span>');
+        html += '<tr style="border-bottom:1px solid var(--border);cursor:pointer;" onclick="mailReadMessage(\'' + escapeHtml(msgId) + '\',\'' + escapeHtml(m.folderId || '') + '\')">' +
+          '<td style="padding:0.55rem 0.75rem;">' + sentByLabel + '</td>' +
+          '<td style="padding:0.55rem 0.75rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:0;">' + escapeHtml(to) + '</td>' +
+          '<td style="padding:0.55rem 0.75rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:0;">' + escapeHtml(subj) + '</td>' +
+          '<td style="padding:0.55rem 0.75rem;text-align:right;white-space:nowrap;color:var(--muted);">' + dt + '</td></tr>';
+      });
+      html += '</tbody></table>';
+      sentBody.innerHTML = html;
+    }
+    document.getElementById('mailSentPrevBtn').disabled = _mailSentPage === 0;
+    document.getElementById('mailSentNextBtn').disabled = msgs.length < _mailPageSize;
+    document.getElementById('mailSentPageLabel').textContent = 'Page ' + (_mailSentPage + 1);
+  } catch (e) {
+    sentBody.innerHTML = '<div style="text-align:center;padding:2rem;color:var(--red);">Network error loading sent mail.</div>';
+  }
+}
+
+function mailSentPrevPage() { if (_mailSentPage > 0) { _mailSentPage--; mailLoadSent(); } }
+function mailSentNextPage() { _mailSentPage++; mailLoadSent(); }
 
 async function mailSearch() {
   var q = (document.getElementById('mailSearchInput').value || '').trim();

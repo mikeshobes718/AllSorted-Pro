@@ -679,6 +679,10 @@ details.scrape-panel summary .scrape-hint{font-family:'DM Sans',sans-serif;font-
       <button type="button" class="nav-item" data-view="quo" id="navQuoItem" onclick="showView('quo')" title="Quo line (OpenPhone) — admin only" style="display:none;">
         <span class="nav-icon">📱</span><span class="nav-text">Quo line</span>
       </button>
+      <button type="button" class="nav-item" data-view="mail" id="navMailItem" onclick="showView('mail')" title="Team Inbox (Zoho Mail)">
+        <span class="nav-icon">✉️</span><span class="nav-text">Mail</span>
+        <span class="nav-count" id="navMailUnread" style="display:none;">0</span>
+      </button>
     </div>
     <div class="nav-section" id="navSectionLibrary">
       <div class="nav-label">Library</div>
@@ -1742,6 +1746,100 @@ details.scrape-panel summary .scrape-hint{font-family:'DM Sans',sans-serif;font-
         </div>
         <div class="panel-body" id="quoConversationsAdminBody">
           <div class="empty"><div class="empty-icon">💬</div><p>Use Refresh to load conversations.</p></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MAIL VIEW -->
+    <div class="view" id="view-mail">
+      <div id="mailSetupPanel" style="display:none;">
+        <div class="panel">
+          <div class="panel-header"><div class="panel-title">Connect Zoho Mail</div></div>
+          <div class="panel-body" style="text-align:center;padding:2.5rem 1rem;">
+            <div style="font-size:2.2rem;margin-bottom:0.75rem;">✉️</div>
+            <p style="font-size:0.92rem;margin-bottom:1rem;">Connect your shared Zoho Mail inbox to send and receive email from this dashboard.</p>
+            <a href="/api/zoho-mail?action=connect" class="btn btn-green" id="mailConnectBtn">Connect Zoho Mail</a>
+            <p style="font-size:0.75rem;color:var(--muted);margin-top:0.75rem;">Admin only. You will be redirected to Zoho to authorize access.</p>
+          </div>
+        </div>
+      </div>
+
+      <div id="mailMainPanel" style="display:none;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;flex-wrap:wrap;gap:0.5rem;">
+          <div>
+            <h2 style="font-size:1.35rem;font-weight:600;margin:0;letter-spacing:-0.02em;">Team Inbox</h2>
+            <p id="mailFromLabel" style="font-size:0.78rem;color:var(--muted);margin:0.15rem 0 0;"></p>
+          </div>
+          <div style="display:flex;gap:0.5rem;align-items:center;flex-wrap:wrap;">
+            <div style="position:relative;">
+              <input type="text" id="mailSearchInput" class="form-input" placeholder="Search emails..." style="padding:0.35rem 0.5rem 0.35rem 1.8rem;font-size:0.82rem;min-width:200px;" onkeydown="if(event.key==='Enter')mailSearch()">
+              <span style="position:absolute;left:0.5rem;top:50%;transform:translateY(-50%);font-size:0.85rem;pointer-events:none;">🔍</span>
+            </div>
+            <button type="button" class="btn btn-green btn-sm" onclick="mailOpenCompose()">New Email</button>
+            <button type="button" class="btn btn-ghost btn-sm" onclick="mailLoadInbox()">Refresh</button>
+          </div>
+        </div>
+
+        <!-- Inbox List -->
+        <div class="panel" id="mailInboxPanel">
+          <div class="panel-body" style="padding:0;" id="mailInboxBody">
+            <div style="text-align:center;padding:2rem;color:var(--muted);">Loading inbox...</div>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:0.5rem 1rem;border-top:1px solid var(--border);font-size:0.78rem;" id="mailPagination">
+            <button type="button" class="btn btn-ghost btn-sm" id="mailPrevBtn" onclick="mailPrevPage()" disabled>Previous</button>
+            <span id="mailPageLabel" style="color:var(--muted);">Page 1</span>
+            <button type="button" class="btn btn-ghost btn-sm" id="mailNextBtn" onclick="mailNextPage()">Next</button>
+          </div>
+        </div>
+
+        <!-- Message Reader -->
+        <div class="panel" id="mailReaderPanel" style="display:none;">
+          <div class="panel-header" style="justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:0.5rem;">
+            <div style="flex:1;min-width:0;">
+              <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.3rem;">
+                <button type="button" class="btn btn-ghost btn-sm" onclick="mailBackToInbox()" title="Back to inbox" style="padding:0.2rem 0.5rem;">← Back</button>
+              </div>
+              <h3 id="mailReaderSubject" style="font-size:1.05rem;font-weight:600;margin:0;word-break:break-word;"></h3>
+              <div style="font-size:0.78rem;color:var(--muted);margin-top:0.35rem;" id="mailReaderMeta"></div>
+            </div>
+            <div style="display:flex;gap:0.4rem;">
+              <button type="button" class="btn btn-sm" onclick="mailOpenReply()">Reply</button>
+            </div>
+          </div>
+          <div class="panel-body" id="mailReaderContent" style="font-size:0.88rem;line-height:1.6;overflow-x:auto;"></div>
+        </div>
+
+        <!-- Compose / Reply Modal -->
+        <div id="mailComposeOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:1000;display:none;justify-content:center;align-items:center;padding:1rem;">
+          <div style="background:var(--card);border-radius:8px;width:100%;max-width:640px;max-height:90vh;overflow-y:auto;box-shadow:0 8px 32px rgba(0,0,0,0.15);">
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:1rem 1.25rem;border-bottom:1px solid var(--border);">
+              <h3 id="mailComposeTitle" style="font-size:1rem;font-weight:600;margin:0;">New Email</h3>
+              <button type="button" onclick="mailCloseCompose()" style="background:none;border:none;font-size:1.2rem;cursor:pointer;color:var(--muted);padding:0.2rem;" title="Close">&#10005;</button>
+            </div>
+            <div style="padding:1.25rem;">
+              <div style="margin-bottom:0.75rem;">
+                <label class="form-label" style="font-size:0.78rem;">To</label>
+                <input type="email" id="mailComposeTo" class="form-input" placeholder="recipient@example.com" style="font-size:0.85rem;">
+              </div>
+              <div style="margin-bottom:0.75rem;">
+                <label class="form-label" style="font-size:0.78rem;">CC</label>
+                <input type="text" id="mailComposeCc" class="form-input" placeholder="Optional" style="font-size:0.85rem;">
+              </div>
+              <div style="margin-bottom:0.75rem;">
+                <label class="form-label" style="font-size:0.78rem;">Subject</label>
+                <input type="text" id="mailComposeSubject" class="form-input" style="font-size:0.85rem;">
+              </div>
+              <div style="margin-bottom:1rem;">
+                <label class="form-label" style="font-size:0.78rem;">Message</label>
+                <textarea id="mailComposeBody" class="form-input" rows="10" style="font-size:0.85rem;resize:vertical;min-height:180px;"></textarea>
+              </div>
+              <div style="display:flex;justify-content:flex-end;gap:0.5rem;">
+                <button type="button" class="btn btn-ghost" onclick="mailCloseCompose()">Cancel</button>
+                <button type="button" class="btn btn-green" id="mailSendBtn" onclick="mailSend()">Send</button>
+              </div>
+              <div id="mailComposeStatus" style="margin-top:0.5rem;font-size:0.82rem;"></div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -4917,6 +5015,9 @@ function showView(name, skipHashUpdate) {
   if (name === 'quo') {
     loadQuoAdminPage();
   }
+  if (name === 'mail') {
+    mailInit();
+  }
   if (name === 'log') {
     setTimeout(function () {
       void syncPipelineFromServer({ silent: true });
@@ -4930,11 +5031,12 @@ function showView(name, skipHashUpdate) {
 
 window.addEventListener('hashchange', function () {
   var h = window.location.hash.replace('#', '');
+  if (h === 'mail-connected') h = 'mail';
   if (typeof isInactiveEmployment === 'function' && isInactiveEmployment() && (!h || h !== 'settings')) {
     showView('settings', true);
     return;
   }
-  var valid = ['dashboard','leads','log','appointments','admin','quo','script','assistant','resources','settings','goals','timeclock'];
+  var valid = ['dashboard','leads','log','appointments','admin','quo','script','assistant','resources','settings','goals','timeclock','mail'];
   if (valid.indexOf(h) === -1) return;
   if (typeof isInterviewingEmployment === 'function' && isInterviewingEmployment() && INTERVIEWING_BLOCKED_VIEWS.indexOf(h) !== -1) {
     showView('goals', true);
@@ -4945,7 +5047,8 @@ window.addEventListener('hashchange', function () {
 
 (function restoreViewFromHash() {
   var h = window.location.hash.replace('#', '');
-  var valid = ['dashboard','leads','log','appointments','admin','quo','script','assistant','resources','settings','goals','timeclock'];
+  if (h === 'mail-connected') h = 'mail';
+  var valid = ['dashboard','leads','log','appointments','admin','quo','script','assistant','resources','settings','goals','timeclock','mail'];
   if (valid.indexOf(h) === -1 && h !== '') return;
   setTimeout(function () {
     if (typeof isInactiveEmployment === 'function' && isInactiveEmployment() && (!h || h !== 'settings')) {
@@ -6601,6 +6704,274 @@ function loadQuoAdminPage() {
   }
   void loadQuoAdminPhoneNumbers();
   void loadQuoAdminConversations();
+}
+
+// ========== ZOHO MAIL ==========
+var _mailPage = 0;
+var _mailPageSize = 25;
+var _mailMessages = [];
+var _mailCurrentMsg = null;
+var _mailReplyMode = false;
+var _mailConnected = false;
+var _mailFromAddress = '';
+
+async function mailApi(payload) {
+  var secret = getPipelineSecret();
+  if (!secret) return { ok: false, error: 'Not logged in' };
+  var r = await fetch('/api/zoho-mail', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(Object.assign({ secret: secret }, payload)),
+  });
+  return r.json();
+}
+
+async function mailInit() {
+  var setupPanel = document.getElementById('mailSetupPanel');
+  var mainPanel = document.getElementById('mailMainPanel');
+  if (!setupPanel || !mainPanel) return;
+  try {
+    var res = await mailApi({ action: 'status' });
+    _mailConnected = !!(res && res.connected);
+    _mailFromAddress = (res && res.fromAddress) || '';
+  } catch (e) {
+    _mailConnected = false;
+  }
+  if (_mailConnected) {
+    setupPanel.style.display = 'none';
+    mainPanel.style.display = '';
+    var fl = document.getElementById('mailFromLabel');
+    if (fl) fl.textContent = _mailFromAddress;
+    mailLoadInbox();
+  } else {
+    var cu = typeof getCurrentUser === 'function' ? getCurrentUser() : null;
+    var isAdmin = cu && String(cu.role || '').toLowerCase() === 'admin';
+    setupPanel.style.display = '';
+    mainPanel.style.display = 'none';
+    if (!isAdmin) {
+      setupPanel.querySelector('.panel-body').innerHTML =
+        '<div style="text-align:center;padding:2rem;color:var(--muted);">' +
+        '<div style="font-size:2rem;margin-bottom:0.5rem;">✉️</div>' +
+        '<p>Mail is not connected yet. Ask an admin to connect Zoho Mail.</p></div>';
+    }
+  }
+}
+
+async function mailLoadInbox() {
+  var body = document.getElementById('mailInboxBody');
+  if (!body) return;
+  body.innerHTML = '<div style="text-align:center;padding:1.5rem;color:var(--muted);">Loading...</div>';
+  document.getElementById('mailInboxPanel').style.display = '';
+  document.getElementById('mailReaderPanel').style.display = 'none';
+  try {
+    var res = await mailApi({ action: 'inbox', start: _mailPage * _mailPageSize, limit: _mailPageSize });
+    if (!res.ok) { body.innerHTML = '<div style="padding:1rem;color:var(--red);">' + escapeHtml(res.error || 'Failed to load') + '</div>'; return; }
+    _mailMessages = res.messages || [];
+    if (_mailFromAddress === '' && res.fromAddress) _mailFromAddress = res.fromAddress;
+    mailRenderInbox();
+  } catch (e) {
+    body.innerHTML = '<div style="padding:1rem;color:var(--red);">Network error loading inbox.</div>';
+  }
+}
+
+function mailRenderInbox() {
+  var body = document.getElementById('mailInboxBody');
+  if (!body) return;
+  if (_mailMessages.length === 0) {
+    body.innerHTML = '<div style="text-align:center;padding:2rem;color:var(--muted);"><div style="font-size:2rem;margin-bottom:0.5rem;">📭</div><p>No messages found.</p></div>';
+    return;
+  }
+  var html = '<table style="width:100%;border-collapse:collapse;font-size:0.84rem;">';
+  html += '<thead><tr style="border-bottom:2px solid var(--border);text-align:left;">' +
+    '<th style="padding:0.55rem 0.75rem;font-weight:600;width:22%;">From</th>' +
+    '<th style="padding:0.55rem 0.5rem;font-weight:600;">Subject</th>' +
+    '<th style="padding:0.55rem 0.75rem;font-weight:600;width:13%;text-align:right;">Date</th>' +
+    '</tr></thead><tbody>';
+  _mailMessages.forEach(function(m, i) {
+    var from = m.sender || m.fromAddress || '';
+    var subj = m.subject || '(no subject)';
+    var date = '';
+    if (m.receivedTime) {
+      try { date = new Date(parseInt(m.receivedTime, 10)).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }); } catch(e) { date = ''; }
+    }
+    var isUnread = m.status === '0' || m.flagid === '0';
+    var fw = isUnread ? 'font-weight:600;' : '';
+    html += '<tr style="border-bottom:1px solid var(--border);cursor:pointer;transition:background 0.15s;" ' +
+      'onmouseenter="this.style.background=\'var(--cream)\'" onmouseleave="this.style.background=\'\'" ' +
+      'onclick="mailReadMessage(' + i + ')">' +
+      '<td style="padding:0.55rem 0.75rem;' + fw + 'white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:180px;">' + escapeHtml(from) + '</td>' +
+      '<td style="padding:0.55rem 0.5rem;' + fw + 'overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:400px;">' +
+        (isUnread ? '<span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--blue);margin-right:6px;vertical-align:middle;"></span>' : '') +
+        escapeHtml(subj) + '</td>' +
+      '<td style="padding:0.55rem 0.75rem;color:var(--muted);text-align:right;white-space:nowrap;font-size:0.78rem;">' + date + '</td>' +
+      '</tr>';
+  });
+  html += '</tbody></table>';
+  body.innerHTML = html;
+
+  document.getElementById('mailPageLabel').textContent = 'Page ' + (_mailPage + 1);
+  document.getElementById('mailPrevBtn').disabled = _mailPage === 0;
+  document.getElementById('mailNextBtn').disabled = _mailMessages.length < _mailPageSize;
+}
+
+function mailPrevPage() { if (_mailPage > 0) { _mailPage--; mailLoadInbox(); } }
+function mailNextPage() { _mailPage++; mailLoadInbox(); }
+
+async function mailReadMessage(idx) {
+  var m = _mailMessages[idx];
+  if (!m) return;
+  _mailCurrentMsg = m;
+  document.getElementById('mailInboxPanel').style.display = 'none';
+  document.getElementById('mailReaderPanel').style.display = '';
+  document.getElementById('mailReaderSubject').textContent = m.subject || '(no subject)';
+
+  var from = m.sender || m.fromAddress || '';
+  var to = m.toAddress || '';
+  var dateStr = '';
+  if (m.receivedTime) { try { dateStr = new Date(parseInt(m.receivedTime, 10)).toLocaleString(); } catch(e) {} }
+  document.getElementById('mailReaderMeta').innerHTML =
+    '<strong>From:</strong> ' + escapeHtml(from) +
+    (to ? ' &nbsp; <strong>To:</strong> ' + escapeHtml(to) : '') +
+    (dateStr ? ' &nbsp; <strong>Date:</strong> ' + escapeHtml(dateStr) : '');
+
+  var contentEl = document.getElementById('mailReaderContent');
+  contentEl.innerHTML = '<div style="text-align:center;padding:1.5rem;color:var(--muted);">Loading message...</div>';
+
+  try {
+    var folderId = m.folderId || '';
+    var messageId = m.messageId || '';
+    var res = await mailApi({ action: 'read', messageId: messageId, folderId: folderId });
+    if (res.ok && res.message) {
+      var content = res.message.content || res.message.htmlContent || '';
+      if (content) {
+        var iframe = document.createElement('iframe');
+        iframe.style.cssText = 'width:100%;border:none;min-height:300px;';
+        iframe.sandbox = 'allow-same-origin';
+        contentEl.innerHTML = '';
+        contentEl.appendChild(iframe);
+        var doc = iframe.contentDocument || iframe.contentWindow.document;
+        doc.open();
+        doc.write('<!DOCTYPE html><html><head><style>body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;font-size:14px;line-height:1.6;color:#333;margin:0.75rem;word-break:break-word;}img{max-width:100%;height:auto;}a{color:#2563eb;}</style></head><body>' + content + '</body></html>');
+        doc.close();
+        setTimeout(function() {
+          try { iframe.style.height = (doc.body.scrollHeight + 20) + 'px'; } catch(e) {}
+        }, 200);
+      } else {
+        contentEl.innerHTML = '<div style="padding:1rem;color:var(--muted);white-space:pre-wrap;">' + escapeHtml(res.message.summary || 'No content available') + '</div>';
+      }
+    } else {
+      contentEl.innerHTML = '<div style="padding:1rem;color:var(--red);">' + escapeHtml((res && res.error) || 'Could not load message') + '</div>';
+    }
+  } catch (e) {
+    contentEl.innerHTML = '<div style="padding:1rem;color:var(--red);">Network error loading message.</div>';
+  }
+}
+
+function mailBackToInbox() {
+  document.getElementById('mailInboxPanel').style.display = '';
+  document.getElementById('mailReaderPanel').style.display = 'none';
+  _mailCurrentMsg = null;
+}
+
+function mailOpenCompose() {
+  _mailReplyMode = false;
+  document.getElementById('mailComposeTitle').textContent = 'New Email';
+  document.getElementById('mailComposeTo').value = '';
+  document.getElementById('mailComposeCc').value = '';
+  document.getElementById('mailComposeSubject').value = '';
+  document.getElementById('mailComposeBody').value = '';
+  document.getElementById('mailComposeStatus').innerHTML = '';
+  document.getElementById('mailSendBtn').disabled = false;
+  var overlay = document.getElementById('mailComposeOverlay');
+  overlay.style.display = 'flex';
+}
+
+function mailOpenReply() {
+  if (!_mailCurrentMsg) return;
+  _mailReplyMode = true;
+  document.getElementById('mailComposeTitle').textContent = 'Reply';
+  var from = _mailCurrentMsg.sender || _mailCurrentMsg.fromAddress || '';
+  document.getElementById('mailComposeTo').value = from;
+  document.getElementById('mailComposeCc').value = '';
+  var subj = _mailCurrentMsg.subject || '';
+  document.getElementById('mailComposeSubject').value = subj.match(/^re:/i) ? subj : 'Re: ' + subj;
+  document.getElementById('mailComposeBody').value = '\n\n--- Original Message ---\nFrom: ' + from + '\nSubject: ' + subj + '\n';
+  document.getElementById('mailComposeStatus').innerHTML = '';
+  document.getElementById('mailSendBtn').disabled = false;
+  var overlay = document.getElementById('mailComposeOverlay');
+  overlay.style.display = 'flex';
+  document.getElementById('mailComposeBody').focus();
+  document.getElementById('mailComposeBody').setSelectionRange(0, 0);
+}
+
+function mailCloseCompose() {
+  document.getElementById('mailComposeOverlay').style.display = 'none';
+}
+
+async function mailSend() {
+  var to = document.getElementById('mailComposeTo').value.trim();
+  var cc = document.getElementById('mailComposeCc').value.trim();
+  var subject = document.getElementById('mailComposeSubject').value.trim();
+  var body = document.getElementById('mailComposeBody').value;
+  var statusEl = document.getElementById('mailComposeStatus');
+  var sendBtn = document.getElementById('mailSendBtn');
+
+  if (!to) { statusEl.innerHTML = '<span style="color:var(--red);">To address is required.</span>'; return; }
+  if (!subject) { statusEl.innerHTML = '<span style="color:var(--red);">Subject is required.</span>'; return; }
+
+  sendBtn.disabled = true;
+  statusEl.innerHTML = '<span style="color:var(--muted);">Sending...</span>';
+
+  try {
+    var payload;
+    var htmlBody = body.replace(/\n/g, '<br>');
+    if (_mailReplyMode && _mailCurrentMsg) {
+      payload = {
+        action: 'reply',
+        messageId: _mailCurrentMsg.messageId || '',
+        folderId: _mailCurrentMsg.folderId || '',
+        toAddress: to,
+        ccAddress: cc,
+        subject: subject,
+        content: htmlBody,
+      };
+    } else {
+      payload = {
+        action: 'send',
+        toAddress: to,
+        ccAddress: cc,
+        subject: subject,
+        content: htmlBody,
+      };
+    }
+    var res = await mailApi(payload);
+    if (res.ok) {
+      statusEl.innerHTML = '<span style="color:var(--green);font-weight:600;">Sent successfully!</span>';
+      setTimeout(function() { mailCloseCompose(); mailLoadInbox(); }, 1200);
+    } else {
+      statusEl.innerHTML = '<span style="color:var(--red);">Failed: ' + escapeHtml((res.data && res.data.status && res.data.status.description) || res.error || 'Unknown error') + '</span>';
+      sendBtn.disabled = false;
+    }
+  } catch (e) {
+    statusEl.innerHTML = '<span style="color:var(--red);">Network error. Try again.</span>';
+    sendBtn.disabled = false;
+  }
+}
+
+async function mailSearch() {
+  var q = (document.getElementById('mailSearchInput').value || '').trim();
+  if (!q) { mailLoadInbox(); return; }
+  var body = document.getElementById('mailInboxBody');
+  body.innerHTML = '<div style="text-align:center;padding:1.5rem;color:var(--muted);">Searching...</div>';
+  document.getElementById('mailInboxPanel').style.display = '';
+  document.getElementById('mailReaderPanel').style.display = 'none';
+  try {
+    var res = await mailApi({ action: 'search', searchKey: q });
+    _mailMessages = (res && res.messages) || [];
+    mailRenderInbox();
+  } catch (e) {
+    body.innerHTML = '<div style="padding:1rem;color:var(--red);">Search failed.</div>';
+  }
 }
 
 async function loadQuoAdminPhoneNumbers() {

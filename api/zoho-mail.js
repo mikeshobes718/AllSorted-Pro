@@ -1,0 +1,272 @@
+const { getSupabaseAdmin } = require('../lib/supabase-server');
+
+const ZOHO_AUTH_URL = 'https://accounts.zoho.com/oauth/v2/auth';
+const ZOHO_TOKEN_URL = 'https://accounts.zoho.com/oauth/v2/token';
+const ZOHO_MAIL_BASE = 'https://mail.zoho.com';
+const SCOPES = 'ZohoMail.messages.READ,ZohoMail.messages.CREATE,ZohoMail.accounts.READ';
+const CONTENT_KEY = 'zoho_mail_tokens';
+
+function env(k) { return process.env[k] || ''; }
+
+async function loadTokens(supabase) {
+  const { data } = await supabase
+    .from('portal_content')
+    .select('value')
+    .eq('key', CONTENT_KEY)
+    .single();
+  return data && data.value ? data.value : null;
+}
+
+async function saveTokens(supabase, tokens) {
+  await supabase.from('portal_content').upsert(
+    { key: CONTENT_KEY, value: tokens, updated_at: new Date().toISOString() },
+    { onConflict: 'key' }
+  );
+}
+
+async function refreshAccessToken(supabase, tokens) {
+  const res = await fetch(ZOHO_TOKEN_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: new URLSearchParams({
+      grant_type: 'refresh_token',
+      client_id: env('ZOHO_CLIENT_ID'),
+      client_secret: env('ZOHO_CLIENT_SECRET'),
+      refresh_token: tokens.refreshToken,
+    }),
+  });
+  const d = await res.json();
+  if (d.access_token) {
+    tokens.accessToken = d.access_token;
+    tokens.expiresAt = Date.now() + ((d.expires_in || 3600) * 1000);
+    await saveTokens(supabase, tokens);
+  }
+  return tokens;
+}
+
+async function getValidTokens(supabase) {
+  let tokens = await loadTokens(supabase);
+  if (!tokens || !tokens.refreshToken) return null;
+  if (!tokens.expiresAt || Date.now() > tokens.expiresAt - 60000) {
+    tokens = await refreshAccessToken(supabase, tokens);
+  }
+  return tokens;
+}
+
+async function zohoFetch(tokens, method, path, body) {
+  const url = ZOHO_MAIL_BASE + path;
+  const opts = {
+    method,
+    headers: {
+      Authorization: 'Zoho-oauthtoken ' + tokens.accessToken,
+    },
+  };
+  if (body) {
+    opts.headers['Content-Type'] = 'application/json';
+    opts.body = JSON.stringify(body);
+  }
+  const r = await fetch(url, opts);
+  return r.json();
+}
+
+module.exports = async (req, res) => {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  if (req.method === 'OPTIONS') return res.status(204).end();
+
+  const supabase = getSupabaseAdmin();
+  if (!supabase) return res.status(500).json({ ok: false, error: 'Database not configured' });
+
+  const q = req.query || {};
+  const action = q.action || (req.body && req.body.action) || '';
+
+  // --- OAuth: redirect admin to Zoho consent ---
+  if (action === 'connect') {
+    const clientId = env('ZOHO_CLIENT_ID');
+    const redirectUri = env('ZOHO_REDIRECT_URI');
+    if (!clientId || !redirectUri) {
+      return res.status(500).json({ ok: false, error: 'ZOHO_CLIENT_ID or ZOHO_REDIRECT_URI not set' });
+    }
+    const url =
+      ZOHO_AUTH_URL +
+      '?scope=' + encodeURIComponent(SCOPES) +
+      '&client_id=' + encodeURIComponent(clientId) +
+      '&response_type=code' +
+      '&access_type=offline' +
+      '&redirect_uri=' + encodeURIComponent(redirectUri) +
+      '&prompt=consent';
+    return res.redirect(302, url);
+  }
+
+  // --- OAuth: callback from Zoho ---
+  if (action === 'callback') {
+    const code = q.code;
+    if (!code) return res.status(400).send('Missing authorization code. Check Zoho consent.');
+
+    const tokenRes = await fetch(ZOHO_TOKEN_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({
+        grant_type: 'authorization_code',
+        client_id: env('ZOHO_CLIENT_ID'),
+        client_secret: env('ZOHO_CLIENT_SECRET'),
+        redirect_uri: env('ZOHO_REDIRECT_URI'),
+        code,
+      }),
+    });
+    const td = await tokenRes.json();
+    if (!td.access_token) {
+      return res.status(400).json({ ok: false, error: 'Token exchange failed', detail: td });
+    }
+
+    const accRes = await fetch(ZOHO_MAIL_BASE + '/api/accounts', {
+      headers: { Authorization: 'Zoho-oauthtoken ' + td.access_token },
+    });
+    const accData = await accRes.json();
+    const account = accData && accData.data && accData.data[0];
+    const accountId = account ? account.accountId : null;
+    const fromAddress = account ? (account.primaryEmailAddress || account.incomingUserName) : '';
+    let inboxFolderId = '';
+
+    if (account) {
+      const folderRes = await fetch(
+        ZOHO_MAIL_BASE + '/api/accounts/' + accountId + '/folders',
+        { headers: { Authorization: 'Zoho-oauthtoken ' + td.access_token } }
+      );
+      const folderData = await folderRes.json();
+      if (folderData && folderData.data) {
+        const inbox = folderData.data.find(function (f) {
+          return (f.folderName || '').toLowerCase() === 'inbox';
+        });
+        if (inbox) inboxFolderId = inbox.folderId;
+      }
+    }
+
+    const tokens = {
+      accessToken: td.access_token,
+      refreshToken: td.refresh_token,
+      expiresAt: Date.now() + ((td.expires_in || 3600) * 1000),
+      accountId: accountId || '',
+      fromAddress: fromAddress || '',
+      inboxFolderId: inboxFolderId,
+    };
+    await saveTokens(supabase, tokens);
+
+    return res.redirect(302, '/caller-dashboard.html#mail-connected');
+  }
+
+  // --- All other actions require auth ---
+  let body = req.body;
+  if (typeof body === 'string') { try { body = JSON.parse(body); } catch { body = {}; } }
+  if (!body || typeof body !== 'object') body = {};
+
+  const scraperSecret = process.env.SCRAPER_SECRET || 'Free2026';
+  if (body.secret !== scraperSecret) {
+    return res.status(401).json({ ok: false, error: 'Unauthorized' });
+  }
+
+  const act = body.action || '';
+
+  // --- Status check ---
+  if (act === 'status') {
+    const tokens = await loadTokens(supabase);
+    const connected = !!(tokens && tokens.refreshToken && tokens.accountId);
+    return res.status(200).json({
+      ok: true,
+      connected,
+      fromAddress: connected ? tokens.fromAddress : '',
+    });
+  }
+
+  // --- All mail actions need valid tokens ---
+  const tokens = await getValidTokens(supabase);
+  if (!tokens || !tokens.accountId) {
+    return res.status(200).json({ ok: false, error: 'Zoho Mail not connected. Admin must connect first.' });
+  }
+
+  const acctId = tokens.accountId;
+  const inboxFolder = tokens.inboxFolderId || '';
+
+  // --- Inbox ---
+  if (act === 'inbox') {
+    const start = parseInt(body.start, 10) || 0;
+    const limit = Math.min(parseInt(body.limit, 10) || 25, 50);
+    const path = '/api/accounts/' + acctId + '/messages/view?folderId=' + inboxFolder +
+      '&start=' + start + '&limit=' + limit + '&sortBy=date&sortOrder=false';
+    const data = await zohoFetch(tokens, 'GET', path);
+    const messages = (data && data.data) || [];
+    return res.status(200).json({ ok: true, messages, fromAddress: tokens.fromAddress });
+  }
+
+  // --- Read single message ---
+  if (act === 'read') {
+    const messageId = body.messageId;
+    const folderId = body.folderId || inboxFolder;
+    if (!messageId) return res.status(400).json({ ok: false, error: 'messageId required' });
+    const path = '/api/accounts/' + acctId + '/folders/' + folderId + '/messages/' + messageId + '/content';
+    const data = await zohoFetch(tokens, 'GET', path);
+    return res.status(200).json({ ok: true, message: (data && data.data) || data });
+  }
+
+  // --- Send new email ---
+  if (act === 'send') {
+    const { toAddress, ccAddress, subject, content } = body;
+    if (!toAddress || !subject) {
+      return res.status(400).json({ ok: false, error: 'toAddress and subject required' });
+    }
+    const payload = {
+      fromAddress: tokens.fromAddress,
+      toAddress,
+      ccAddress: ccAddress || '',
+      subject,
+      content: content || '',
+      askReceipt: 'no',
+    };
+    const path = '/api/accounts/' + acctId + '/messages';
+    const data = await zohoFetch(tokens, 'POST', path, payload);
+    const ok = data && data.status && data.status.code === 200;
+    return res.status(200).json({ ok, data });
+  }
+
+  // --- Reply ---
+  if (act === 'reply') {
+    const { messageId, content, toAddress, ccAddress, subject } = body;
+    if (!messageId || !content) {
+      return res.status(400).json({ ok: false, error: 'messageId and content required' });
+    }
+    const folderId = body.folderId || inboxFolder;
+    const payload = {
+      fromAddress: tokens.fromAddress,
+      toAddress: toAddress || '',
+      ccAddress: ccAddress || '',
+      subject: subject || '',
+      content,
+      askReceipt: 'no',
+    };
+    const path = '/api/accounts/' + acctId + '/messages/' + messageId;
+    const data = await zohoFetch(tokens, 'PUT', path, payload);
+    const ok = data && data.status && data.status.code === 200;
+    return res.status(200).json({ ok, data });
+  }
+
+  // --- Search ---
+  if (act === 'search') {
+    const searchStr = body.searchKey || '';
+    if (!searchStr) return res.status(400).json({ ok: false, error: 'searchKey required' });
+    const start = parseInt(body.start, 10) || 0;
+    const limit = Math.min(parseInt(body.limit, 10) || 25, 50);
+    const path = '/api/accounts/' + acctId + '/messages/search?searchKey=' +
+      encodeURIComponent(searchStr) + '&start=' + start + '&limit=' + limit;
+    const data = await zohoFetch(tokens, 'GET', path);
+    return res.status(200).json({ ok: true, messages: (data && data.data) || [] });
+  }
+
+  // --- Disconnect ---
+  if (act === 'disconnect') {
+    await supabase.from('portal_content').delete().eq('key', CONTENT_KEY);
+    return res.status(200).json({ ok: true });
+  }
+
+  return res.status(400).json({ ok: false, error: 'Unknown action: ' + act });
+};

@@ -2,6 +2,19 @@ const { getSupabaseAdmin } = require('../lib/supabase-server');
 
 const BATCH_SIZE = 500;
 
+const BLOCKED_CALL_LOG_IDS = new Set([
+  '1775590100441',
+  '1775513366302',
+  '1775509737687',
+  '1775497484981',
+  '1775493860660',
+  '1775493655547',
+]);
+
+function isBlockedCallLogId(id) {
+  return id != null && BLOCKED_CALL_LOG_IDS.has(String(id));
+}
+
 async function loadQueueLeadsFromTable(supabase) {
   let all = [];
   let from = 0;
@@ -73,6 +86,7 @@ function buildCallLogRows(arr) {
   const now = new Date().toISOString();
   return arr
     .filter((o) => o && o.id)
+    .filter((o) => !isBlockedCallLogId(o.id))
     .filter((o) => String(o.employee_id || o.employeeId || '') !== '399')
     .map((o) => ({
     id: String(o.id),
@@ -182,7 +196,11 @@ module.exports = async (req, res) => {
         action === 'get_light' ? Promise.resolve(undefined) : loadLeadDb(supabase),
       ]);
 
-    const payload = { leads, callLog, appointments, leadRemovalRequests };
+    const callLogFiltered = Array.isArray(callLog)
+      ? callLog.filter((o) => o && !isBlockedCallLogId(o.id))
+      : callLog;
+
+    const payload = { leads, callLog: callLogFiltered, appointments, leadRemovalRequests };
     if (action !== 'get_light') {
       payload.leadDb = leadDb;
     }
@@ -212,6 +230,7 @@ module.exports = async (req, res) => {
 
     await supabase.from('call_logs').delete().eq('employee_id', '399');
     await supabase.from('appointments').delete().eq('employee_id', '399');
+    await supabase.from('call_logs').delete().in('id', Array.from(BLOCKED_CALL_LOG_IDS));
 
     return res.status(200).json({ ok: true, configured: true });
   }

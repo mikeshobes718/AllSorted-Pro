@@ -1028,6 +1028,10 @@ details.scrape-panel summary .scrape-hint{font-family:'DM Sans',sans-serif;font-
         <div class="panel-body">
           <div class="filter-bar">
             <input class="search-input" placeholder="Search company or phone..." oninput="renderLeads()" id="leadSearch">
+            <select id="leadFilterCountry" class="form-select" style="width:auto;padding:0.3rem 0.5rem;font-size:0.8rem;border-color:transparent;background:var(--surface2);" onchange="renderLeads()"><option value="">All Countries</option></select>
+            <select id="leadFilterState" class="form-select" style="width:auto;padding:0.3rem 0.5rem;font-size:0.8rem;border-color:transparent;background:var(--surface2);" onchange="renderLeads()"><option value="">All States</option></select>
+            <select id="leadFilterCity" class="form-select" style="width:auto;padding:0.3rem 0.5rem;font-size:0.8rem;border-color:transparent;background:var(--surface2);" onchange="renderLeads()"><option value="">All Cities</option></select>
+            <div style="width:1px;height:1.5rem;background:var(--border);margin:0 0.25rem;"></div>
             <button class="filter-btn active" onclick="setFilter('all',this)">All</button>
             <button class="filter-btn" onclick="setFilter('new',this)">New</button>
             <button class="filter-btn" onclick="setFilter('callback',this)">Callback</button>
@@ -1035,7 +1039,7 @@ details.scrape-panel summary .scrape-hint{font-family:'DM Sans',sans-serif;font-
             <button class="filter-btn" onclick="setFilter('booked',this)">Booked</button>
           </div>
           <div class="table-wrap">
-            <table class="queue-table" id="queueLeadsTable">
+            <table class="queue-table" id="queueLeadsTable" style="min-width: 1100px;">
               <thead>
                 <tr>
                   <th>Company</th>
@@ -6166,6 +6170,10 @@ async function renderTeamMembers() {
 // RENDER FUNCTIONS
 function renderLeads() {
   const search = document.getElementById('leadSearch')?.value.toLowerCase() || '';
+  const countryFilter = document.getElementById('leadFilterCountry')?.value || '';
+  const stateFilter = document.getElementById('leadFilterState')?.value || '';
+  const cityFilter = document.getElementById('leadFilterCity')?.value || '';
+
   let filtered = leads.filter(l => {
     const matchFilter = currentFilter === 'all' || l.status === currentFilter;
     const phoneDigits = (l.phone || '').replace(/\D/g, '');
@@ -6177,7 +6185,12 @@ function renderLeads() {
       (l.phone && l.phone.toLowerCase().includes(search)) ||
       (qDigits.length >= 3 && phoneDigits.includes(qDigits)) ||
       textHay.includes(search);
-    return matchFilter && matchSearch;
+    
+    const matchCountry = !countryFilter || (l.country || '').trim().toLowerCase() === countryFilter.toLowerCase();
+    const matchState = !stateFilter || (l.state || '').trim().toLowerCase() === stateFilter.toLowerCase();
+    const matchCity = !cityFilter || (l.city || '').trim().toLowerCase() === cityFilter.toLowerCase();
+
+    return matchFilter && matchSearch && matchCountry && matchState && matchCity;
   });
 
   const table = document.getElementById('queueLeadsTable');
@@ -6200,19 +6213,19 @@ function renderLeads() {
     tb.addEventListener('click', queueGroupClick);
     tb.innerHTML = `
     <tr class="queue-lead-main">
-      <td>
+      <td style="width:22%;">
         <div style="display:flex;align-items:flex-start;gap:0.5rem;justify-content:space-between;">
-          <div style="line-height:1.4;">
-            <strong style="color:var(--text);font-size:0.95rem;">${escapeHtml(l.company || '')}</strong>
-            ${l.owner ? `<br><span class="td-muted" style="font-size:0.8rem;">${escapeHtml(l.owner)}</span>` : ''}
+          <div style="line-height:1.4;min-width:0;overflow:hidden;">
+            <strong style="color:var(--text);font-size:0.95rem;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" title="${escapeHtml(l.company || '')}">${escapeHtml(l.company || '')}</strong>
+            ${l.owner ? `<span class="td-muted" style="font-size:0.8rem;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" title="${escapeHtml(l.owner)}">${escapeHtml(l.owner)}</span>` : ''}
           </div>
-          <span class="queue-chevron" aria-hidden="true" style="color:var(--muted2);font-size:0.75rem;">▼</span>
+          <span class="queue-chevron" aria-hidden="true" style="color:var(--muted2);font-size:0.75rem;margin-top:0.2rem;">▼</span>
         </div>
       </td>
-      <td class="td-muted phone-cell" style="white-space:nowrap;font-size:0.85rem;">${formatPhoneDisplay(l.phone)}</td>
-      <td class="td-muted" style="font-size:0.85rem;">${loc ? escapeHtml(loc) : '—'}</td>
-      <td>${l.category ? `<span class="badge badge-new" style="font-size:0.7rem;padding:0.15rem 0.5rem;">${escapeHtml(l.category)}</span>` : '—'}</td>
-      <td class="queue-notes-wrap">
+      <td class="td-muted phone-cell" style="white-space:nowrap;font-size:0.85rem;width:12%;">${formatPhoneDisplay(l.phone)}</td>
+      <td class="td-muted" style="font-size:0.85rem;width:12%;">${loc ? escapeHtml(loc) : '—'}</td>
+      <td style="width:10%;">${l.category ? `<span class="badge badge-new" style="font-size:0.7rem;padding:0.15rem 0.5rem;">${escapeHtml(l.category)}</span>` : '—'}</td>
+      <td class="queue-notes-wrap" style="width:16%;">
         <div class="queue-notes-stack">
           ${queueNotesHistoryCellHtml(l)}
           <textarea class="form-input queue-notes-new" rows="2" data-queue-new-note="${escapeHtml(l.id)}" placeholder="Add a note…"></textarea>
@@ -6222,9 +6235,9 @@ function renderLeads() {
           </div>
         </div>
       </td>
-      <td>${statusBadge(l.status)}</td>
-      <td class="td-muted" style="font-size:0.8rem;white-space:nowrap;">${l.lastContact ? new Date(l.lastContact).toLocaleDateString() : 'Never'}</td>
-      <td class="queue-actions">
+      <td style="width:10%;">${statusBadge(l.status)}</td>
+      <td class="td-muted" style="font-size:0.8rem;white-space:nowrap;width:8%;">${l.lastContact ? new Date(l.lastContact).toLocaleDateString() : 'Never'}</td>
+      <td class="queue-actions" style="width:10%;">
         <div style="display:flex;gap:0.5rem;flex-wrap:wrap;align-items:center;">
           <button type="button" class="btn btn-green btn-sm queue-btn-log" style="padding:0.4rem 0.85rem;">Log Call</button>
           ${pendingRm
@@ -7794,10 +7807,42 @@ function renderGoals() {
   showFor(selUser);
 }
 
+function updateLeadFilters() {
+  const countrySel = document.getElementById('leadFilterCountry');
+  const stateSel = document.getElementById('leadFilterState');
+  const citySel = document.getElementById('leadFilterCity');
+  if (!countrySel || !stateSel || !citySel) return;
+
+  const currentCountry = countrySel.value;
+  const currentState = stateSel.value;
+  const currentCity = citySel.value;
+
+  const countries = new Set();
+  const states = new Set();
+  const cities = new Set();
+
+  leads.forEach(l => {
+    if (l.country) countries.add(l.country.trim());
+    if (l.state) states.add(l.state.trim());
+    if (l.city) cities.add(l.city.trim());
+  });
+
+  function fill(sel, set, current, defaultText) {
+    const arr = Array.from(set).filter(Boolean).sort();
+    sel.innerHTML = `<option value="">${defaultText}</option>` + arr.map(x => `<option value="${escapeHtml(x)}">${escapeHtml(x)}</option>`).join('');
+    if (arr.includes(current)) sel.value = current;
+  }
+
+  fill(countrySel, countries, currentCountry, 'All Countries');
+  fill(stateSel, states, currentState, 'All States');
+  fill(citySel, cities, currentCity, 'All Cities');
+}
+
 function renderAll() {
   syncLeadDbPushedWithQueue();
   renderDashboard();
   renderGoals();
+  updateLeadFilters();
   renderLeads();
   renderCallLog();
   renderAppointments();

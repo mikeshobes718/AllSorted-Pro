@@ -6698,6 +6698,48 @@ function renderDashboard() {
   renderAdminAnalytics();
 }
 
+function resolvePortalEmployeeId(obj) {
+  if (!obj || typeof obj !== 'object') return '';
+  var v = obj.employeeId != null ? obj.employeeId : obj.employee_id;
+  return v != null ? String(v).trim() : '';
+}
+
+function lookupPortalUserDisplay(eid, roster) {
+  var id = String(eid || '').trim();
+  if (!id) return '';
+  var users = Array.isArray(roster) ? roster : [];
+  for (var i = 0; i < users.length; i++) {
+    var u = users[i];
+    if (String(u.employeeId || '').trim() === id || String(u.id || '').trim() === id) {
+      return u.name || u.email || ('Emp #' + id);
+    }
+  }
+  return 'Emp #' + id;
+}
+
+function buildEmployeeDisplayMapFromRosterAndActivity(allUsers) {
+  var roster = Array.isArray(allUsers) ? allUsers : [];
+  var map = {};
+  roster.forEach(function(u) {
+    var es = typeof normalizeEmploymentStatus === 'function' ? normalizeEmploymentStatus(u.employmentStatus) : 'active';
+    if (es !== 'active' || String(u.role || '').toLowerCase() === 'admin') return;
+    var eid = String(u.employeeId || u.id || '').trim();
+    if (eid) map[eid] = u.name || u.email || eid;
+  });
+  function ensure(eid) {
+    eid = String(eid || '').trim();
+    if (!eid) return;
+    if (!map[eid]) map[eid] = lookupPortalUserDisplay(eid, roster);
+  }
+  if (typeof callLog !== 'undefined' && Array.isArray(callLog)) {
+    callLog.forEach(function(c) { ensure(resolvePortalEmployeeId(c)); });
+  }
+  if (typeof appointments !== 'undefined' && Array.isArray(appointments)) {
+    appointments.forEach(function(a) { ensure(resolvePortalEmployeeId(a)); });
+  }
+  return map;
+}
+
 function renderTeamPulse() {
   var section = document.getElementById('teamPulseSection');
   if (!section) return;
@@ -6715,20 +6757,12 @@ function renderTeamPulse() {
   var lastWeekLogs = callLog.filter(function(c) { var d = new Date(c.timestamp); return d >= twoWeeksAgo && d < weekAgo; });
 
   var allUsers = typeof _allPortalUsers === 'object' && Array.isArray(_allPortalUsers) ? _allPortalUsers : [];
-  var activeUsers = allUsers.filter(function(u) {
-    var es = typeof normalizeEmploymentStatus === 'function' ? normalizeEmploymentStatus(u.employmentStatus) : 'active';
-    return es === 'active' && String(u.role||'').toLowerCase() !== 'admin';
-  });
 
-  var empMap = {};
-  activeUsers.forEach(function(u) {
-    var eid = u.employeeId || u.id || '';
-    empMap[eid] = u.name || u.email || eid;
-  });
+  var empMap = buildEmployeeDisplayMapFromRosterAndActivity(allUsers);
 
   var dialsByEmp = {};
   todayLogs.forEach(function(c) {
-    var eid = String(c.employeeId || 'Unknown');
+    var eid = resolvePortalEmployeeId(c) || 'Unknown';
     dialsByEmp[eid] = (dialsByEmp[eid] || 0) + 1;
   });
 
@@ -6887,12 +6921,7 @@ function renderAdminAnalytics() {
   var twoWeeksAgo = new Date(); twoWeeksAgo.setDate(twoWeeksAgo.getDate() - 14);
 
   var allUsers = typeof _allPortalUsers === 'object' && Array.isArray(_allPortalUsers) ? _allPortalUsers : [];
-  var activeUsers = allUsers.filter(function(u) {
-    var es = typeof normalizeEmploymentStatus === 'function' ? normalizeEmploymentStatus(u.employmentStatus) : 'active';
-    return es === 'active' && String(u.role || '').toLowerCase() !== 'admin';
-  });
-  var empMap = {};
-  activeUsers.forEach(function(u) { var eid = u.employeeId || u.id || ''; empMap[eid] = u.name || u.email || eid; });
+  var empMap = buildEmployeeDisplayMapFromRosterAndActivity(allUsers);
 
   function aaLeadStatus(l) {
     return String(l.status || '').toLowerCase().trim();
@@ -6984,11 +7013,11 @@ function renderAdminAnalytics() {
     var empIds = Object.keys(empMap);
     var empStats = empIds.map(function(eid) {
       var name = empMap[eid] || ('Emp #' + eid);
-      var myCalls = callLog.filter(function(c) { return String(c.employeeId || '') === eid; });
-      var myBooked = myCalls.filter(function(c) { return c.outcome === 'booked'; }).length;
-      var myAppts = appointments.filter(function(a) { return a.employeeId != null && String(a.employeeId).trim() === eid; });
-      var myShowed = myAppts.filter(function(a) { return a.status === 'showed' || a.status === 'closed'; }).length;
-      var myWon = myAppts.filter(function(a) { return a.status === 'closed'; }).length;
+      var myCalls = callLog.filter(function(c) { return resolvePortalEmployeeId(c) === eid; });
+      var myBooked = myCalls.filter(function(c) { return aaCallOutcome(c) === 'booked'; }).length;
+      var myAppts = appointments.filter(function(a) { return resolvePortalEmployeeId(a) === eid; });
+      var myShowed = myAppts.filter(function(a) { var s = aaApptStatus(a); return s === 'showed' || s === 'closed'; }).length;
+      var myWon = myAppts.filter(function(a) { return aaApptStatus(a) === 'closed'; }).length;
       var showRate = myAppts.length > 0 ? Math.round((myShowed / myAppts.length) * 100) : 0;
       var convRate = myCalls.length > 0 ? Math.round((myBooked / myCalls.length) * 100) : 0;
       var weekCalls = myCalls.filter(function(c) { return new Date(c.timestamp) >= weekAgo; }).length;

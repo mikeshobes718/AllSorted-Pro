@@ -4,6 +4,18 @@ const {
 } = require('./training-library-shared');
 
 const { getSupabaseAdmin } = require('../lib/supabase-server');
+const { checkOrigin, declaredTooLarge, bodyBytes, edgeGuard } = require('../lib/edge-guard');
+
+// The dashboard refuses to send more than 4 MB of JSON (TEAM_CHAT_MAX_PAYLOAD_BYTES
+// in caller-dashboard.html): up to 6 photos as base64 JPEG data URLs, each
+// resized to 1280px, plus 40 messages of history. 4.25 MB leaves room for
+// multi-byte text the browser counted as single characters. Vercel's own
+// ceiling for a serverless request body is 4.5 MB.
+const MAX_BODY_BYTES = Math.floor(4.25 * 1024 * 1024);
+const GUARD_DEFAULTS = { perMinute: 15, dailyCap: 1000 };
+
+const TEXT_MODEL = 'anthropic/claude-haiku-5.5';
+const TEXT_FALLBACK = 'qwen/qwen3.8-flash';
 
 const BUILT_IN_KNOWLEDGE = `
 ## AllSorted Pro — Company Overview
@@ -352,7 +364,7 @@ function buildModelList(hasVision) {
   // Text-only requests default to Claude Haiku 5.5; requests with user images keep Sonnet 4.6.
   const primary =
     process.env.OPENROUTER_MODEL ||
-    (hasVision ? 'anthropic/claude-sonnet-4.6' : 'anthropic/claude-haiku-5.5');
+    (hasVision ? 'anthropic/claude-sonnet-4.6' : TEXT_MODEL);
   const extra = (process.env.OPENROUTER_MODEL_FALLBACKS || '')
     .split(',')
     .map(function (s) {
@@ -368,11 +380,11 @@ function buildModelList(hasVision) {
     'meta-llama/llama-3.2-3b-instruct:free',
     'mistralai/mistral-7b-instruct:free',
   ];
-  // Text-only: Haiku 5.5 plus exactly one fallback. Sonnet 4.6 is the only model from the
-  // old chain still listed on OpenRouter (the :free and 2024-era slugs are gone).
+  // Text-only: Haiku 5.5 plus exactly one cheap fallback (the :free and 2024-era
+  // slugs of the old chain are gone from OpenRouter).
   const defaults = hasVision
     ? [primary].concat(visionFallbacks).concat(smallFallbacks)
-    : [primary, 'anthropic/claude-sonnet-4.6'];
+    : [primary, TEXT_FALLBACK];
   const all = defaults.concat(extra);
   const seen = {};
   return all.filter(function (m) {
@@ -382,20 +394,34 @@ function buildModelList(hasVision) {
   });
 }
 
+// Team chat is answering questions, scripts, objections and short emails from a
+// knowledge base: no multi-step analysis, so Haiku (and its fallback) run without
+// thinking. Vision models and any OPENROUTER_MODEL override get no reasoning field.
+const NO_REASONING_MODELS = [TEXT_MODEL, TEXT_FALLBACK];
+
 module.exports = async (req, res) => {
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  const origin = checkOrigin(req, res, 'POST, OPTIONS');
 
   if (req.method === 'OPTIONS') {
-    return res.status(204).end();
+    return res.status(origin.ok ? 204 : 403).end();
+  }
+
+  if (!origin.ok) {
+    return res.status(403).json({ error: 'Origin not allowed' });
   }
 
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
+  if (declaredTooLarge(req, MAX_BODY_BYTES)) {
+    return res.status(413).json({ error: 'Message too large. Try a smaller photo or less text.' });
+  }
+
   let body = req.body;
+  if (bodyBytes(body) > MAX_BODY_BYTES) {
+    return res.status(413).json({ error: 'Message too large. Try a smaller photo or less text.' });
+  }
   if (typeof body === 'string') {
     try {
       body = JSON.parse(body);
@@ -419,6 +445,12 @@ module.exports = async (req, res) => {
       error: 'Assistant is not configured yet.',
       code: 'missing_openrouter_key',
     });
+  }
+
+  const gate = await edgeGuard(req, 'allsorted/team-chat', GUARD_DEFAULTS);
+  if (!gate.allowed) {
+    if (gate.retryAfter) res.setHeader('Retry-After', String(gate.retryAfter));
+    return res.status(gate.status).json({ error: gate.error, code: gate.code });
   }
 
   let kbExtra = '';
@@ -454,12 +486,17 @@ module.exports = async (req, res) => {
           'HTTP-Referer': siteUrl,
           'X-Title': 'AllSorted Pro',
         },
-        body: JSON.stringify({
-          model,
-          messages,
-          temperature: 0.5,
-          max_tokens: 4096,
-        }),
+        body: JSON.stringify(
+          Object.assign(
+            {
+              model,
+              messages,
+              temperature: 0.5,
+              max_tokens: 4096,
+            },
+            NO_REASONING_MODELS.indexOf(model) >= 0 ? { reasoning: { enabled: false } } : {}
+          )
+        ),
       });
     } catch (e) {
       lastErr = e && e.message ? e.message : 'Upstream request failed';

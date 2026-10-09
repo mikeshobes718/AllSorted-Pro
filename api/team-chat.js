@@ -368,10 +368,11 @@ function buildModelList(hasVision) {
     'meta-llama/llama-3.2-3b-instruct:free',
     'mistralai/mistral-7b-instruct:free',
   ];
-  // Text-only: Haiku 5.5 plus exactly one fallback (the cheapest one already in the chain).
+  // Text-only: Haiku 5.5 plus exactly one fallback. Sonnet 4.6 is the only model from the
+  // old chain still listed on OpenRouter (the :free and 2024-era slugs are gone).
   const defaults = hasVision
     ? [primary].concat(visionFallbacks).concat(smallFallbacks)
-    : [primary, smallFallbacks[0]];
+    : [primary, 'anthropic/claude-sonnet-4.6'];
   const all = defaults.concat(extra);
   const seen = {};
   return all.filter(function (m) {

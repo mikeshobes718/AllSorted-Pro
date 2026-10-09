@@ -399,6 +399,12 @@ function buildModelList(hasVision) {
 // thinking. Vision models and any OPENROUTER_MODEL override get no reasoning field.
 const NO_REASONING_MODELS = [TEXT_MODEL, TEXT_FALLBACK];
 
+// Claude Haiku 5.5 accepts no sampling settings (temperature, top_p, top_k), so
+// its requests carry none. The Qwen fallback and the vision models keep 0.5.
+function isHaiku55(model) {
+  return /^anthropic\/claude-haiku-5\.5/.test(String(model || ''));
+}
+
 module.exports = async (req, res) => {
   const origin = checkOrigin(req, res, 'POST, OPTIONS');
 
@@ -491,9 +497,9 @@ module.exports = async (req, res) => {
             {
               model,
               messages,
-              temperature: 0.5,
               max_tokens: 4096,
             },
+            isHaiku55(model) ? {} : { temperature: 0.5 },
             NO_REASONING_MODELS.indexOf(model) >= 0 ? { reasoning: { enabled: false } } : {}
           )
         ),

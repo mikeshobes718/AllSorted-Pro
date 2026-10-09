@@ -349,7 +349,10 @@ function messagesHaveUserImages(messages) {
 }
 
 function buildModelList(hasVision) {
-  const primary = process.env.OPENROUTER_MODEL || 'anthropic/claude-sonnet-4.6';
+  // Text-only requests default to Claude Haiku 5.5; requests with user images keep Sonnet 4.6.
+  const primary =
+    process.env.OPENROUTER_MODEL ||
+    (hasVision ? 'anthropic/claude-sonnet-4.6' : 'anthropic/claude-haiku-5.5');
   const extra = (process.env.OPENROUTER_MODEL_FALLBACKS || '')
     .split(',')
     .map(function (s) {
@@ -365,9 +368,10 @@ function buildModelList(hasVision) {
     'meta-llama/llama-3.2-3b-instruct:free',
     'mistralai/mistral-7b-instruct:free',
   ];
+  // Text-only: Haiku 5.5 plus exactly one fallback (the cheapest one already in the chain).
   const defaults = hasVision
     ? [primary].concat(visionFallbacks).concat(smallFallbacks)
-    : [primary].concat(smallFallbacks).concat(visionFallbacks);
+    : [primary, smallFallbacks[0]];
   const all = defaults.concat(extra);
   const seen = {};
   return all.filter(function (m) {
@@ -407,7 +411,8 @@ module.exports = async (req, res) => {
     return res.status(400).json({ error: 'messages array required' });
   }
 
-  const apiKey = process.env.OPENROUTER_API_KEY;
+  const apiKey =
+    process.env.OPENROUTER_API_KEY_ALLSORTED || process.env.OPENROUTER_API_KEY;
   if (!apiKey) {
     return res.status(503).json({
       error: 'Assistant is not configured yet.',
@@ -446,7 +451,7 @@ module.exports = async (req, res) => {
           Authorization: 'Bearer ' + apiKey,
           'Content-Type': 'application/json',
           'HTTP-Referer': siteUrl,
-          'X-Title': 'AllSorted Pro Team Assistant',
+          'X-Title': 'AllSorted Pro',
         },
         body: JSON.stringify({
           model,

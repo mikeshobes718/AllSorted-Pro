@@ -1,18 +1,17 @@
-var { getSupabaseAdmin } = require('../lib/supabase-server');
+'use strict';
+const { getDb } = require('../lib/db');
 
-function nowIso() {
-  return new Date().toISOString();
-}
+function nowIso() { return new Date().toISOString(); }
 
 function calcWorkedMs(shift) {
   if (!shift || !shift.clockedInAt) return 0;
-  var start = new Date(shift.clockedInAt).getTime();
-  var end = Date.now();
-  var totalBreak = 0;
+  const start = new Date(shift.clockedInAt).getTime();
+  const end = Date.now();
+  let totalBreak = 0;
   if (Array.isArray(shift.breaks)) {
-    shift.breaks.forEach(function (b) {
-      var bs = new Date(b.start).getTime();
-      var be = b.end ? new Date(b.end).getTime() : end;
+    shift.breaks.forEach(function(b) {
+      const bs = new Date(b.start).getTime();
+      const be = b.end ? new Date(b.end).getTime() : end;
       totalBreak += be - bs;
     });
   }
@@ -37,79 +36,13 @@ function shiftFromRow(row) {
 
 function entryFromRow(row) {
   if (!row) return null;
-  var e = {
-    type: row.entry_type,
-    ts: row.ts,
-    ip: row.ip,
-    note: row.note,
-    name: row.name,
-    email: row.email,
-  };
+  const e = { type: row.entry_type, ts: row.ts, ip: row.ip, note: row.note, name: row.name, email: row.email };
   if (row.shift_start != null) e.shiftStart = row.shift_start;
   if (row.breaks != null) e.breaks = row.breaks;
   if (row.worked_ms != null) e.workedMs = row.worked_ms;
   if (row.adjusted_by != null) e.adjustedBy = row.adjusted_by;
   if (row.adjusted_at != null) e.adjustedAt = row.adjusted_at;
   return e;
-}
-
-async function getActiveShift(supabase, userId) {
-  var { data } = await supabase
-    .from('timeclock_active_shifts')
-    .select('*')
-    .eq('user_id', userId)
-    .maybeSingle();
-  return data ? shiftFromRow(data) : null;
-}
-
-async function upsertActiveShift(supabase, userId, shift) {
-  await supabase.from('timeclock_active_shifts').upsert(
-    {
-      user_id: userId,
-      clocked_in_at: shift.clockedInAt,
-      status: shift.status,
-      breaks: shift.breaks,
-      email: shift.email,
-      name: shift.name,
-      updated_at: nowIso(),
-    },
-    { onConflict: 'user_id' }
-  );
-}
-
-async function deleteActiveShift(supabase, userId) {
-  await supabase
-    .from('timeclock_active_shifts')
-    .delete()
-    .eq('user_id', userId);
-}
-
-async function insertEntry(supabase, entry) {
-  await supabase.from('timeclock_entries').insert({
-    user_id: entry.userId,
-    entry_type: entry.type,
-    ts: entry.ts,
-    ip: entry.ip || null,
-    note: entry.note || null,
-    name: entry.name || null,
-    email: entry.email || null,
-    shift_start: entry.shiftStart || null,
-    breaks: entry.breaks || null,
-    worked_ms: entry.workedMs || null,
-    adjusted_by: entry.adjustedBy || null,
-    adjusted_at: entry.adjustedAt || null,
-    created_at: nowIso(),
-  });
-}
-
-async function getEntries(supabase, userId) {
-  var { data } = await supabase
-    .from('timeclock_entries')
-    .select('*')
-    .eq('user_id', userId)
-    .gte('ts', cutoff90d())
-    .order('ts', { ascending: true });
-  return (data || []).map(entryFromRow);
 }
 
 module.exports = async (req, res) => {
@@ -120,163 +53,153 @@ module.exports = async (req, res) => {
   if (req.method === 'OPTIONS') return res.status(204).end();
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
-  var body = req.body;
-  if (typeof body === 'string') {
-    try { body = JSON.parse(body); } catch { return res.status(400).json({ error: 'Invalid JSON' }); }
-  }
+  let body = req.body;
+  if (typeof body === 'string') try { body = JSON.parse(body); } catch { return res.status(400).json({ error: 'Invalid JSON' }); }
   if (!body || typeof body !== 'object') return res.status(400).json({ error: 'Invalid body' });
 
-  var supabase = getSupabaseAdmin();
-  if (!supabase) return res.status(200).json({ ok: false, configured: false, error: 'Supabase not configured' });
+  const sql = getDb();
+  if (!sql) return res.status(200).json({ ok: false, configured: false, error: 'DB not configured' });
 
-  var action = String(body.action || '').trim();
-  var userId = String(body.userId || '').trim();
-  var email = String(body.email || '').trim();
-  var name = String(body.name || '').trim();
-  var note = String(body.note || '').trim().slice(0, 300);
-  var scraperSecret = process.env.SCRAPER_SECRET || 'Free2026';
-  var ip = '';
+  const action = String(body.action || '').trim();
+  const userId = String(body.userId || '').trim();
+  const email = String(body.email || '').trim();
+  const name = String(body.name || '').trim();
+  const note = String(body.note || '').trim().slice(0, 300);
+  const scraperSecret = process.env.SCRAPER_SECRET || 'Free2026';
+  let ip = '';
   try {
-    ip = String(
-      req.headers['x-real-ip'] ||
-      req.headers['x-forwarded-for'] ||
-      req.socket.remoteAddress ||
-      ''
-    ).split(',')[0].trim();
+    ip = String(req.headers['x-real-ip'] || req.headers['x-forwarded-for'] || req.socket.remoteAddress || '').split(',')[0].trim();
   } catch {}
 
   try {
     if (action === 'clock_in') {
       if (!userId) return res.status(400).json({ error: 'userId required' });
-      var existing = await getActiveShift(supabase, userId);
-      if (existing && existing.clockedInAt) {
-        return res.status(200).json({ ok: false, error: 'Already clocked in', active: existing });
+      const existing = await sql`SELECT * FROM timeclock_active_shifts WHERE user_id = ${userId} LIMIT 1`;
+      if (existing.length > 0 && existing[0].clocked_in_at) {
+        return res.status(200).json({ ok: false, error: 'Already clocked in', active: shiftFromRow(existing[0]) });
       }
-      var shift = {
-        clockedInAt: nowIso(),
-        breaks: [],
-        status: 'working',
-        userId: userId,
-        email: email,
-        name: name,
-      };
-      await upsertActiveShift(supabase, userId, shift);
-      await insertEntry(supabase, { userId: userId, type: 'clock_in', ts: shift.clockedInAt, ip: ip, note: note, name: name, email: email });
+      const shift = { clockedInAt: nowIso(), breaks: [], status: 'working', userId, email, name };
+      await sql`
+        INSERT INTO timeclock_active_shifts (user_id, clocked_in_at, status, breaks, email, name, updated_at)
+        VALUES (${userId}, ${shift.clockedInAt}, 'working', ${JSON.stringify([])}, ${email}, ${name}, NOW())
+        ON CONFLICT (user_id) DO UPDATE SET
+          clocked_in_at = EXCLUDED.clocked_in_at, status = EXCLUDED.status, breaks = EXCLUDED.breaks,
+          email = EXCLUDED.email, name = EXCLUDED.name, updated_at = EXCLUDED.updated_at
+      `;
+      await sql`
+        INSERT INTO timeclock_entries (user_id, entry_type, ts, ip, note, name, email, created_at)
+        VALUES (${userId}, 'clock_in', ${shift.clockedInAt}, ${ip||null}, ${note||null}, ${name||null}, ${email||null}, NOW())
+      `;
       return res.status(200).json({ ok: true, active: shift });
     }
 
     if (action === 'clock_out') {
       if (!userId) return res.status(400).json({ error: 'userId required' });
-      var shift = await getActiveShift(supabase, userId);
-      if (!shift || !shift.clockedInAt) {
-        return res.status(200).json({ ok: false, error: 'Not clocked in' });
-      }
+      const rows = await sql`SELECT * FROM timeclock_active_shifts WHERE user_id = ${userId} LIMIT 1`;
+      if (!rows.length || !rows[0].clocked_in_at) return res.status(200).json({ ok: false, error: 'Not clocked in' });
+      const shift = shiftFromRow(rows[0]);
       if (shift.status === 'on_break' && Array.isArray(shift.breaks) && shift.breaks.length) {
-        var last = shift.breaks[shift.breaks.length - 1];
+        const last = shift.breaks[shift.breaks.length - 1];
         if (!last.end) last.end = nowIso();
       }
-      var workedMs = calcWorkedMs(shift);
-      var ts = nowIso();
-      await insertEntry(supabase, {
-        userId: userId,
-        type: 'clock_out',
-        ts: ts,
-        ip: ip,
-        note: note,
-        name: name,
-        email: email,
-        shiftStart: shift.clockedInAt,
-        breaks: shift.breaks,
-        workedMs: workedMs,
-      });
-      await deleteActiveShift(supabase, userId);
-      return res.status(200).json({ ok: true, workedMs: workedMs });
+      const workedMs = calcWorkedMs(shift);
+      const ts = nowIso();
+      await sql`
+        INSERT INTO timeclock_entries (user_id, entry_type, ts, ip, note, name, email, shift_start, breaks, worked_ms, created_at)
+        VALUES (${userId}, 'clock_out', ${ts}, ${ip||null}, ${note||null}, ${name||null}, ${email||null},
+          ${shift.clockedInAt}, ${JSON.stringify(shift.breaks)}, ${workedMs}, NOW())
+      `;
+      await sql`DELETE FROM timeclock_active_shifts WHERE user_id = ${userId}`;
+      return res.status(200).json({ ok: true, workedMs });
     }
 
     if (action === 'break_start') {
       if (!userId) return res.status(400).json({ error: 'userId required' });
-      var shift = await getActiveShift(supabase, userId);
-      if (!shift || !shift.clockedInAt) return res.status(200).json({ ok: false, error: 'Not clocked in' });
+      const rows = await sql`SELECT * FROM timeclock_active_shifts WHERE user_id = ${userId} LIMIT 1`;
+      if (!rows.length || !rows[0].clocked_in_at) return res.status(200).json({ ok: false, error: 'Not clocked in' });
+      const shift = shiftFromRow(rows[0]);
       if (shift.status === 'on_break') return res.status(200).json({ ok: false, error: 'Already on break' });
       if (!Array.isArray(shift.breaks)) shift.breaks = [];
       shift.breaks.push({ start: nowIso(), end: null });
       shift.status = 'on_break';
-      await upsertActiveShift(supabase, userId, shift);
-      var breakTs = shift.breaks[shift.breaks.length - 1].start;
-      await insertEntry(supabase, { userId: userId, type: 'break_start', ts: breakTs, ip: ip, note: note, name: name, email: email });
+      const breakTs = shift.breaks[shift.breaks.length - 1].start;
+      await sql`
+        UPDATE timeclock_active_shifts SET status = 'on_break', breaks = ${JSON.stringify(shift.breaks)}, updated_at = NOW()
+        WHERE user_id = ${userId}
+      `;
+      await sql`
+        INSERT INTO timeclock_entries (user_id, entry_type, ts, ip, note, name, email, created_at)
+        VALUES (${userId}, 'break_start', ${breakTs}, ${ip||null}, ${note||null}, ${name||null}, ${email||null}, NOW())
+      `;
       return res.status(200).json({ ok: true, active: shift });
     }
 
     if (action === 'break_end') {
       if (!userId) return res.status(400).json({ error: 'userId required' });
-      var shift = await getActiveShift(supabase, userId);
-      if (!shift || !shift.clockedInAt) return res.status(200).json({ ok: false, error: 'Not clocked in' });
+      const rows = await sql`SELECT * FROM timeclock_active_shifts WHERE user_id = ${userId} LIMIT 1`;
+      if (!rows.length || !rows[0].clocked_in_at) return res.status(200).json({ ok: false, error: 'Not clocked in' });
+      const shift = shiftFromRow(rows[0]);
       if (shift.status !== 'on_break') return res.status(200).json({ ok: false, error: 'Not on break' });
       if (Array.isArray(shift.breaks) && shift.breaks.length) {
-        var last = shift.breaks[shift.breaks.length - 1];
+        const last = shift.breaks[shift.breaks.length - 1];
         if (!last.end) last.end = nowIso();
       }
       shift.status = 'working';
-      await upsertActiveShift(supabase, userId, shift);
-      await insertEntry(supabase, { userId: userId, type: 'break_end', ts: nowIso(), ip: ip, note: note, name: name, email: email });
+      await sql`
+        UPDATE timeclock_active_shifts SET status = 'working', breaks = ${JSON.stringify(shift.breaks)}, updated_at = NOW()
+        WHERE user_id = ${userId}
+      `;
+      await sql`
+        INSERT INTO timeclock_entries (user_id, entry_type, ts, ip, note, name, email, created_at)
+        VALUES (${userId}, 'break_end', ${nowIso()}, ${ip||null}, ${note||null}, ${name||null}, ${email||null}, NOW())
+      `;
       return res.status(200).json({ ok: true, active: shift });
     }
 
     if (action === 'status') {
       if (!userId) return res.status(400).json({ error: 'userId required' });
-      var shift = await getActiveShift(supabase, userId);
-      var entries = await getEntries(supabase, userId);
-      return res.status(200).json({ ok: true, configured: true, active: shift || null, log: entries });
+      const shiftRows = await sql`SELECT * FROM timeclock_active_shifts WHERE user_id = ${userId} LIMIT 1`;
+      const entryRows = await sql`SELECT * FROM timeclock_entries WHERE user_id = ${userId} AND ts >= ${cutoff90d()} ORDER BY ts ASC`;
+      return res.status(200).json({ ok: true, configured: true, active: shiftRows.length ? shiftFromRow(shiftRows[0]) : null, log: entryRows.map(entryFromRow) });
     }
 
     if (action === 'history') {
       if (!userId) return res.status(400).json({ error: 'userId required' });
-      var entries = await getEntries(supabase, userId);
-      return res.status(200).json({ ok: true, configured: true, log: entries });
+      const entryRows = await sql`SELECT * FROM timeclock_entries WHERE user_id = ${userId} AND ts >= ${cutoff90d()} ORDER BY ts ASC`;
+      return res.status(200).json({ ok: true, configured: true, log: entryRows.map(entryFromRow) });
     }
 
     if (action === 'admin_list') {
       if (body.secret !== scraperSecret) return res.status(401).json({ error: 'Wrong password' });
-      var { data: activeRows } = await supabase.from('timeclock_active_shifts').select('*');
-      var actives = (activeRows || []).map(function (row) {
-        var s = shiftFromRow(row);
+      const activeRows = await sql`SELECT * FROM timeclock_active_shifts`;
+      const actives = activeRows.map(function(row) {
+        const s = shiftFromRow(row);
         s._workedMs = calcWorkedMs(s);
         return s;
       });
-      var { data: entryRows } = await supabase
-        .from('timeclock_entries')
-        .select('*')
-        .gte('ts', cutoff90d())
-        .order('ts', { ascending: true });
-      var allLogs = {};
-      (entryRows || []).forEach(function (row) {
-        var uid = row.user_id;
+      const entryRows = await sql`SELECT * FROM timeclock_entries WHERE ts >= ${cutoff90d()} ORDER BY ts ASC`;
+      const allLogs = {};
+      entryRows.forEach(function(row) {
+        const uid = row.user_id;
         if (!allLogs[uid]) allLogs[uid] = [];
         allLogs[uid].push(entryFromRow(row));
       });
-      return res.status(200).json({ ok: true, configured: true, actives: actives, logs: allLogs });
+      return res.status(200).json({ ok: true, configured: true, actives, logs: allLogs });
     }
 
     if (action === 'admin_adjust') {
       if (body.secret !== scraperSecret) return res.status(401).json({ error: 'Wrong password' });
-      var targetUserId = String(body.targetUserId || '').trim();
+      const targetUserId = String(body.targetUserId || '').trim();
       if (!targetUserId) return res.status(400).json({ error: 'targetUserId required' });
-      var entry = body.entry;
+      const entry = body.entry;
       if (!entry || !entry.type || !entry.ts) return res.status(400).json({ error: 'entry with type and ts required' });
-      await insertEntry(supabase, {
-        userId: targetUserId,
-        type: entry.type,
-        ts: entry.ts,
-        ip: entry.ip || null,
-        note: entry.note || null,
-        name: entry.name || null,
-        email: entry.email || null,
-        shiftStart: entry.shiftStart || null,
-        breaks: entry.breaks || null,
-        workedMs: entry.workedMs || null,
-        adjustedBy: 'admin',
-        adjustedAt: nowIso(),
-      });
+      await sql`
+        INSERT INTO timeclock_entries (user_id, entry_type, ts, ip, note, name, email, shift_start, breaks, worked_ms, adjusted_by, adjusted_at, created_at)
+        VALUES (${targetUserId}, ${entry.type}, ${entry.ts}, ${entry.ip||null}, ${entry.note||null},
+          ${entry.name||null}, ${entry.email||null}, ${entry.shiftStart||null},
+          ${entry.breaks ? JSON.stringify(entry.breaks) : null}, ${entry.workedMs||null},
+          'admin', ${nowIso()}, NOW())
+      `;
       return res.status(200).json({ ok: true });
     }
 

@@ -1,251 +1,176 @@
-const { getSupabaseAdmin } = require('../lib/supabase-server');
-
-const BATCH_SIZE = 500;
+'use strict';
+const { getDb } = require('../lib/db');
 
 const BLOCKED_CALL_LOG_IDS = new Set([
-  '1775590100441',
-  '1775513366302',
-  '1775509737687',
-  '1775497484981',
-  '1775493860660',
-  '1775493655547',
+  '1775590100441','1775513366302','1775509737687',
+  '1775497484981','1775493860660','1775493655547',
 ]);
-
-function isBlockedCallLogId(id) {
-  return id != null && BLOCKED_CALL_LOG_IDS.has(String(id));
-}
-
 const BLOCKED_APPOINTMENT_IDS = new Set(['1775509758542']);
 
-function isBlockedAppointmentId(id) {
-  return id != null && BLOCKED_APPOINTMENT_IDS.has(String(id));
-}
-
-async function loadQueueLeadsFromTable(supabase) {
-  let all = [];
-  let from = 0;
-  const PAGE = 1000;
-  while (true) {
-    const { data, error } = await supabase
-      .from('portal_queue_leads')
-      .select('data')
-      .order('updated_at', { ascending: false })
-      .range(from, from + PAGE - 1);
-    if (error) return [];
-    if (!data || data.length === 0) break;
-    all = all.concat(data);
-    if (data.length < PAGE) break;
-    from += PAGE;
-  }
-  return all.map((r) => r.data).filter(Boolean);
-}
-
-async function paginatedSelect(supabase, table, orderCol, maxRows) {
-  let all = [];
-  let from = 0;
-  const PAGE = 1000;
-  while (all.length < maxRows) {
-    const end = Math.min(from + PAGE - 1, from + (maxRows - all.length) - 1);
-    const { data, error } = await supabase
-      .from(table)
-      .select('data')
-      .order(orderCol, { ascending: false })
-      .range(from, end);
-    if (error || !data || data.length === 0) break;
-    all = all.concat(data);
-    if (data.length < PAGE) break;
-    from += PAGE;
-  }
-  return all.map((r) => r.data).filter(Boolean);
-}
-
-async function loadCallLogs(supabase) {
-  return paginatedSelect(supabase, 'call_logs', 'timestamp', 50000);
-}
-
-async function loadAppointments(supabase) {
-  return paginatedSelect(supabase, 'appointments', 'updated_at', 8000);
-}
-
-async function loadLeadRemovalRequests(supabase) {
-  return paginatedSelect(supabase, 'lead_removal_requests', 'updated_at', 4000);
-}
-
-async function loadLeadDb(supabase) {
-  return paginatedSelect(supabase, 'lead_db', 'updated_at', 100000);
-}
-
-async function upsertBatched(supabase, table, rows) {
-  if (!rows.length) return null;
-  for (let i = 0; i < rows.length; i += BATCH_SIZE) {
-    const batch = rows.slice(i, i + BATCH_SIZE);
-    const { error } = await supabase
-      .from(table)
-      .upsert(batch, { onConflict: 'id' });
-    if (error) return error;
-  }
-  return null;
-}
-
-function buildCallLogRows(arr) {
-  if (!Array.isArray(arr)) return [];
-  const now = new Date().toISOString();
-  return arr
-    .filter((o) => o && o.id)
-    .filter((o) => !isBlockedCallLogId(o.id))
-    .filter((o) => String(o.employee_id || o.employeeId || '') !== '399')
-    .map((o) => ({
-    id: String(o.id),
-    employee_id: o.employee_id || o.employeeId || null,
-    company: o.company || null,
-    phone: o.phone || null,
-    outcome: o.outcome || null,
-    notes: o.notes || null,
-    callback_date: o.callback_date || o.callbackDate || null,
-    timestamp: o.timestamp || now,
-    updated_at: now,
-    data: o,
-  }));
-}
-
-function buildAppointmentRows(arr) {
-  if (!Array.isArray(arr)) return [];
-  const now = new Date().toISOString();
-  return arr
-    .filter((o) => o && o.id)
-    .filter((o) => !isBlockedAppointmentId(o.id))
-    .filter((o) => String(o.employee_id || o.employeeId || '') !== '399')
-    .map((o) => ({
-    id: String(o.id),
-    employee_id: o.employee_id || o.employeeId || null,
-    company: o.company || null,
-    contact_name: o.contact_name || o.contactName || null,
-    phone: o.phone || null,
-    email: o.email || null,
-    status: o.status || null,
-    notes: o.notes || null,
-    appointment_date: o.appointment_date || o.appointmentDate || null,
-    created_at: o.created_at || o.createdAt || now,
-    updated_at: now,
-    data: o,
-  }));
-}
-
-function buildLeadRemovalRows(arr) {
-  if (!Array.isArray(arr)) return [];
-  const now = new Date().toISOString();
-  return arr.filter((o) => o && o.id).map((o) => ({
-    id: String(o.id),
-    lead_id: o.lead_id || o.leadId || null,
-    employee_id: o.employee_id || o.employeeId || null,
-    reason: o.reason || null,
-    status: o.status || null,
-    created_at: o.created_at || o.createdAt || now,
-    updated_at: now,
-    data: o,
-  }));
-}
-
-function buildLeadDbRows(arr) {
-  if (!Array.isArray(arr)) return [];
-  const now = new Date().toISOString();
-  return arr.filter((o) => o && o.id).map((o) => ({
-    id: String(o.id),
-    data: o,
-    updated_at: now,
-  }));
-}
-
-module.exports = async (req, res) => {
+function cors(res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+}
 
-  if (req.method === 'OPTIONS') {
-    return res.status(204).end();
-  }
+function parseBody(req) {
+  let b = req.body;
+  if (typeof b === 'string') try { b = JSON.parse(b); } catch { return null; }
+  if (!b || typeof b !== 'object') return null;
+  return b;
+}
 
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
-  }
+async function loadCallLogs(sql) {
+  const rows = await sql`SELECT data FROM call_logs ORDER BY timestamp DESC LIMIT 50000`;
+  return rows.map(r => r.data).filter(Boolean)
+    .filter(o => o && !BLOCKED_CALL_LOG_IDS.has(String(o.id)));
+}
 
-  let body = req.body;
-  if (typeof body === 'string') {
-    try {
-      body = JSON.parse(body);
-    } catch {
-      return res.status(400).json({ error: 'Invalid JSON' });
+async function loadAppointments(sql) {
+  const rows = await sql`SELECT data FROM appointments ORDER BY updated_at DESC LIMIT 8000`;
+  return rows.map(r => r.data).filter(Boolean)
+    .filter(o => o && !BLOCKED_APPOINTMENT_IDS.has(String(o.id)));
+}
+
+async function loadLeadRemovalRequests(sql) {
+  const rows = await sql`SELECT data FROM lead_removal_requests ORDER BY updated_at DESC LIMIT 4000`;
+  return rows.map(r => r.data).filter(Boolean);
+}
+
+async function loadLeadDb(sql) {
+  const rows = await sql`SELECT data FROM lead_db ORDER BY updated_at DESC LIMIT 200000`;
+  return rows.map(r => r.data).filter(Boolean);
+}
+
+async function upsertCallLogs(sql, arr) {
+  if (!Array.isArray(arr) || !arr.length) return;
+  const now = new Date().toISOString();
+  const valid = arr.filter(o => o && o.id && !BLOCKED_CALL_LOG_IDS.has(String(o.id))
+    && String(o.employee_id || o.employeeId || '') !== '399');
+  for (let i = 0; i < valid.length; i += 500) {
+    const chunk = valid.slice(i, i + 500);
+    for (const o of chunk) {
+      await sql`
+        INSERT INTO call_logs (id, employee_id, company, phone, outcome, notes, callback_date, timestamp, updated_at, data)
+        VALUES (${String(o.id)}, ${o.employee_id||o.employeeId||null}, ${o.company||null}, ${o.phone||null},
+          ${o.outcome||null}, ${o.notes||null}, ${o.callback_date||o.callbackDate||null},
+          ${o.timestamp||now}, ${now}, ${JSON.stringify(o)})
+        ON CONFLICT (id) DO UPDATE SET
+          employee_id = EXCLUDED.employee_id, company = EXCLUDED.company, phone = EXCLUDED.phone,
+          outcome = EXCLUDED.outcome, notes = EXCLUDED.notes, callback_date = EXCLUDED.callback_date,
+          timestamp = EXCLUDED.timestamp, updated_at = EXCLUDED.updated_at, data = EXCLUDED.data
+      `;
     }
   }
-  if (!body || typeof body !== 'object') {
-    return res.status(400).json({ error: 'Invalid body' });
+  await sql`DELETE FROM call_logs WHERE employee_id = '399'`;
+  await sql`DELETE FROM call_logs WHERE id = ANY(${Array.from(BLOCKED_CALL_LOG_IDS)})`;
+}
+
+async function upsertAppointments(sql, arr) {
+  if (!Array.isArray(arr) || !arr.length) return;
+  const now = new Date().toISOString();
+  const valid = arr.filter(o => o && o.id && !BLOCKED_APPOINTMENT_IDS.has(String(o.id))
+    && String(o.employee_id || o.employeeId || '') !== '399');
+  for (const o of valid) {
+    await sql`
+      INSERT INTO appointments (id, employee_id, company, contact_name, phone, email, status, notes, appointment_date, created_at, updated_at, data)
+      VALUES (${String(o.id)}, ${o.employee_id||o.employeeId||null}, ${o.company||null},
+        ${o.contact_name||o.contactName||null}, ${o.phone||null}, ${o.email||null},
+        ${o.status||null}, ${o.notes||null}, ${o.appointment_date||o.appointmentDate||null},
+        ${o.created_at||o.createdAt||now}, ${now}, ${JSON.stringify(o)})
+      ON CONFLICT (id) DO UPDATE SET
+        employee_id = EXCLUDED.employee_id, company = EXCLUDED.company, contact_name = EXCLUDED.contact_name,
+        phone = EXCLUDED.phone, email = EXCLUDED.email, status = EXCLUDED.status, notes = EXCLUDED.notes,
+        appointment_date = EXCLUDED.appointment_date, updated_at = EXCLUDED.updated_at, data = EXCLUDED.data
+    `;
   }
+  await sql`DELETE FROM appointments WHERE employee_id = '399'`;
+  await sql`DELETE FROM appointments WHERE id = ANY(${Array.from(BLOCKED_APPOINTMENT_IDS)})`;
+}
+
+async function upsertLeadRemovalRequests(sql, arr) {
+  if (!Array.isArray(arr) || !arr.length) return;
+  const now = new Date().toISOString();
+  const valid = arr.filter(o => o && o.id);
+  for (const o of valid) {
+    await sql`
+      INSERT INTO lead_removal_requests (id, lead_id, employee_id, reason, status, created_at, updated_at, data)
+      VALUES (${String(o.id)}, ${o.lead_id||o.leadId||null}, ${o.employee_id||o.employeeId||null},
+        ${o.reason||null}, ${o.status||null}, ${o.created_at||o.createdAt||now}, ${now}, ${JSON.stringify(o)})
+      ON CONFLICT (id) DO UPDATE SET
+        lead_id = EXCLUDED.lead_id, employee_id = EXCLUDED.employee_id, reason = EXCLUDED.reason,
+        status = EXCLUDED.status, updated_at = EXCLUDED.updated_at, data = EXCLUDED.data
+    `;
+  }
+}
+
+async function upsertLeadDb(sql, arr) {
+  if (!Array.isArray(arr) || !arr.length) return;
+  const now = new Date().toISOString();
+  const valid = arr.filter(o => o && o.id);
+  for (let i = 0; i < valid.length; i += 500) {
+    const chunk = valid.slice(i, i + 500);
+    for (const o of chunk) {
+      await sql`
+        INSERT INTO lead_db (id, data, category, state, city, pushed, updated_at)
+        VALUES (${String(o.id)}, ${JSON.stringify(o)}, ${o.category||null}, ${o.state||null},
+          ${o.city||null}, ${!!o.pushed}, ${now})
+        ON CONFLICT (id) DO UPDATE SET
+          data = EXCLUDED.data, category = EXCLUDED.category, state = EXCLUDED.state,
+          city = EXCLUDED.city, pushed = EXCLUDED.pushed, updated_at = EXCLUDED.updated_at
+      `;
+    }
+  }
+}
+
+module.exports = async (req, res) => {
+  cors(res);
+  if (req.method === 'OPTIONS') return res.status(204).end();
+  if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
+
+  const body = parseBody(req);
+  if (!body) return res.status(400).json({ error: 'Invalid body' });
 
   const scraperSecret = process.env.SCRAPER_SECRET || 'Free2026';
-  if (body.secret !== scraperSecret) {
-    return res.status(401).json({ error: 'Wrong password' });
-  }
+  if (body.secret !== scraperSecret) return res.status(401).json({ error: 'Wrong password' });
 
-  const supabase = getSupabaseAdmin();
-  if (!supabase) {
-    return res.status(200).json({ ok: true, configured: false, payload: null });
-  }
+  const sql = getDb();
+  if (!sql) return res.status(200).json({ ok: true, configured: false, payload: null });
 
   const action = body.action || 'get';
 
-  if (action === 'get' || action === 'get_light') {
-    const [leads, callLog, appointments, leadRemovalRequests, leadDb] =
-      await Promise.all([
-        loadQueueLeadsFromTable(supabase),
-        loadCallLogs(supabase),
-        loadAppointments(supabase),
-        loadLeadRemovalRequests(supabase),
-        action === 'get_light' ? Promise.resolve(undefined) : loadLeadDb(supabase),
+  try {
+    if (action === 'get' || action === 'get_light') {
+      const [callLog, appointments, leadRemovalRequests, leadDb] = await Promise.all([
+        loadCallLogs(sql),
+        loadAppointments(sql),
+        loadLeadRemovalRequests(sql),
+        action === 'get_light' ? Promise.resolve(undefined) : loadLeadDb(sql),
       ]);
-
-    const callLogFiltered = Array.isArray(callLog)
-      ? callLog.filter((o) => o && !isBlockedCallLogId(o.id))
-      : callLog;
-
-    const appointmentsFiltered = Array.isArray(appointments)
-      ? appointments.filter((o) => o && !isBlockedAppointmentId(o.id))
-      : appointments;
-
-    const payload = { leads, callLog: callLogFiltered, appointments: appointmentsFiltered, leadRemovalRequests };
-    if (action !== 'get_light') {
-      payload.leadDb = leadDb;
+      const payload = { leads: [], callLog, appointments, leadRemovalRequests };
+      if (action !== 'get_light') payload.leadDb = leadDb;
+      return res.status(200).json({ ok: true, configured: true, payload });
     }
 
-    return res.status(200).json({ ok: true, configured: true, payload });
-  }
-
-  if (action === 'set') {
-    const rawIn = body.payload && typeof body.payload === 'object' ? body.payload : {};
-
-    const callLogRows = buildCallLogRows(rawIn.callLog);
-    const appointmentRows = buildAppointmentRows(rawIn.appointments);
-    const removalRows = buildLeadRemovalRows(rawIn.leadRemovalRequests);
-    const leadDbRows = buildLeadDbRows(rawIn.leadDb);
-
-    const errors = await Promise.all([
-      upsertBatched(supabase, 'call_logs', callLogRows),
-      upsertBatched(supabase, 'appointments', appointmentRows),
-      upsertBatched(supabase, 'lead_removal_requests', removalRows),
-      upsertBatched(supabase, 'lead_db', leadDbRows),
-    ]);
-
-    const firstError = errors.find(Boolean);
-    if (firstError) {
-      return res.status(500).json({ ok: false, error: firstError.message });
+    if (action === 'set') {
+      const raw = body.payload && typeof body.payload === 'object' ? body.payload : {};
+      await Promise.all([
+        upsertCallLogs(sql, raw.callLog),
+        upsertAppointments(sql, raw.appointments),
+        upsertLeadRemovalRequests(sql, raw.leadRemovalRequests),
+        upsertLeadDb(sql, raw.leadDb),
+      ]);
+      return res.status(200).json({ ok: true, configured: true });
     }
 
-    await supabase.from('call_logs').delete().eq('employee_id', '399');
-    await supabase.from('appointments').delete().eq('employee_id', '399');
-    await supabase.from('call_logs').delete().in('id', Array.from(BLOCKED_CALL_LOG_IDS));
-    await supabase.from('appointments').delete().in('id', Array.from(BLOCKED_APPOINTMENT_IDS));
+    if (action === 'wipe_leads_data') {
+      await sql`DELETE FROM portal_queue_leads`;
+      await sql`DELETE FROM lead_db`;
+      return res.status(200).json({ ok: true, configured: true, wiped: { portal_queue_leads: true, lead_db: true } });
+    }
 
-    return res.status(200).json({ ok: true, configured: true });
+    return res.status(400).json({ error: 'Unknown action' });
+  } catch (e) {
+    return res.status(500).json({ ok: false, error: e && e.message ? e.message : 'server error' });
   }
-
-  return res.status(400).json({ error: 'Unknown action' });
 };

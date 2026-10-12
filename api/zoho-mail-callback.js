@@ -1,4 +1,5 @@
-const { getSupabaseAdmin } = require('../lib/supabase-server');
+'use strict';
+const { getDb } = require('../lib/db');
 
 const ZOHO_TOKEN_URL = 'https://accounts.zoho.com/oauth/v2/token';
 const ZOHO_MAIL_BASE = 'https://mail.zoho.com';
@@ -8,12 +9,10 @@ function env(k) { return process.env[k] || ''; }
 
 module.exports = async (req, res) => {
   const code = req.query.code;
-  if (!code) {
-    return res.status(400).send('Missing authorization code from Zoho. Please try connecting again.');
-  }
+  if (!code) return res.status(400).send('Missing authorization code from Zoho. Please try connecting again.');
 
-  const supabase = getSupabaseAdmin();
-  if (!supabase) return res.status(500).send('Database not configured');
+  const sql = getDb();
+  if (!sql) return res.status(500).send('Database not configured');
 
   const redirectUri = env('ZOHO_REDIRECT_URI');
 
@@ -30,9 +29,7 @@ module.exports = async (req, res) => {
       }),
     });
     const td = await tokenRes.json();
-    if (!td.access_token) {
-      return res.status(400).json({ ok: false, error: 'Token exchange failed', detail: td });
-    }
+    if (!td.access_token) return res.status(400).json({ ok: false, error: 'Token exchange failed', detail: td });
 
     const accRes = await fetch(ZOHO_MAIL_BASE + '/api/accounts', {
       headers: { Authorization: 'Zoho-oauthtoken ' + td.access_token },
@@ -44,31 +41,25 @@ module.exports = async (req, res) => {
     let inboxFolderId = '';
 
     if (account) {
-      const folderRes = await fetch(
-        ZOHO_MAIL_BASE + '/api/accounts/' + accountId + '/folders',
-        { headers: { Authorization: 'Zoho-oauthtoken ' + td.access_token } }
-      );
+      const folderRes = await fetch(ZOHO_MAIL_BASE + '/api/accounts/' + accountId + '/folders', {
+        headers: { Authorization: 'Zoho-oauthtoken ' + td.access_token },
+      });
       const folderData = await folderRes.json();
       if (folderData && folderData.data) {
-        const inbox = folderData.data.find(function (f) {
-          return (f.folderName || '').toLowerCase() === 'inbox';
-        });
+        const inbox = folderData.data.find(f => (f.folderName || '').toLowerCase() === 'inbox');
         if (inbox) inboxFolderId = inbox.folderId;
       }
     }
 
     const tokens = {
-      accessToken: td.access_token,
-      refreshToken: td.refresh_token,
+      accessToken: td.access_token, refreshToken: td.refresh_token,
       expiresAt: Date.now() + ((td.expires_in || 3600) * 1000),
-      accountId: accountId || '',
-      fromAddress: fromAddress || '',
-      inboxFolderId: inboxFolderId,
+      accountId: accountId || '', fromAddress: fromAddress || '', inboxFolderId,
     };
-    await supabase.from('portal_content').upsert(
-      { key: CONTENT_KEY, value: tokens, updated_at: new Date().toISOString() },
-      { onConflict: 'key' }
-    );
+    await sql`
+      INSERT INTO portal_content (key, value, updated_at) VALUES (${CONTENT_KEY}, ${JSON.stringify(tokens)}, NOW())
+      ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value, updated_at = EXCLUDED.updated_at
+    `;
 
     return res.redirect(302, '/caller-dashboard.html#mail-connected');
   } catch (e) {

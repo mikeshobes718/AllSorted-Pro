@@ -407,6 +407,15 @@
 
   @media (max-width: 768px) {
     .features-grid { grid-template-columns: 1fr; gap: 2rem; }
+    .features .features-grid > div:first-child > .section-label,
+    .features .features-grid > div:first-child > h2 {
+      text-align: center;
+    }
+    .features .features-grid > div:first-child > .section-sub {
+      text-align: center;
+      margin-left: auto;
+      margin-right: auto;
+    }
   }
 
   .feature-list { list-style: none; }
@@ -861,8 +870,26 @@
   @media (max-width: 600px) {
     nav .phone { display: none; }
     h1 { font-size: 2.5rem; }
-    .hero-stats { gap: 1.5rem; flex-wrap: wrap; }
-    .hero-cta-group { flex-direction: column; align-items: flex-start; }
+    .hero-cta-group {
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+    }
+    .hero-cta-group .guarantee {
+      text-align: center;
+      max-width: 22rem;
+    }
+    .hero-stats {
+      gap: 1.25rem 1.5rem;
+      flex-wrap: wrap;
+      justify-content: center;
+      width: 100%;
+    }
+    .hero-stats > div {
+      text-align: center;
+      flex: 0 1 auto;
+      min-width: min(100%, 9.5rem);
+    }
   }
 </style>
 </head>
@@ -882,7 +909,7 @@
   <div class="hero-inner">
     <div class="badge">First 2 weeks free — no card, no commitment</div>
     <h1>Your books, <em>done for you.</em> Every month.</h1>
-    <p class="hero-sub">We handle your bookkeeping start to finish — reconciliation, expenses, monthly reports — so you never think about it again.<br><br>We offer the first two weeks completely free — no credit card, no commitment. After that it's $97 a month for the first three months while we prove our value. Then $197 a month after that, which is still a fraction of what a local bookkeeper charges.</p>
+    <p class="hero-sub">We handle your bookkeeping start to finish — reconciliation, expenses, monthly reports — so you never think about it again.<br><br>We offer the first two weeks completely free — no credit card, no commitment. After that, ongoing service is <strong>$99/month</strong> — one simple price, still a fraction of what a local bookkeeper charges.</p>
     <div class="hero-cta-group">
       <a href="https://calendly.com/hello-allsortedpro/30min" class="btn-primary">Book a free call</a>
       <div class="guarantee">
@@ -896,12 +923,8 @@
         <div class="stat-label">First 2 weeks</div>
       </div>
       <div>
-        <div class="stat-val">$97</div>
-        <div class="stat-label">Per month, first 3 months after trial</div>
-      </div>
-      <div>
-        <div class="stat-val">$197</div>
-        <div class="stat-label">Per month after that</div>
+        <div class="stat-val">$99</div>
+        <div class="stat-label">Per month after trial</div>
       </div>
     </div>
   </div>
@@ -952,7 +975,7 @@
     <div>
       <div class="section-label">What's Included</div>
       <h2>Everything, <em>handled.</em></h2>
-      <p class="section-sub" style="margin-bottom: 2rem;">Transparent pricing phases. One dedicated bookkeeper. Zero headaches.</p>
+      <p class="section-sub" style="margin-bottom: 2rem;">One simple price. One dedicated bookkeeper. Zero headaches.</p>
       <ul class="feature-list">
         <li>
           <span class="check">✓</span>
@@ -987,7 +1010,7 @@
       <div class="divider"></div>
       <div class="aside-label">Try it free</div>
       <div class="aside-num" style="color: var(--gold);">14<span style="font-size: 1.2rem; color: var(--muted); font-family: 'DM Sans', sans-serif; font-weight: 300;"> days</span></div>
-      <p>No credit card required. Then $97/mo for three months, then $197/mo — still less than most local bookkeepers.</p>
+      <p>No credit card required. Then $99/mo — still less than most local bookkeepers.</p>
       <a href="https://calendly.com/hello-allsortedpro/30min" class="btn-primary" style="display: block; text-align: center; margin-top: 1rem; text-decoration: none;">Book a free call</a>
     </div>
   </div>
@@ -1021,21 +1044,20 @@
 <section class="pricing">
   <div class="section-label">Pricing</div>
   <h2>Shockingly <em>simple.</em></h2>
-  <p class="section-sub">We offer the first two weeks completely free — no credit card, no commitment. After that it's $97 a month for the first three months while we prove our value. Then $197 a month after that, which is still a fraction of what a local bookkeeper charges.</p>
+  <p class="section-sub">We offer the first two weeks completely free — no credit card, no commitment. After that, ongoing service is <strong>$99/month</strong> — one price, full service, still a fraction of what a local bookkeeper charges.</p>
   <div class="pricing-grid">
     <div class="pricing-card featured">
       <div class="featured-badge">Start free</div>
       <div class="card-tier">How billing works</div>
       <div class="card-price">
-        <span class="price-amount">$0</span>
-        <span class="price-per">/ first 2 weeks</span>
+        <span class="price-amount">$99</span>
+        <span class="price-per">/ month</span>
       </div>
-      <div class="price-was">Then $97/mo × 3 months · then $197/mo ongoing</div>
-      <p class="card-desc">Same full service at every stage — we only use simple phases so you can try us without risk.</p>
+      <div class="price-was">First 2 weeks free · then $99/mo ongoing</div>
+      <p class="card-desc">Same full service from day one after your trial — no tiered pricing, no surprises.</p>
       <ul class="card-features">
         <li>Two weeks completely free — no credit card, no commitment</li>
-        <li>$97/month for the first three months after your trial</li>
-        <li>$197/month after that — still a fraction of a local bookkeeper</li>
+        <li>$99/month after your trial — one simple ongoing price</li>
         <li>Monthly bookkeeping &amp; reconciliation</li>
         <li>Monthly P&amp;L report</li>
         <li>Dedicated bookkeeper &amp; tax-ready books</li>
@@ -1110,8 +1132,8 @@
   <div>© 2026 AllSorted Pro. All rights reserved.</div>
   <div class="footer-links">
     <a href="login.html?return=caller-dashboard.html" class="footer-login" data-auth-link>Log in</a>
-    <a href="#">Privacy Policy</a>
-    <a href="#">Terms of Service</a>
+    <a href="privacy.html">Privacy Policy</a>
+    <a href="terms.html">Terms of Service</a>
     <a href="tel:+19177733276">(917) 773-3276</a>
     <a href="mailto:hello@allsortedpro.com">hello@allsortedpro.com</a>
   </div>

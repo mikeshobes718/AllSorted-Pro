@@ -3,7 +3,7 @@ const {
   formatResourcesKnowledgeForAssistant,
 } = require('./training-library-shared');
 
-const { getSupabaseAdmin } = require('../lib/supabase-server');
+const { getDb } = require('../lib/db');
 
 const BUILT_IN_KNOWLEDGE = `
 ## AllSorted Pro — Company Overview
@@ -227,30 +227,27 @@ A: Open the portal → sidebar **Dashboard** → **Time Clock**. Tap **Clock In*
 
 async function getAssistantKbExtra() {
   const envKb = process.env.TEAM_ASSISTANT_KNOWLEDGE || '';
-  const supabase = getSupabaseAdmin();
+  const sql = getDb();
   let kvKb = '';
-  if (supabase) {
+  if (sql) {
     try {
-      const { data } = await supabase.from('portal_content').select('value').eq('key', 'assistant_kb').maybeSingle();
-      if (data && data.value) {
-        kvKb = typeof data.value === 'object' && data.value.content ? String(data.value.content) : '';
+      const rows = await sql`SELECT value FROM portal_content WHERE key = 'assistant_kb' LIMIT 1`;
+      if (rows.length && rows[0].value) {
+        const v = rows[0].value;
+        kvKb = typeof v === 'object' && v.content ? String(v.content) : '';
       }
-    } catch {
-      kvKb = '';
-    }
+    } catch { kvKb = ''; }
   }
   let resourcesKb = '';
   try {
     let stored = [];
-    if (supabase) {
+    if (sql) {
       try {
-        const { data } = await supabase.from('portal_content').select('value').eq('key', 'training_links').maybeSingle();
-        if (data && data.value) {
-          stored = Array.isArray(data.value) ? data.value : [];
+        const rows = await sql`SELECT value FROM portal_content WHERE key = 'training_links' LIMIT 1`;
+        if (rows.length && rows[0].value) {
+          stored = Array.isArray(rows[0].value) ? rows[0].value : [];
         }
-      } catch {
-        stored = [];
-      }
+      } catch { stored = []; }
     }
     if (!Array.isArray(stored)) stored = [];
     const merged = mergeTrainingLinksWithDefaults(stored);

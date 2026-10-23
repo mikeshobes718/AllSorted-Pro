@@ -3,52 +3,16 @@
     {
       "source": "/caller-dashboard.html",
       "headers": [
-        { "key": "Cache-Control", "value": "no-cache, no-store, must-revalidate" }
+        {
+          "key": "Cache-Control",
+          "value": "no-cache, no-store, must-revalidate"
+        }
       ]
     }
   ],
   "functions": {
-    "api/zoho-mail.js": {
-      "maxDuration": 60
-    },
-    "api/scrape-maps.js": {
+    "api/[endpoint].js": {
       "maxDuration": 300
-    },
-    "api/lead-pipeline.js": {
-      "maxDuration": 300
-    },
-    "api/team-chat.js": {
-      "maxDuration": 60
-    },
-    "api/team-chat-log.js": {
-      "maxDuration": 30
-    },
-    "api/portal-content.js": {
-      "maxDuration": 30
-    },
-    "api/team-chat-clear.js": {
-      "maxDuration": 15
-    },
-    "api/portal-presence.js": {
-      "maxDuration": 15
-    },
-    "api/portal-pipeline.js": {
-      "maxDuration": 60
-    },
-    "api/portal-leads.js": {
-      "maxDuration": 60
-    },
-    "api/portal-access.js": {
-      "maxDuration": 15
-    },
-    "api/portal-access-admin.js": {
-      "maxDuration": 15
-    },
-    "api/team-room.js": {
-      "maxDuration": 30
-    },
-    "api/queue-events.js": {
-      "maxDuration": 15
     }
   }
 }
